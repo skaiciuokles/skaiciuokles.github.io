@@ -7,14 +7,14 @@ const vdu = 2312.15; // Vidutinis darbo užmokestis Lietuvoje 2026 m.
 const taxRates = {
   // Gyventojų pajamų mokestis
   gpm: [
-    { threshold: vdu * 60, rate: 0.32 },
-    { threshold: vdu * 36, rate: 0.25 },
     { threshold: 0, rate: 0.2 },
+    { threshold: vdu * 36, rate: 0.25 },
+    { threshold: vdu * 60, rate: 0.32 },
   ],
   // Valstybinio socialinio draudimo įmokos
   vsd: [
-    { threshold: vdu * 60, rate: 0 },
     { threshold: 0, rate: 0.1252 },
+    { threshold: vdu * 60, rate: 0 },
   ],
   // Privalomojo sveikatos draudimo įmokos
   psd: [{ threshold: 0, rate: 0.0698 }],
@@ -55,6 +55,19 @@ const months = [
   'Gruodis',
 ];
 
+// Helper function to calculate progressive tax for a monthly salary
+function calculateProgressiveTax(
+  totalAnnual: number,
+  monthlySalary: number,
+  brackets: (typeof taxRates)[keyof typeof taxRates],
+) {
+  // Sort brackets from highest to lowest threshold
+  const sortedBrackets = brackets.toSorted((a, b) => b.threshold - a.threshold);
+  const bracket = sortedBrackets.find(b => totalAnnual >= b.threshold) ?? brackets[0];
+
+  return { amount: monthlySalary * bracket.rate, percentage: bracket.rate };
+}
+
 export function TaxCalculatorPage() {
   const [income, setIncome] = React.useState<Income>({
     monthly: undefined,
@@ -63,34 +76,28 @@ export function TaxCalculatorPage() {
 
   const calculations = React.useMemo(() => {
     const results: MonthlyIncomeCalculations[] = [];
+
     if (income.monthly !== undefined) {
       const monthlySalary = income.monthly;
       let totalAnnual = income.additionalAnnual ?? 0;
+
       for (let month = 1; month <= 12; month++) {
         totalAnnual = totalAnnual + monthlySalary;
 
-        // Calculate GPM (income tax)
-        const gpmRate = taxRates.gpm.find(t => totalAnnual >= t.threshold)?.rate ?? taxRates.gpm[2].rate;
-        const gpmAmount = monthlySalary * gpmRate;
+        const gpmTax = calculateProgressiveTax(totalAnnual, monthlySalary, taxRates.gpm);
+        const vsdTax = calculateProgressiveTax(totalAnnual, monthlySalary, taxRates.vsd);
+        const psdTax = calculateProgressiveTax(totalAnnual, monthlySalary, taxRates.psd);
 
-        // Calculate VSD (social security)
-        const vsdRate = taxRates.vsd.find(t => totalAnnual >= t.threshold)?.rate ?? taxRates.vsd[1].rate;
-        const vsdAmount = monthlySalary * vsdRate;
-
-        // Calculate PSD (health insurance)
-        const psdRate = taxRates.psd.find(t => totalAnnual >= t.threshold)?.rate ?? taxRates.psd[0].rate;
-        const psdAmount = monthlySalary * psdRate;
-
-        const totalTaxes = gpmAmount + vsdAmount + psdAmount;
+        const totalTaxes = gpmTax.amount + vsdTax.amount + psdTax.amount;
         const afterTaxes = monthlySalary - totalTaxes;
 
         results.push({
           totalAnnualBeforeTaxes: totalAnnual,
           totalMonthlyAfterTaxes: afterTaxes,
           taxes: {
-            gpm: { amount: gpmAmount, percentage: gpmRate * 100 },
-            vsd: { amount: vsdAmount, percentage: vsdRate * 100 },
-            psd: { amount: psdAmount, percentage: psdRate * 100 },
+            gpm: gpmTax,
+            vsd: vsdTax,
+            psd: psdTax,
           },
         });
       }
@@ -191,14 +198,16 @@ export function TaxCalculatorPage() {
                 <th>Metinės pajamos</th>
                 <th>GPM tarifas</th>
                 <th>VSD tarifas</th>
+                <th>PSD tarifas</th>
               </tr>
             </thead>
             <tbody className="[&>tr]:bg-stone-50">
               <tr>
                 <td>iki 36 VDU</td>
                 <td>0 - {(vdu * 36).toFixed(0)}</td>
-                <td>{(taxRates.gpm[2].rate * 100).toFixed(0)}%</td>
-                <td>{(taxRates.vsd[1].rate * 100).toFixed(2)}%</td>
+                <td>{(taxRates.gpm[0].rate * 100).toFixed(0)}%</td>
+                <td>{(taxRates.vsd[0].rate * 100).toFixed(2)}%</td>
+                <td>{(taxRates.psd[0].rate * 100).toFixed(2)}%</td>
               </tr>
               <tr>
                 <td>nuo 36 iki 60 VDU</td>
@@ -206,13 +215,15 @@ export function TaxCalculatorPage() {
                   {(vdu * 36).toFixed(0)} - {(vdu * 60).toFixed(0)}
                 </td>
                 <td>{(taxRates.gpm[1].rate * 100).toFixed(0)}%</td>
-                <td>{(taxRates.vsd[1].rate * 100).toFixed(2)}%</td>
+                <td>{(taxRates.vsd[0].rate * 100).toFixed(2)}%</td>
+                <td>{(taxRates.psd[0].rate * 100).toFixed(2)}%</td>
               </tr>
               <tr>
                 <td>nuo 60 VDU</td>
                 <td>virš {(vdu * 60).toFixed(0)}</td>
-                <td>{(taxRates.gpm[0].rate * 100).toFixed(0)}%</td>
-                <td>{(taxRates.vsd[0].rate * 100).toFixed(0)}%</td>
+                <td>{(taxRates.gpm[2].rate * 100).toFixed(0)}%</td>
+                <td>{(taxRates.vsd[1].rate * 100).toFixed(0)}%</td>
+                <td>{(taxRates.psd[0].rate * 100).toFixed(2)}%</td>
               </tr>
             </tbody>
           </table>
