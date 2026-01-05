@@ -84,15 +84,23 @@ function calculateProgressiveTax(
   return { amount: monthlySalary * bracket.rate, percentage: bracket.rate * 100 };
 }
 
+function formatCurrency(amount: number) {
+  return amount.toLocaleString('lt-LT', { style: 'currency', currency: 'EUR' });
+}
+
+function formatPercent(amount: number) {
+  return (amount / 100).toLocaleString('lt-LT', { style: 'percent', minimumFractionDigits: 2 });
+}
+
 export function TaxCalculatorPage() {
   const [income, setIncome] = React.useState<Income>({
     monthly: 15000,
     additionalAnnual: undefined,
   });
 
-  const { calculations, totalTaxes } = React.useMemo(() => {
+  const { calculations, totals, averages } = React.useMemo(() => {
     const results: MonthlyIncomeCalculations[] = [];
-    const totalTaxes = { gpm: 0, vsd: 0, psd: 0 };
+    const totals = { gpm: 0, vsd: 0, psd: 0, salaryBeforeTaxes: 0, salaryAfterTaxes: 0 };
 
     if (income.monthly !== undefined) {
       const monthlySalary = income.monthly;
@@ -108,9 +116,10 @@ export function TaxCalculatorPage() {
         const totalMonthlyTaxes = gpmTax.amount + vsdTax.amount + psdTax.amount;
         const afterTaxes = monthlySalary - totalMonthlyTaxes;
 
-        totalTaxes.gpm += gpmTax.amount;
-        totalTaxes.vsd += vsdTax.amount;
-        totalTaxes.psd += psdTax.amount;
+        totals.gpm += gpmTax.amount;
+        totals.vsd += vsdTax.amount;
+        totals.psd += psdTax.amount;
+        totals.salaryAfterTaxes += afterTaxes;
 
         results.push({
           totalAnnualBeforeTaxes: totalAnnual,
@@ -122,6 +131,8 @@ export function TaxCalculatorPage() {
           },
         });
       }
+
+      totals.salaryBeforeTaxes = totalAnnual;
     } else {
       for (let month = 1; month <= 12; month++) {
         results.push({
@@ -136,10 +147,23 @@ export function TaxCalculatorPage() {
       }
     }
 
-    return { calculations: results, totalTaxes };
+    return {
+      calculations: results,
+      totals,
+      averages: {
+        gpmPercent: (totals.gpm * 100) / totals.salaryBeforeTaxes,
+        vsdPercent: (totals.vsd * 100) / totals.salaryBeforeTaxes,
+        psdPercent: (totals.psd * 100) / totals.salaryBeforeTaxes,
+        taxPercent: ((totals.gpm + totals.vsd + totals.psd) * 100) / totals.salaryBeforeTaxes,
+      },
+    };
   }, [income]);
 
-  const renderLine = (label: string, render: (calculation: MonthlyIncomeCalculations) => React.ReactNode) => {
+  const renderLine = (
+    label: string,
+    render: (calculation: MonthlyIncomeCalculations) => React.ReactNode,
+    total: React.ReactNode,
+  ) => {
     return (
       <tr className="bg-stone-50">
         <td className="border border-stone-300 px-3 py-2 font-medium bg-stone-100">{label}</td>
@@ -148,6 +172,7 @@ export function TaxCalculatorPage() {
             {render(calc)}
           </td>
         ))}
+        <td className="border border-stone-300 px-3 py-2 text-center font-bold">{total}</td>
       </tr>
     );
   };
@@ -183,7 +208,7 @@ export function TaxCalculatorPage() {
         <table className="w-full border-collapse text-sm">
           <thead>
             <tr className="bg-stone-200">
-              {[null, ...months].map((month, index) => (
+              {[null, ...months, 'Viso'].map((month, index) => (
                 <th key={index} className="border border-stone-300 px-3 py-2 text-center">
                   {month}
                 </th>
@@ -191,29 +216,28 @@ export function TaxCalculatorPage() {
             </tr>
           </thead>
           <tbody>
-            {renderLine('Atlyginimas į rankas', calc => calc.totalMonthlyAfterTaxes.toFixed(2))}
-            {renderLine('Metinės bruto pajamos', calc => calc.totalAnnualBeforeTaxes.toFixed(2))}
+            {renderLine(
+              'Atlyginimas į rankas',
+              calc => formatCurrency(calc.totalMonthlyAfterTaxes),
+              formatCurrency(totals.salaryAfterTaxes),
+            )}
+            {renderLine(
+              'Metinės bruto pajamos',
+              calc => formatCurrency(calc.totalAnnualBeforeTaxes),
+              formatCurrency(totals.salaryBeforeTaxes),
+            )}
             {/* Mokesčiai header */}
             <tr className="bg-stone-200">
-              <td className="border border-stone-300 px-3 py-2 font-bold" colSpan={13}>
-                Mokesčiai
+              <td className="border border-stone-300 px-3 py-2 font-bold" colSpan={14}>
+                Mokesčiai {formatCurrency(totals.gpm + totals.vsd + totals.psd)} ({formatPercent(averages.taxPercent)})
               </td>
             </tr>
-            {renderLine('GPM, %', calc => `${calc.taxes.gpm.percentage.toFixed(0)}%`)}
-            {renderLine('GPM, EUR', calc => calc.taxes.gpm.amount.toFixed(2))}
-            {renderLine('VSD, %', calc => `${calc.taxes.vsd.percentage.toFixed(2)}%`)}
-            {renderLine('VSD, EUR', calc => calc.taxes.vsd.amount.toFixed(2))}
-            {renderLine('PSD, %', calc => `${calc.taxes.psd.percentage.toFixed(2)}%`)}
-            {renderLine('PSD, EUR', calc => calc.taxes.psd.amount.toFixed(2))}
-            {renderLine('Total Taxes, EUR', calc => (
-              <b>{(calc.taxes.gpm.amount + calc.taxes.vsd.amount + calc.taxes.psd.amount).toFixed(2)}</b>
-            ))}
-            <tr className="bg-stone-200">
-              <td className="border border-stone-300 px-3 py-2 text-center">Iš viso mokesčių per metus</td>
-              <td className="border border-stone-300 px-3 py-2 text-center" colSpan={12}>
-                <b>{(totalTaxes.gpm + totalTaxes.vsd + totalTaxes.psd).toFixed(2)} EUR</b>
-              </td>
-            </tr>
+            {renderLine('GPM, %', calc => formatPercent(calc.taxes.gpm.percentage), formatPercent(averages.gpmPercent))}
+            {renderLine('GPM, EUR', calc => formatCurrency(calc.taxes.gpm.amount), `${formatCurrency(totals.gpm)}`)}
+            {renderLine('VSD, %', calc => formatPercent(calc.taxes.vsd.percentage), formatPercent(averages.vsdPercent))}
+            {renderLine('VSD, EUR', calc => formatCurrency(calc.taxes.vsd.amount), `${formatCurrency(totals.vsd)}`)}
+            {renderLine('PSD, %', calc => formatPercent(calc.taxes.psd.percentage), formatPercent(averages.psdPercent))}
+            {renderLine('PSD, EUR', calc => formatCurrency(calc.taxes.psd.amount), `${formatCurrency(totals.psd)}`)}
           </tbody>
         </table>
       </div>
