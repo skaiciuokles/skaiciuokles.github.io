@@ -95,7 +95,7 @@ function formatPercent(amount: number) {
 export function TaxCalculatorPage() {
   const [income, setIncome] = React.useState<Income>({
     monthly: 15000,
-    additionalAnnual: undefined,
+    additionalAnnual: 0,
   });
 
   const { calculations, totals, averages } = React.useMemo(() => {
@@ -190,7 +190,6 @@ export function TaxCalculatorPage() {
             type="number"
             value={income.monthly}
             onChange={e => setIncome(prev => ({ ...prev, monthly: Number(e.target.value) }))}
-            placeholder="Įveskite mėnesinį atlyginimą"
           />
         </div>
         <div className="p-4 border rounded-sm">
@@ -199,7 +198,6 @@ export function TaxCalculatorPage() {
             type="number"
             value={income.additionalAnnual}
             onChange={e => setIncome(prev => ({ ...prev, additionalAnnual: Number(e.target.value) }))}
-            placeholder="Įveskite papildomas MB pajamas"
           />
         </div>
       </div>
