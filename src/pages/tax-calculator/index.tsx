@@ -38,11 +38,13 @@ export function TaxCalculatorPage() {
       </div>
 
       <TaxSummaryTable
-        label="Mokesčių suvestinė"
+        label="Metinė darbo santykių mokesčių suvestinė"
         monthlySalary={income.monthly ?? 0}
         additionalIncome={income.additionalAnnual}
         withSodra
       />
+
+      <TaxSummaryTable label="Metinė MB mokesčių suvestinė" monthlySalary={(income.additionalAnnual ?? 0) / 12} />
 
       <TaxTariffLegend />
     </div>
