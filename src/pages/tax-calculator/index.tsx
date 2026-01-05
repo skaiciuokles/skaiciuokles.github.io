@@ -181,7 +181,7 @@ export function TaxCalculatorPage() {
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-black flex items-center justify-center gap-2">
         <Calculator className="size-8" />
-        Sveiki atvykę į Mokesčių Skaičiuoklę
+        2026 Metų Mokesčių Skaičiuoklė
       </h1>
       <div className="flex gap-4 mx-auto">
         <div className="p-4 border rounded-sm">
