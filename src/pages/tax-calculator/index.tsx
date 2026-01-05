@@ -241,7 +241,7 @@ export function TaxCalculatorPage() {
       </div>
 
       <div className="mt-8">
-        <h2 className="text-xl font-bold mb-4 text-center">Metiniai rėžiai</h2>
+        <h2 className="text-xl font-bold mb-4 text-center">Metiniai mokesčių tarifai</h2>
         <div className="max-w-2xl mx-auto">
           <table className="w-full border-collapse text-sm [&_th,td]:border [&_th,td]:border-stone-300 [&_th,td]:px-4 [&_th,td]:py-2">
             <thead>
@@ -256,7 +256,7 @@ export function TaxCalculatorPage() {
             <tbody className="[&>tr]:bg-stone-50">
               <tr>
                 <td>iki 36 VDU</td>
-                <td>0 - {(vdu * 36).toFixed(0)}</td>
+                <td>0 - {formatCurrency(vdu * 36)}</td>
                 <td>{(taxRates.gpm[0].rate * 100).toFixed(0)}%</td>
                 <td>{(taxRates.vsd[0].rate * 100).toFixed(2)}%</td>
                 <td>{(taxRates.psd[0].rate * 100).toFixed(2)}%</td>
@@ -264,7 +264,7 @@ export function TaxCalculatorPage() {
               <tr>
                 <td>nuo 36 iki 60 VDU</td>
                 <td>
-                  {(vdu * 36).toFixed(0)} - {(vdu * 60).toFixed(0)}
+                  {formatCurrency(vdu * 36)} - {formatCurrency(vdu * 60)}
                 </td>
                 <td>{(taxRates.gpm[1].rate * 100).toFixed(0)}%</td>
                 <td>{(taxRates.vsd[0].rate * 100).toFixed(2)}%</td>
@@ -272,7 +272,7 @@ export function TaxCalculatorPage() {
               </tr>
               <tr>
                 <td>nuo 60 VDU</td>
-                <td>virš {(vdu * 60).toFixed(0)}</td>
+                <td>virš {formatCurrency(vdu * 60)}</td>
                 <td>{(taxRates.gpm[2].rate * 100).toFixed(0)}%</td>
                 <td>{(taxRates.vsd[1].rate * 100).toFixed(0)}%</td>
                 <td>{(taxRates.psd[0].rate * 100).toFixed(2)}%</td>
