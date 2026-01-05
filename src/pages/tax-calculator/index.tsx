@@ -3,6 +3,7 @@ import { Calculator } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { TaxSummaryTable } from './tax-summary-table';
+import { TaxTariffLegend } from './tax-tariff-legend';
 import type { Income } from './utils';
 
 export function TaxCalculatorPage() {
@@ -42,6 +43,8 @@ export function TaxCalculatorPage() {
         additionalIncome={income.additionalAnnual}
         withSodra
       />
+
+      <TaxTariffLegend />
     </div>
   );
 }
