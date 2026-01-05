@@ -65,13 +65,13 @@ export function TaxSummaryTable({ label, monthlySalary, additionalIncome, withSo
   ) {
     return (
       <tr className="bg-stone-50">
-        <td className="border border-stone-300 px-3 py-2 font-medium bg-stone-100">{label}</td>
+        <td className="border border-stone-300 px-2 py-1.5 font-medium bg-stone-100">{label}</td>
         {calculations.map((calc, index) => (
-          <td key={index} className="border border-stone-300 px-3 py-2 text-center">
+          <td key={index} className="border border-stone-300 px-2 py-1.5 text-center">
             {render(calc)}
           </td>
         ))}
-        <td className="border border-stone-300 px-3 py-2 text-center font-bold">{total}</td>
+        <td className="border border-stone-300 px-2 py-1.5 text-center font-bold">{total}</td>
       </tr>
     );
   }
@@ -83,7 +83,7 @@ export function TaxSummaryTable({ label, monthlySalary, additionalIncome, withSo
         <thead>
           <tr className="bg-stone-200">
             {[null, ...months, 'Viso'].map((month, index) => (
-              <th key={index} className="border border-stone-300 px-3 py-2 text-center">
+              <th key={index} className="border border-stone-300 px-2 py-1.5 text-center">
                 {month}
               </th>
             ))}
@@ -102,7 +102,7 @@ export function TaxSummaryTable({ label, monthlySalary, additionalIncome, withSo
           )}
           {/* Mokesčiai header */}
           <tr className="bg-stone-200">
-            <td className="border border-stone-300 px-3 py-2 font-bold" colSpan={14}>
+            <td className="border border-stone-300 px-2 py-1.5 font-bold" colSpan={14}>
               Mokesčiai {formatCurrency(totals.gpm + totals.vsd + totals.psd)} ({formatPercent(averages.taxPercent)})
             </td>
           </tr>
