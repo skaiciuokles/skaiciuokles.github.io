@@ -104,12 +104,13 @@ export function TaxCalculatorPage() {
 
     if (income.monthly !== undefined) {
       const monthlySalary = income.monthly;
-      let totalAnnual = income.additionalAnnual ?? 0;
+      let totalAnnual = 0;
 
       for (let month = 1; month <= 12; month++) {
         totalAnnual = totalAnnual + monthlySalary;
+        const totalAnnualForGPM = totalAnnual + (income.additionalAnnual ?? 0);
 
-        const gpmTax = calculateProgressiveTax(totalAnnual, monthlySalary, taxRates.gpm);
+        const gpmTax = calculateProgressiveTax(totalAnnualForGPM, monthlySalary, taxRates.gpm);
         const vsdTax = calculateProgressiveTax(totalAnnual, monthlySalary, taxRates.vsd);
         const psdTax = calculateProgressiveTax(totalAnnual, monthlySalary, taxRates.psd);
 
