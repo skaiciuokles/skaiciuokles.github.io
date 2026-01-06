@@ -153,7 +153,7 @@ export function TaxCalculatorPage() {
             >
               VMI pateikta informacija.
             </a>{' '}
-            Rezultatai yra apytiksliai ir gali skirtis nuo galutinių VMI apskaičiavimų, todėl už jų tikslumą neatsakome.
+            Rezultatai yra apytiksliai ir gali skirtis nuo galutinių VMI apskaičiavimų.
           </div>
         </div>
       </div>
