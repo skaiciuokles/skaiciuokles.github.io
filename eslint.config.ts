@@ -4,6 +4,7 @@ import tseslint from 'typescript-eslint';
 import react from 'eslint-plugin-react';
 import { defineConfig } from 'eslint/config';
 import eslintPrettier from 'eslint-plugin-prettier/recommended';
+import reactRefresh from 'eslint-plugin-react-refresh';
 import reactHooks from 'eslint-plugin-react-hooks';
 
 export default defineConfig([
@@ -13,6 +14,7 @@ export default defineConfig([
     extends: ['js/recommended'],
     languageOptions: { globals: globals.browser },
   },
+  reactRefresh.configs.recommended,
   tseslint.configs.recommended,
   reactHooks.configs.flat.recommended,
   eslintPrettier,
@@ -22,4 +24,5 @@ export default defineConfig([
       '@typescript-eslint/no-explicit-any': 'off',
     },
   },
+  { ignores: ['**/dist', '**/node_modules'] },
 ]);
