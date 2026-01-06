@@ -8,4 +8,5 @@ export const env = {
   nodeEnv,
   isProduction: nodeEnv === 'production',
   isDevelopment: nodeEnv === 'development',
+  buildNumber: process.env.BUN_PUBLIC_BUILD_NUMBER,
 } as const;

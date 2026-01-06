@@ -72,9 +72,12 @@ export function useIsOpen(initialOpeningDelay?: number, initiallyOpen = false) {
             setIsOpen(false);
           }
         },
-        toggle: () => {
+        toggle: (callback?: (old: boolean) => boolean) => {
           if (isMounted.current) {
-            setIsOpen(old => !old);
+            setIsOpen(old => {
+              if (callback) return callback(old);
+              return !old;
+            });
           }
         },
         onOpenChange: (isOpen: boolean) => {
