@@ -31,7 +31,7 @@ export function TaxSummaryTableWrapper({
           <CollapsibleTrigger>
             <h2 className="text-lg font-bold mb-2 text-left flex items-center gap-2 cursor-pointer">
               {label}
-              {isOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+              {isOpen ? <ChevronUp className="size-4 shrink-0" /> : <ChevronDown className="size-4 shrink-0" />}
             </h2>
           </CollapsibleTrigger>
         )}

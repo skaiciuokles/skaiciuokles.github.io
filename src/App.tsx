@@ -3,7 +3,7 @@ import './index.css';
 
 export function App() {
   return (
-    <div className="max-w-480 mx-auto p-4 text-center relative z-10">
+    <div className="max-w-480 mx-auto p-4 text-center relative z-10 h-screen">
       <TaxCalculatorPage />
     </div>
   );

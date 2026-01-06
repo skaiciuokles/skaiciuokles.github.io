@@ -13,14 +13,14 @@ export function TaxCalculatorPage() {
   });
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 h-full">
       <h1 className="text-2xl font-black flex items-center justify-center gap-2">
         <Calculator className="size-8" />
         2026 Metų Mokesčių Skaičiuoklė
       </h1>
 
-      <div className="grid grid-cols-[300px_auto]">
-        <div className="flex flex-col gap-4 mr-3 pr-3 border-r">
+      <div className="grid grid-cols-[300px_auto] overflow-hidden">
+        <div className="space-y-4 mr-3 pr-3 border-r">
           <div className="p-4 border rounded-sm">
             <Label className="mb-2 block text-left font-bold">Mėnesio darbo santykių pajamos (prieš mokesčius):</Label>
             <Input
@@ -41,7 +41,7 @@ export function TaxCalculatorPage() {
           </div>
         </div>
 
-        <div className="flex flex-col gap-4">
+        <div className="overflow-y-auto space-y-4">
           <TaxSummaryTable
             label="Metinė darbo santykių mokesčių suvestinė"
             monthlySalary={income.monthly ?? 0}

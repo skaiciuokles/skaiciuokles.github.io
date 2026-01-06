@@ -53,7 +53,7 @@ export function TaxTariffLegend() {
           <TaxSummaryTableBodyColumn>{(taxRates.psd[0].rate * 100).toFixed(2)}%</TaxSummaryTableBodyColumn>
         </TaxSummaryTableBodyRow>
       </TaxSummaryTableWrapper>
-      <div className="mt-4 text-sm text-gray-600">
+      <div className="text-sm text-gray-600">
         <p>*Numatytas VDU 2026 metams yra {formatCurrency(VDU)} EUR</p>
       </div>
     </>
