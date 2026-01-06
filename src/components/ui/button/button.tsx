@@ -1,52 +1,89 @@
-import { Slot } from '@radix-ui/react-slot';
-import { cva, type VariantProps } from 'class-variance-authority';
-import * as React from 'react';
+'use client';
 
+import React, { type ButtonHTMLAttributes } from 'react';
+import { type VariantProps } from 'class-variance-authority';
+import { useIsMountedRef } from '@/hooks/general';
 import { cn } from '@/lib/utils';
+import { type BaseUnavailableProps, Unavailable } from '../unavailable';
+import { CircularSpinner } from '../loading';
+import { buttonVariants } from './variants';
 
-const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive",
-  {
-    variants: {
-      variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary/90',
-        destructive:
-          'bg-destructive text-white hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
-        outline:
-          'border bg-background shadow-xs hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50',
-        secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
-        ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
-        link: 'text-primary underline-offset-4 hover:underline',
-      },
-      size: {
-        default: 'h-9 px-4 py-2 has-[>svg]:px-3',
-        sm: 'h-8 rounded-md gap-1.5 px-3 has-[>svg]:px-2.5',
-        lg: 'h-10 rounded-md px-6 has-[>svg]:px-4',
-        icon: 'size-9',
-        'icon-sm': 'size-8',
-        'icon-lg': 'size-10',
-      },
-    },
-    defaultVariants: {
-      variant: 'default',
-      size: 'default',
-    },
-  },
-);
-
-function Button({
+export function Button({
   className,
   variant,
-  size,
-  asChild = false,
-  ...props
-}: React.ComponentProps<'button'> &
-  VariantProps<typeof buttonVariants> & {
-    asChild?: boolean;
-  }) {
-  const Comp = asChild ? Slot : 'button';
+  size = variant === 'text' ? 'none' : 'default',
+  loading,
+  children,
+  disabled,
+  unavailable,
+  unavailableTitle,
+  unavailableContentClassName,
+  onClick,
+  async,
+  ref,
+  ...rest
+}: ButtonProps) {
+  const [internalLoading, setIsLoading] = React.useState(false);
+  const isMountedRef = useIsMountedRef();
+  const isLoading = loading || internalLoading;
 
-  return <Comp data-slot="button" className={cn(buttonVariants({ variant, size, className }))} {...props} />;
+  const buttonDisabled = disabled || unavailable || isLoading;
+  const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    if (buttonDisabled) {
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+
+    if (onClick) {
+      try {
+        if (async) {
+          setIsLoading(true);
+        }
+        await onClick(event);
+      } finally {
+        if (async && isMountedRef.current) {
+          setIsLoading(false);
+        }
+      }
+    }
+  };
+
+  const content = (
+    <button
+      className={cn(buttonVariants({ variant, size, className }))}
+      onClick={handleClick}
+      disabled={buttonDisabled}
+      data-slot="button"
+      ref={ref}
+      {...rest}
+      // Overriding the original to not add `false` value to `aria-disabled` attribute
+      aria-disabled={rest['aria-disabled'] === true || rest['aria-disabled'] === 'true' ? true : undefined}
+    >
+      {isLoading && <CircularSpinner className="mr-1" size="sm" />}
+      {children}
+    </button>
+  );
+
+  if (unavailable) {
+    return (
+      <Unavailable unavailableTitle={unavailableTitle} unavailableContentClassName={unavailableContentClassName}>
+        {content}
+      </Unavailable>
+    );
+  }
+
+  return content;
 }
 
-export { Button, buttonVariants };
+type BaseButtonProps = React.ComponentProps<'button'>;
+export interface ButtonProps extends BaseButtonProps, VariantProps<typeof buttonVariants>, BaseUnavailableProps {
+  loading?: boolean;
+  async?: boolean;
+  /**
+   * If true, the button will be appear disabled but will still be clickable.
+   */
+  'aria-disabled'?: ButtonHTMLAttributes<HTMLButtonElement>['aria-disabled'];
+}
+
+Button.displayName = 'Button';
