@@ -81,8 +81,17 @@ export function TaxCalculatorPage() {
             />
           </div>
 
+          <div className="text-sm text-gray-600">*Numatytas VDU 2026 metams yra {formatCurrency(VDU)} EUR</div>
           <div className="text-sm text-gray-600">
-            <p>*Numatytas VDU 2026 metams yra {formatCurrency(VDU)} EUR</p>
+            **Skaičiuoklė paremta{' '}
+            <a
+              href="https://www.vmi.lt/evmi/5725"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-700 underline hover:text-blue-900"
+            >
+              VMI pateikta informacija.
+            </a>
           </div>
         </div>
 
