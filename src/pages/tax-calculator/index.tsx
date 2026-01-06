@@ -74,7 +74,7 @@ export function TaxCalculatorPage() {
             <Label className="mb-2 block text-left font-bold">Mėnesio darbo santykių pajamos (prieš mokesčius):</Label>
             <Input
               type="number"
-              value={income.monthly}
+              value={income.monthly ?? ''}
               onChange={e =>
                 setIncome(prev => ({ ...prev, monthly: e.target.value ? Number(e.target.value) : undefined }))
               }
@@ -85,7 +85,7 @@ export function TaxCalculatorPage() {
             <Label className="mb-2 block text-left font-bold">Mėnesio IV pagal pažymą pajamos (prieš mokesčius):</Label>
             <Input
               type="number"
-              value={income.ivMonthly}
+              value={income.ivMonthly ?? ''}
               onChange={e =>
                 setIncome(prev => ({ ...prev, ivMonthly: e.target.value ? Number(e.target.value) : undefined }))
               }
@@ -99,7 +99,7 @@ export function TaxCalculatorPage() {
             <Label className="mb-2 block text-left font-bold">Mėnesio MB pajamos (prieš mokesčius):</Label>
             <Input
               type="number"
-              value={income.mbMonthly}
+              value={income.mbMonthly ?? ''}
               onChange={e =>
                 setIncome(prev => ({ ...prev, mbMonthly: e.target.value ? Number(e.target.value) : undefined }))
               }
