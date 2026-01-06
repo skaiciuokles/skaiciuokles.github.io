@@ -7,11 +7,11 @@ import { cn } from '@/lib/utils';
 import React from 'react';
 
 const CollapsibleContext = createContext<ICollapsibleContext | undefined>(undefined);
-const TRANSITION_DURATION = 150;
 
 export function Collapsible({
   id,
   direction = 'horizontal',
+  duration = 150,
   trigger,
   children,
   className,
@@ -41,8 +41,8 @@ export function Collapsible({
 
   const close = useCallback(() => {
     setIsOpen(false);
-    setTimeout(() => setIsRendered(false), TRANSITION_DURATION);
-  }, []);
+    setTimeout(() => setIsRendered(false), duration);
+  }, [duration]);
 
   const actions = useMemo(
     () => ({
@@ -70,7 +70,7 @@ export function Collapsible({
     <div
       style={{
         ...(direction === 'horizontal' ? { height: isOpen ? size?.height : 0 } : { width: isOpen ? size?.width : 0 }),
-        transitionDuration: `${TRANSITION_DURATION}ms`,
+        transitionDuration: `${duration}ms`,
         ...style,
       }}
       className={cn(
@@ -101,6 +101,7 @@ type TriggerElement = React.ReactElement<{ onClick?: () => void; 'data-slot'?: s
 export interface CollapsibleProps extends React.ComponentProps<'div'> {
   id?: string;
   direction?: 'vertical' | 'horizontal';
+  duration?: number;
   style?: React.CSSProperties;
   className?: string;
   trigger?: TriggerElement;
