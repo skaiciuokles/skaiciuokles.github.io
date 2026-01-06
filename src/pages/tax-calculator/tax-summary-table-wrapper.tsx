@@ -1,4 +1,6 @@
 import React from 'react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
+import { Collapsible, CollapsibleTrigger } from '@/components/layouts/collapsible';
 import { cn } from '@/lib/utils';
 
 export function TaxSummaryTableHeaderRow({ className, ...rest }: React.ComponentProps<'tr'>) {
@@ -17,16 +19,26 @@ export function TaxSummaryTableBodyColumn({ className, ...rest }: React.Componen
 
 export function TaxSummaryTableWrapper({ label, tableHeader, children }: TaxSummaryTableWrapperProps) {
   return (
-    <div>
-      <h2 className="text-lg font-bold mb-2 text-left flex items-center gap-2">{label}</h2>
-      <div className="overflow-x-auto">
+    <div className="overflow-x-auto">
+      <Collapsible
+        renderBefore={({ isOpen }) => (
+          <CollapsibleTrigger>
+            <h2 className="text-lg font-bold mb-2 text-left flex items-center gap-2 cursor-pointer">
+              {label}
+              {isOpen ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
+            </h2>
+          </CollapsibleTrigger>
+        )}
+        initialOpen
+        asChild
+      >
         <table className="w-full border-collapse text-sm">
           <thead>
             <TaxSummaryTableHeaderRow>{tableHeader}</TaxSummaryTableHeaderRow>
           </thead>
           <tbody>{children}</tbody>
         </table>
-      </div>
+      </Collapsible>
     </div>
   );
 }
