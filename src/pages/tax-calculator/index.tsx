@@ -47,8 +47,8 @@ export function TaxCalculatorPage() {
         </a>
       </header>
 
-      <div className="grid grid-cols-[300px_auto] overflow-hidden h-full">
-        <div className="space-y-4 p-3 border-r">
+      <div className="grid grid-cols-[325px_auto] overflow-hidden h-full">
+        <div className="flex flex-col gap-4 p-3 border-r overflow-y-auto">
           <div className="p-3 border rounded-sm">
             <Label className="mb-2 block text-left font-bold">Mokestiniai metai:</Label>
             <Select
@@ -80,8 +80,12 @@ export function TaxCalculatorPage() {
               placeholder="Pajamos iš MB"
             />
           </div>
-
-          <div className="text-sm text-gray-600">*Numatytas VDU 2026 metams yra {formatCurrency(VDU)} EUR</div>
+          <div className="border-t pt-3 space-y-3 -mx-3 px-3 mt-auto">
+            <TaxTariffLegend year={income.year} />
+            <div className="text-xs text-gray-500">
+              *VDU {income.year} m. = {formatCurrency(VDU)} €
+            </div>
+          </div>
         </div>
 
         <div className="overflow-y-auto">
@@ -98,8 +102,6 @@ export function TaxCalculatorPage() {
             monthlySalary={income.additionalMonthly ?? 0}
             className="p-3 border-b"
           />
-
-          <TaxTariffLegend className="p-3 border-b" />
 
           <div className="text-sm text-gray-600 p-3">
             Skaičiuoklė paremta{' '}
