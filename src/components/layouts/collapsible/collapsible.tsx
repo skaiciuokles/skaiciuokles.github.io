@@ -21,14 +21,21 @@ export function Collapsible({
   renderAfter,
   initialOpen = false,
   collapseOnClickOutside = false,
+  ...rest
 }: CollapsibleProps) {
   const [isOpen, setIsOpen] = useState(initialOpen);
   const [isRendered, setIsRendered] = useState(initialOpen);
   const [element, size] = useElementResizeObserver(entry => {
     const [boxSize] = entry.borderBoxSize;
+    const parent = entry.target.parentElement;
+    const parentRect = parent && parent.getBoundingClientRect();
+    const parentPadding = parentRect
+      ? { x: parentRect.width - parent.clientWidth, y: parentRect.height - parent.clientHeight }
+      : { x: 0, y: 0 };
+
     return {
-      width: boxSize?.inlineSize || entry.contentRect.width,
-      height: boxSize?.blockSize || entry.contentRect.height,
+      width: (boxSize?.inlineSize || entry.contentRect.width) + parentPadding.x,
+      height: (boxSize?.blockSize || entry.contentRect.height) + parentPadding.y,
     };
   }, []);
 
@@ -66,8 +73,13 @@ export function Collapsible({
         transitionDuration: `${TRANSITION_DURATION}ms`,
         ...style,
       }}
-      className={cn('overflow-hidden transition-[width,height]', className)}
+      className={cn(
+        'transition-[width,height]',
+        direction === 'vertical' ? 'overflow-x-hidden' : 'overflow-y-hidden',
+        className,
+      )}
       ref={useOnClickOutside(actions.close, undefined, { shouldIgnore, disabled: !collapseOnClickOutside })}
+      {...rest}
     >
       {cloneElement(children, { ref: element })}
     </div>
@@ -86,7 +98,7 @@ export function Collapsible({
 
 type TriggerElement = React.ReactElement<{ onClick?: () => void; 'data-slot'?: string }>;
 
-export interface CollapsibleProps {
+export interface CollapsibleProps extends React.ComponentProps<'div'> {
   id?: string;
   direction?: 'vertical' | 'horizontal';
   style?: React.CSSProperties;
