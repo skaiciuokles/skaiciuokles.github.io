@@ -12,6 +12,7 @@ export function TaxSummaryTable({
   label,
   monthlySalary,
   additionalForGPM,
+  additionalForSodra,
   gpmOverride,
   withSodra,
   taxRates,
@@ -43,11 +44,12 @@ export function TaxSummaryTable({
       const sodraTaxableIncome = monthlySalary * taxRates.sodraBase;
       totalSodraTaxable = totalSodraTaxable + sodraTaxableIncome;
 
+      const totalAnnualForSodra = totalSodraTaxable + (additionalForSodra ?? 0);
       const vsdTax = withSodra
-        ? calculateProgressiveTax(totalAnnualTaxable, sodraTaxableIncome, taxRates.vsd)
+        ? calculateProgressiveTax(totalAnnualForSodra, sodraTaxableIncome, taxRates.vsd)
         : { amount: 0, percentage: 0 };
       const psdTax = withSodra
-        ? calculateProgressiveTax(totalAnnualTaxable, sodraTaxableIncome, taxRates.psd)
+        ? calculateProgressiveTax(totalAnnualForSodra, sodraTaxableIncome, taxRates.psd)
         : { amount: 0, percentage: 0 };
 
       const totalMonthlyTaxes = gpmTax.amount + vsdTax.amount + psdTax.amount;
@@ -87,7 +89,7 @@ export function TaxSummaryTable({
         taxPercent: totalAnnualTaxable > 0 ? ((totals.gpm + totals.vsd + totals.psd) * 100) / totalAnnualTaxable : 0,
       },
     };
-  }, [monthlySalary, additionalForGPM, withSodra, taxRates, gpmOverride]);
+  }, [monthlySalary, additionalForGPM, additionalForSodra, withSodra, taxRates, gpmOverride]);
 
   const headers = [
     'Mėnuo',
@@ -181,6 +183,7 @@ interface TaxSummaryTableProps extends React.ComponentProps<'div'> {
   monthlySalary: number;
   taxRates: TaxRates;
   additionalForGPM?: number;
+  additionalForSodra?: number;
   gpmOverride?: { amount: number; percentage: number };
   withSodra?: boolean;
 }

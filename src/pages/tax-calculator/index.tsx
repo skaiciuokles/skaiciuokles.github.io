@@ -121,6 +121,7 @@ export function TaxCalculatorPage() {
             additionalForGPM={
               (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 + (income.ivMonthly ?? 0) * ivTaxRates.gpmBase * 12
             }
+            additionalForSodra={(income.ivMonthly ?? 0) * ivTaxRates.sodraBase * 12}
             className="border-b p-3"
             taxRates={taxRates}
             withSodra
