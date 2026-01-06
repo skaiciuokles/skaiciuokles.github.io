@@ -9,5 +9,3 @@ export const env = {
   isProduction: nodeEnv === 'production',
   isDevelopment: nodeEnv === 'development',
 } as const;
-
-console.log('posthog.host', env.posthog.host);
