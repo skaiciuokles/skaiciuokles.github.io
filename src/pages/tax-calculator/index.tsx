@@ -6,11 +6,25 @@ import { TaxSummaryTable } from './tax-summary-table';
 import { TaxTariffLegend } from './tax-tariff-legend';
 import type { Income } from './utils';
 
+const INCOME_STORAGE_KEY = 'tax-calculator-income';
+
 export function TaxCalculatorPage() {
-  const [income, setIncome] = React.useState<Income>({
-    monthly: 0,
-    additionalMonthly: 0,
+  const [income, setIncome] = React.useState<Income>(() => {
+    const savedIncome = localStorage.getItem(INCOME_STORAGE_KEY);
+    if (savedIncome) {
+      try {
+        return JSON.parse(savedIncome);
+      } catch (error) {
+        console.error('Error parsing income from localStorage', error);
+      }
+    }
+
+    return { monthly: 0, additionalMonthly: 0 };
   });
+
+  React.useEffect(() => {
+    localStorage.setItem(INCOME_STORAGE_KEY, JSON.stringify(income));
+  }, [income]);
 
   return (
     <div className="flex flex-col gap-4 h-full">
