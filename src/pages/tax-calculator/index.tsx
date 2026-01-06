@@ -118,7 +118,9 @@ export function TaxCalculatorPage() {
           <TaxSummaryTable
             label="Metinė darbo santykių mokesčių suvestinė"
             monthlySalary={income.monthly ?? 0}
-            additionalForGPM={(income.mbMonthly ?? 0) * 12}
+            additionalForGPM={
+              (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 + (income.ivMonthly ?? 0) * ivTaxRates.gpmBase * 12
+            }
             className="border-b p-3"
             taxRates={taxRates}
             withSodra
