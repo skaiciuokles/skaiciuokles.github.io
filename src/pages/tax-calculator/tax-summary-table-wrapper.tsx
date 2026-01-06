@@ -29,7 +29,7 @@ export function TaxSummaryTableWrapper({
       <Collapsible
         renderBefore={({ isOpen }) => (
           <CollapsibleTrigger>
-            <h2 className="text-lg font-bold mb-2 text-left flex items-center gap-2 cursor-pointer">
+            <h2 className="text-lg font-bold text-left flex items-center gap-2 cursor-pointer">
               {label}
               {isOpen ? <ChevronUp className="size-4 shrink-0" /> : <ChevronDown className="size-4 shrink-0" />}
             </h2>
@@ -38,12 +38,14 @@ export function TaxSummaryTableWrapper({
         initialOpen
         asChild
       >
-        <table className="w-full border-collapse text-sm">
-          <thead>
-            <TaxSummaryTableHeaderRow>{tableHeader}</TaxSummaryTableHeaderRow>
-          </thead>
-          <tbody>{children}</tbody>
-        </table>
+        <div className="pt-2">
+          <table className="w-full border-collapse text-sm">
+            <thead>
+              <TaxSummaryTableHeaderRow>{tableHeader}</TaxSummaryTableHeaderRow>
+            </thead>
+            <tbody>{children}</tbody>
+          </table>
+        </div>
       </Collapsible>
     </div>
   );

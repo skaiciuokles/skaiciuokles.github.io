@@ -8,7 +8,7 @@ import {
   TaxSummaryTableWrapper,
 } from './tax-summary-table-wrapper';
 
-export function TaxSummaryTable({ label, monthlySalary, additionalIncome, withSodra }: TaxSummaryTableProps) {
+export function TaxSummaryTable({ label, monthlySalary, additionalIncome, withSodra, ...rest }: TaxSummaryTableProps) {
   const { calculations, totals, averages } = React.useMemo(() => {
     const results: MonthlyIncomeCalculations[] = [];
     const totals: IncomeTotals = {
@@ -93,6 +93,7 @@ export function TaxSummaryTable({ label, monthlySalary, additionalIncome, withSo
       tableHeader={headers.map((header, index) => (
         <TaxSummaryTableHeaderColumn key={index}>{header}</TaxSummaryTableHeaderColumn>
       ))}
+      {...rest}
     >
       {calculations.map((calc, index) => (
         <TaxSummaryTableBodyRow key={index}>
@@ -139,9 +140,9 @@ export function TaxSummaryTable({ label, monthlySalary, additionalIncome, withSo
   );
 }
 
-type TaxSummaryTableProps = {
+interface TaxSummaryTableProps extends React.ComponentProps<'div'> {
   label: React.ReactNode;
   monthlySalary: number;
   additionalIncome?: number;
   withSodra?: boolean;
-};
+}
