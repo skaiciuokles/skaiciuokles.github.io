@@ -19,6 +19,7 @@
     "clsx": "^2.1.1",
     "lodash": "^4.17.21",
     "lucide-react": "^0.545.0",
+    "posthog-js": "^1.314.0",
     "react": "^19",
     "react-dom": "^19",
     "simple-icons": "^16.4.0",

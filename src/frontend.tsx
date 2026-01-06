@@ -7,12 +7,28 @@
 
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
+import { PostHogProvider } from 'posthog-js/react';
+import { env } from './lib/env';
 import { App } from './App';
 
 const elem = document.getElementById('root')!;
 const app = (
   <StrictMode>
-    <App />
+    {env.isProduction ? (
+      <PostHogProvider
+        apiKey={env.posthog.key}
+        options={{
+          api_host: env.posthog.host,
+          defaults: '2025-11-30',
+          capture_exceptions: true,
+          debug: false,
+        }}
+      >
+        <App />
+      </PostHogProvider>
+    ) : (
+      <App />
+    )}
   </StrictMode>
 );
 
