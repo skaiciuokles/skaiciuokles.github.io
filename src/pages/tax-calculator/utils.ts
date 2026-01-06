@@ -49,6 +49,7 @@ export interface IncomeAverages {
 }
 
 export interface Income {
+  year: 2026;
   monthly?: number;
   additionalMonthly?: number;
 }

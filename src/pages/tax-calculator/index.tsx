@@ -3,6 +3,7 @@ import { ChartNoAxesCombinedIcon } from 'lucide-react';
 import { siGithub } from 'simple-icons';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select } from '@/components/forms/select';
 import { SimpleIcon } from '@/components/ui/simple-icon';
 import { TaxSummaryTable } from './tax-summary-table';
 import { TaxTariffLegend } from './tax-tariff-legend';
@@ -22,7 +23,7 @@ export function TaxCalculatorPage() {
       }
     }
 
-    return { ...parsed };
+    return { year: 2026, ...parsed };
   });
 
   React.useEffect(() => {
@@ -48,6 +49,15 @@ export function TaxCalculatorPage() {
 
       <div className="grid grid-cols-[300px_auto] overflow-hidden h-full">
         <div className="space-y-4 p-3 border-r">
+          <div className="p-3 border rounded-sm">
+            <Label className="mb-2 block text-left font-bold">Mokestiniai metai:</Label>
+            <Select
+              value={income.year.toString()}
+              onValueChange={value => setIncome(prev => ({ ...prev, year: Number(value) as 2026 }))}
+              options={[{ label: '2026', value: '2026' }]}
+              className="w-full"
+            />
+          </div>
           <div className="p-3 border rounded-sm">
             <Label className="mb-2 block text-left font-bold">Mėnesio darbo santykių pajamos (prieš mokesčius):</Label>
             <Input
