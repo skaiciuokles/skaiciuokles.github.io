@@ -7,7 +7,7 @@ import { Select } from '@/components/forms/select';
 import { SimpleIcon } from '@/components/ui/simple-icon';
 import { TaxSummaryTable } from './tax-summary-table';
 import { TaxTariffLegend } from './tax-tariff-legend';
-import { formatCurrency, VDU, type Income } from './utils';
+import { calculateIVGpm, formatCurrency, ivTaxRates, mbTaxRates, taxRates, VDU, type Income } from './utils';
 
 const INCOME_STORAGE_KEY = 'tax-calculator-income';
 
@@ -29,6 +29,18 @@ export function TaxCalculatorPage() {
   React.useEffect(() => {
     localStorage.setItem(INCOME_STORAGE_KEY, JSON.stringify(income));
   }, [income]);
+
+  const ivGpmOverride = React.useMemo(() => {
+    if (!income.ivMonthly) return undefined;
+    // Taxable income = 70% of total income (30% expense deduction)
+    const annualTaxableIncome = income.ivMonthly * 12 * ivTaxRates.gpmBase;
+
+    // A tax credit is available for IV income if the annual taxable income is less than 42,500 EUR
+    if (annualTaxableIncome <= 42500) {
+      const result = calculateIVGpm(annualTaxableIncome);
+      return { amount: result.amount / 12, percentage: result.percentage * ivTaxRates.gpmBase };
+    }
+  }, [income.ivMonthly]);
 
   return (
     <div className="flex flex-col h-full">
@@ -70,12 +82,26 @@ export function TaxCalculatorPage() {
             />
           </div>
           <div className="p-3 border rounded-sm">
+            <Label className="mb-2 block text-left font-bold">Mėnesio IV pagal pažymą pajamos (prieš mokesčius):</Label>
+            <Input
+              type="number"
+              value={income.ivMonthly}
+              onChange={e =>
+                setIncome(prev => ({ ...prev, ivMonthly: e.target.value ? Number(e.target.value) : undefined }))
+              }
+              placeholder="Pajamos iš individualios veiklos"
+            />
+            <p className="text-xs text-gray-500 mt-1.5 italic text-left">
+              30% išlaidų atskaitymas įtrauktas automatiškai
+            </p>
+          </div>
+          <div className="p-3 border rounded-sm">
             <Label className="mb-2 block text-left font-bold">Mėnesio MB pajamos (prieš mokesčius):</Label>
             <Input
               type="number"
-              value={income.additionalMonthly}
+              value={income.mbMonthly}
               onChange={e =>
-                setIncome(prev => ({ ...prev, additionalMonthly: e.target.value ? Number(e.target.value) : undefined }))
+                setIncome(prev => ({ ...prev, mbMonthly: e.target.value ? Number(e.target.value) : undefined }))
               }
               placeholder="Pajamos iš MB"
             />
@@ -92,15 +118,26 @@ export function TaxCalculatorPage() {
           <TaxSummaryTable
             label="Metinė darbo santykių mokesčių suvestinė"
             monthlySalary={income.monthly ?? 0}
-            additionalIncome={(income.additionalMonthly ?? 0) * 12}
+            additionalForGPM={(income.mbMonthly ?? 0) * 12}
             className="border-b p-3"
+            taxRates={taxRates}
+            withSodra
+          />
+
+          <TaxSummaryTable
+            label="Metinė IV pagal pažymą mokesčių suvestinė"
+            monthlySalary={income.ivMonthly ?? 0}
+            className="p-3 border-b"
+            taxRates={ivTaxRates}
+            gpmOverride={ivGpmOverride}
             withSodra
           />
 
           <TaxSummaryTable
             label="Metinė MB mokesčių suvestinė"
-            monthlySalary={income.additionalMonthly ?? 0}
+            monthlySalary={income.mbMonthly ?? 0}
             className="p-3 border-b"
+            taxRates={mbTaxRates}
           />
 
           <div className="text-sm text-gray-600 p-3">

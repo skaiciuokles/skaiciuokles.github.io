@@ -1,6 +1,5 @@
 import { cn } from '@/lib/utils';
-import { taxRates, VDU, formatCurrency } from '../tax-calculator/utils';
-
+import { taxRates, VDU, formatCurrency, ivTaxRates } from '../tax-calculator/utils';
 interface TaxBracket {
   label: string;
   income: string;
@@ -11,6 +10,20 @@ interface TaxBracket {
 
 const taxBrackets: Record<number, TaxBracket[]> = {
   2026: [
+    {
+      label: 'iki ~12 VDU (tik IV)',
+      income: `0 - ${formatCurrency(20000 / ivTaxRates.gpmBase)}`,
+      gpm: `5%`,
+      vsd: `${(taxRates.vsd[0].rate * 100).toFixed(2)}%`,
+      psd: `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
+    },
+    {
+      label: '~12 - ~26 VDU (tik IV)',
+      income: `${formatCurrency(20000 / ivTaxRates.gpmBase)} - ${formatCurrency(42500 / ivTaxRates.gpmBase)}`,
+      gpm: `5% - 20%`,
+      vsd: `${(taxRates.vsd[0].rate * 100).toFixed(2)}%`,
+      psd: `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
+    },
     {
       label: 'iki 12 VDU (tik MB)',
       income: `0 - ${formatCurrency(VDU * 12)}`,
@@ -26,7 +39,7 @@ const taxBrackets: Record<number, TaxBracket[]> = {
       psd: `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
     },
     {
-      label: 'nuo 36 iki 60 VDU',
+      label: '36 - 60 VDU',
       income: `${formatCurrency(VDU * 36)} - ${formatCurrency(VDU * 60)}`,
       gpm: `${(taxRates.gpm[1].rate * 100).toFixed(0)}%`,
       vsd: `${(taxRates.vsd[0].rate * 100).toFixed(2)}%`,
@@ -55,8 +68,7 @@ export function TaxTariffLegend({ year, className, ...rest }: TaxTariffLegendPro
             <div className="flex text-gray-700 justify-center">
               <span className="pr-1 mr-1 border-r border-gray-300">GPM: {bracket.gpm}</span>
               <span className="pr-1 mr-1 border-r border-gray-300">VSD: {bracket.vsd}</span>
-              <span className="pr-1 mr-1 border-r border-gray-300">PSD: {bracket.psd}</span>
-              <span>PSD: {bracket.psd}</span>
+              <span className="pr-1 mr-1">PSD: {bracket.psd}</span>
             </div>
           </div>
         ))}
