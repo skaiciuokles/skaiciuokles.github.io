@@ -1,7 +1,13 @@
 import React from 'react';
-
 import { calculateProgressiveTax, formatCurrency, formatPercent, months, taxRates } from './utils';
 import type { IncomeTotals, MonthlyIncomeCalculations } from './utils';
+import {
+  TaxSummaryTableBodyColumn,
+  TaxSummaryTableBodyRow,
+  TaxSummaryTableHeaderColumn,
+  TaxSummaryTableHeaderRow,
+  TaxSummaryTableWrapper,
+} from './tax-summary-table-wrapper';
 
 export function TaxSummaryTable({ label, monthlySalary, additionalIncome, withSodra }: TaxSummaryTableProps) {
   const { calculations, totals, averages } = React.useMemo(() => {
@@ -64,61 +70,50 @@ export function TaxSummaryTable({ label, monthlySalary, additionalIncome, withSo
     total: React.ReactNode,
   ) {
     return (
-      <tr className="bg-stone-50">
-        <td className="border border-stone-300 px-2 py-1.5 font-medium bg-stone-100">{label}</td>
+      <TaxSummaryTableBodyRow>
+        <TaxSummaryTableBodyColumn className="font-medium bg-stone-100">{label}</TaxSummaryTableBodyColumn>
         {calculations.map((calc, index) => (
-          <td key={index} className="border border-stone-300 px-2 py-1.5 text-center">
-            {render(calc)}
-          </td>
+          <TaxSummaryTableBodyColumn key={index}>{render(calc)}</TaxSummaryTableBodyColumn>
         ))}
-        <td className="border border-stone-300 px-2 py-1.5 text-center font-bold">{total}</td>
-      </tr>
+        <TaxSummaryTableBodyColumn className="font-bold">{total}</TaxSummaryTableBodyColumn>
+      </TaxSummaryTableBodyRow>
     );
   }
 
   return (
-    <div className="overflow-x-auto">
-      <h2 className="text-lg font-bold mb-2 text-left">{label}</h2>
-      <table className="w-full border-collapse text-sm">
-        <thead>
-          <tr className="bg-stone-200">
-            {[null, ...months, 'Viso'].map((month, index) => (
-              <th key={index} className="border border-stone-300 px-2 py-1.5 text-center">
-                {month}
-              </th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {renderLine(
-            'Atlyginimas į rankas',
-            it => formatCurrency(it.totalMonthlyAfterTaxes),
-            formatCurrency(totals.salaryAfterTaxes),
-          )}
-          {renderLine(
-            'Metinės bruto pajamos',
-            it => formatCurrency(it.totalAnnualBeforeTaxes),
-            formatCurrency(totals.salaryBeforeTaxes),
-          )}
-          {/* Mokesčiai header */}
-          <tr className="bg-stone-200">
-            <td className="border border-stone-300 px-2 py-1.5 font-bold" colSpan={14}>
-              Mokesčiai {formatCurrency(totals.gpm + totals.vsd + totals.psd)} ({formatPercent(averages.taxPercent)})
-            </td>
-          </tr>
-          {renderLine('GPM, %', it => formatPercent(it.taxes.gpm.percentage), formatPercent(averages.gpmPercent))}
-          {renderLine('GPM, EUR', it => formatCurrency(it.taxes.gpm.amount), `${formatCurrency(totals.gpm)}`)}
-          {withSodra && (
-            <>
-              {renderLine('VSD, %', it => formatPercent(it.taxes.vsd.percentage), formatPercent(averages.vsdPercent))}
-              {renderLine('VSD, EUR', it => formatCurrency(it.taxes.vsd.amount), `${formatCurrency(totals.vsd)}`)}
-              {renderLine('PSD, %', it => formatPercent(it.taxes.psd.percentage), formatPercent(averages.psdPercent))}
-              {renderLine('PSD, EUR', it => formatCurrency(it.taxes.psd.amount), `${formatCurrency(totals.psd)}`)}
-            </>
-          )}
-        </tbody>
-      </table>
-    </div>
+    <TaxSummaryTableWrapper
+      label={label}
+      tableHeader={[null, ...months, 'Viso'].map((month, index) => (
+        <TaxSummaryTableHeaderColumn key={index}>{month}</TaxSummaryTableHeaderColumn>
+      ))}
+    >
+      {renderLine(
+        'Atlyginimas į rankas',
+        it => formatCurrency(it.totalMonthlyAfterTaxes),
+        formatCurrency(totals.salaryAfterTaxes),
+      )}
+      {renderLine(
+        'Metinės bruto pajamos',
+        it => formatCurrency(it.totalAnnualBeforeTaxes),
+        formatCurrency(totals.salaryBeforeTaxes),
+      )}
+      {/* Mokesčiai header */}
+      <TaxSummaryTableHeaderRow>
+        <TaxSummaryTableHeaderColumn colSpan={14}>
+          Mokesčiai {formatCurrency(totals.gpm + totals.vsd + totals.psd)} ({formatPercent(averages.taxPercent)})
+        </TaxSummaryTableHeaderColumn>
+      </TaxSummaryTableHeaderRow>
+      {renderLine('GPM, %', it => formatPercent(it.taxes.gpm.percentage), formatPercent(averages.gpmPercent))}
+      {renderLine('GPM, EUR', it => formatCurrency(it.taxes.gpm.amount), `${formatCurrency(totals.gpm)}`)}
+      {withSodra && (
+        <>
+          {renderLine('VSD, %', it => formatPercent(it.taxes.vsd.percentage), formatPercent(averages.vsdPercent))}
+          {renderLine('VSD, EUR', it => formatCurrency(it.taxes.vsd.amount), `${formatCurrency(totals.vsd)}`)}
+          {renderLine('PSD, %', it => formatPercent(it.taxes.psd.percentage), formatPercent(averages.psdPercent))}
+          {renderLine('PSD, EUR', it => formatCurrency(it.taxes.psd.amount), `${formatCurrency(totals.psd)}`)}
+        </>
+      )}
+    </TaxSummaryTableWrapper>
   );
 }
 
