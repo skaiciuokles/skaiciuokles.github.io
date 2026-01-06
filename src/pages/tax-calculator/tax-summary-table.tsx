@@ -11,7 +11,15 @@ import {
 export function TaxSummaryTable({ label, monthlySalary, additionalIncome, withSodra }: TaxSummaryTableProps) {
   const { calculations, totals, averages } = React.useMemo(() => {
     const results: MonthlyIncomeCalculations[] = [];
-    const totals: IncomeTotals = { gpm: 0, vsd: 0, psd: 0, salaryBeforeTaxes: 0, salaryAfterTaxes: 0 };
+    const totals: IncomeTotals = {
+      gpm: 0,
+      vsd: 0,
+      psd: 0,
+      totalTaxes: 0,
+      totalTaxesPercentage: 0,
+      salaryBeforeTaxes: 0,
+      salaryAfterTaxes: 0,
+    };
     let totalAnnual = 0;
 
     for (let month = 1; month <= 12; month++) {
@@ -37,6 +45,7 @@ export function TaxSummaryTable({ label, monthlySalary, additionalIncome, withSo
       totals.vsd += vsdTax.amount;
       totals.psd += psdTax.amount;
       totals.salaryAfterTaxes += afterTaxes;
+      totals.totalTaxes += totalMonthlyTaxes;
 
       results.push({
         totalAnnualBeforeTaxes: totalAnnual,
@@ -45,11 +54,16 @@ export function TaxSummaryTable({ label, monthlySalary, additionalIncome, withSo
           gpm: gpmTax,
           vsd: vsdTax,
           psd: psdTax,
+          total: {
+            amount: totalMonthlyTaxes,
+            percentage: monthlySalary ? (totalMonthlyTaxes / monthlySalary) * 100 : 0,
+          },
         },
       });
     }
 
     totals.salaryBeforeTaxes = totalAnnual;
+    totals.totalTaxesPercentage = totalAnnual > 0 ? (totals.totalTaxes * 100) / totalAnnual : 0;
 
     return {
       calculations: results,
@@ -65,11 +79,12 @@ export function TaxSummaryTable({ label, monthlySalary, additionalIncome, withSo
 
   const headers = [
     'Mėnuo',
-    'Atlyginimas į rankas',
-    'Metinės bruto pajamos',
+    'Pajamos į rankas',
+    'Metinės pajamos',
     'GPM, %',
     'GPM, EUR',
     ...(withSodra ? ['VSD, %', 'VSD, EUR', 'PSD, %', 'PSD, EUR'] : []),
+    'Viso mokesčių, EUR (%)',
   ];
 
   return (
@@ -94,6 +109,11 @@ export function TaxSummaryTable({ label, monthlySalary, additionalIncome, withSo
               <TaxSummaryTableBodyColumn>{formatCurrency(calc.taxes.psd.amount)}</TaxSummaryTableBodyColumn>
             </>
           )}
+          <TaxSummaryTableBodyColumn>
+            <div className="text-nowrap">
+              {formatCurrency(calc.taxes.total.amount)} ({formatPercent(calc.taxes.total.percentage)})
+            </div>
+          </TaxSummaryTableBodyColumn>
         </TaxSummaryTableBodyRow>
       ))}
       {/* Totals row */}
@@ -111,6 +131,9 @@ export function TaxSummaryTable({ label, monthlySalary, additionalIncome, withSo
             <TaxSummaryTableBodyColumn>{formatCurrency(totals.psd)}</TaxSummaryTableBodyColumn>
           </>
         )}
+        <TaxSummaryTableBodyColumn>
+          {formatCurrency(totals.totalTaxes)} ({formatPercent(totals.totalTaxesPercentage)})
+        </TaxSummaryTableBodyColumn>
       </TaxSummaryTableBodyRow>
     </TaxSummaryTableWrapper>
   );

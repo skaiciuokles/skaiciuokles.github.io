@@ -28,13 +28,15 @@ interface Tax {
 export interface MonthlyIncomeCalculations {
   totalAnnualBeforeTaxes: number;
   totalMonthlyAfterTaxes: number;
-  taxes: { gpm: Tax; vsd: Tax; psd: Tax };
+  taxes: { gpm: Tax; vsd: Tax; psd: Tax; total: Tax };
 }
 
 export interface IncomeTotals {
   gpm: number;
   vsd: number;
   psd: number;
+  totalTaxes: number;
+  totalTaxesPercentage: number;
   salaryBeforeTaxes: number;
   salaryAfterTaxes: number;
 }
