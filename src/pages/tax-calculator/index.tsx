@@ -59,9 +59,9 @@ export function TaxCalculatorPage() {
         </a>
       </header>
 
-      <div className="grid grid-cols-[325px_auto] overflow-hidden h-full">
-        <div className="flex flex-col gap-4 p-3 border-r overflow-y-auto">
-          <div className="p-3 border rounded-sm">
+      <div className="md:grid md:grid-cols-[325px_auto] md:overflow-hidden md:h-full">
+        <div className="flex overflow-x-auto md:flex-col gap-4 p-3 border-r md:overflow-y-auto">
+          <div className="p-3 border rounded-sm min-w-42">
             <Label className="mb-2 block text-left font-bold">Mokestiniai metai:</Label>
             <Select
               value={income.year.toString()}
@@ -70,7 +70,7 @@ export function TaxCalculatorPage() {
               className="w-full"
             />
           </div>
-          <div className="p-3 border rounded-sm">
+          <div className="p-3 border rounded-sm min-w-52">
             <Label className="mb-2 block text-left font-bold">Mėnesio darbo santykių pajamos (prieš mokesčius):</Label>
             <Input
               type="number"
@@ -81,7 +81,7 @@ export function TaxCalculatorPage() {
               placeholder="Pajamos iš darbo santykių"
             />
           </div>
-          <div className="p-3 border rounded-sm">
+          <div className="p-3 border rounded-sm min-w-72">
             <Label className="mb-2 block text-left font-bold">Mėnesio IV pagal pažymą pajamos (prieš mokesčius):</Label>
             <Input
               type="number"
@@ -91,11 +91,11 @@ export function TaxCalculatorPage() {
               }
               placeholder="Pajamos iš individualios veiklos"
             />
-            <p className="text-xs text-gray-500 mt-1.5 italic text-left">
+            <p className="text-xs text-gray-500 mt-1.5 italic text-left not-md:text-xs">
               30% išlaidų atskaitymas įtrauktas automatiškai
             </p>
           </div>
-          <div className="p-3 border rounded-sm">
+          <div className="p-3 border rounded-sm min-w-42">
             <Label className="mb-2 block text-left font-bold">Mėnesio MB pajamos (prieš mokesčius):</Label>
             <Input
               type="number"
@@ -106,7 +106,7 @@ export function TaxCalculatorPage() {
               placeholder="Pajamos iš MB"
             />
           </div>
-          <div className="border-t pt-3 space-y-3 -mx-3 px-3 mt-auto">
+          <div className="border-t pt-3 space-y-3 -mx-3 px-3 mt-auto not-md:hidden">
             <TaxTariffLegend year={income.year} />
             <div className="text-xs text-gray-500">
               *VDU {income.year} m. = {formatCurrency(VDU)} €
@@ -114,7 +114,7 @@ export function TaxCalculatorPage() {
           </div>
         </div>
 
-        <div className="overflow-y-auto">
+        <div className="md:overflow-y-auto">
           <TaxSummaryTable
             label="Metinė darbo santykių mokesčių suvestinė"
             monthlySalary={income.monthly ?? 0}
