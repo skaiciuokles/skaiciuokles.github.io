@@ -7,14 +7,14 @@ export function TaxSummaryTableHeaderRow({ className, ...rest }: React.Component
   return <tr className={cn('bg-stone-200', className)} {...rest} />;
 }
 export function TaxSummaryTableHeaderColumn({ className, ...rest }: React.ComponentProps<'th'>) {
-  return <th className={cn('border border-stone-300 px-2 py-1.5 text-center', className)} {...rest} />;
+  return <th className={cn('border border-stone-300 px-2 py-1 text-center', className)} {...rest} />;
 }
 
 export function TaxSummaryTableBodyRow({ className, ...rest }: React.ComponentProps<'tr'>) {
   return <tr className={cn('bg-stone-50', className)} {...rest} />;
 }
 export function TaxSummaryTableBodyColumn({ className, ...rest }: React.ComponentProps<'th'>) {
-  return <td className={cn('border border-stone-300 px-2 py-1.5 text-center', className)} {...rest} />;
+  return <td className={cn('border border-stone-300 px-2 py-1 text-center', className)} {...rest} />;
 }
 
 export function TaxSummaryTableWrapper({
