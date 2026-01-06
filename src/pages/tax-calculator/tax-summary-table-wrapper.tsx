@@ -17,9 +17,15 @@ export function TaxSummaryTableBodyColumn({ className, ...rest }: React.Componen
   return <td className={cn('border border-stone-300 px-2 py-1.5 text-center', className)} {...rest} />;
 }
 
-export function TaxSummaryTableWrapper({ label, tableHeader, children }: TaxSummaryTableWrapperProps) {
+export function TaxSummaryTableWrapper({
+  label,
+  tableHeader,
+  children,
+  className,
+  ...rest
+}: TaxSummaryTableWrapperProps) {
   return (
-    <div className="overflow-x-auto">
+    <div className={cn('overflow-x-auto', className)} {...rest}>
       <Collapsible
         renderBefore={({ isOpen }) => (
           <CollapsibleTrigger>
@@ -43,8 +49,8 @@ export function TaxSummaryTableWrapper({ label, tableHeader, children }: TaxSumm
   );
 }
 
-type TaxSummaryTableWrapperProps = {
+interface TaxSummaryTableWrapperProps extends React.ComponentProps<'div'> {
   label: React.ReactNode;
   children: React.ReactNode;
   tableHeader: React.ReactNode;
-};
+}
