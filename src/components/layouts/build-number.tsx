@@ -24,7 +24,7 @@ export function BuildNumber() {
   if (!isOpen) return null;
 
   return (
-    <div className="absolute bottom-0 right-0 text-xs text-foreground/70 p-2 border-l border-t rounded-tl-md bg-background">
+    <div className="fixed bottom-0 right-0 text-xs text-foreground/70 p-2 border-l border-t rounded-tl-md bg-background">
       Build: {env.buildNumber}
     </div>
   );
