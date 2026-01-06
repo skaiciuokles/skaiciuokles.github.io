@@ -48,7 +48,7 @@ export interface IncomeAverages {
 
 export interface Income {
   monthly?: number;
-  additionalAnnual?: number;
+  additionalMonthly?: number;
 }
 
 export const months = [

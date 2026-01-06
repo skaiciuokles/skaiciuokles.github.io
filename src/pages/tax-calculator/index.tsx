@@ -8,8 +8,8 @@ import type { Income } from './utils';
 
 export function TaxCalculatorPage() {
   const [income, setIncome] = React.useState<Income>({
-    monthly: 15000,
-    additionalAnnual: 0,
+    monthly: 0,
+    additionalMonthly: 0,
   });
 
   return (
@@ -20,7 +20,7 @@ export function TaxCalculatorPage() {
       </h1>
       <div className="flex gap-4 mx-auto">
         <div className="p-4 border rounded-sm">
-          <Label className="mb-2 block text-left font-bold">Mėnesinis atlyginimas prieš mokesčius:</Label>
+          <Label className="mb-2 block text-left font-bold">Mėnesio darbo santykių pajamos (prieš mokesčius):</Label>
           <Input
             type="number"
             value={income.monthly}
@@ -28,11 +28,11 @@ export function TaxCalculatorPage() {
           />
         </div>
         <div className="p-4 border rounded-sm">
-          <Label className="mb-2 block text-left font-bold">Papildomos pajamos iš MB prieš mokesčius:</Label>
+          <Label className="mb-2 block text-left font-bold">Papildomos mėnesio pajamos iš MB (prieš mokesčius):</Label>
           <Input
             type="number"
-            value={income.additionalAnnual}
-            onChange={e => setIncome(prev => ({ ...prev, additionalAnnual: Number(e.target.value) }))}
+            value={income.additionalMonthly}
+            onChange={e => setIncome(prev => ({ ...prev, additionalMonthly: Number(e.target.value) }))}
           />
         </div>
       </div>
@@ -40,11 +40,11 @@ export function TaxCalculatorPage() {
       <TaxSummaryTable
         label="Metinė darbo santykių mokesčių suvestinė"
         monthlySalary={income.monthly ?? 0}
-        additionalIncome={income.additionalAnnual}
+        additionalIncome={(income.additionalMonthly ?? 0) * 12}
         withSodra
       />
 
-      <TaxSummaryTable label="Metinė MB mokesčių suvestinė" monthlySalary={(income.additionalAnnual ?? 0) / 12} />
+      <TaxSummaryTable label="Metinė MB mokesčių suvestinė" monthlySalary={income.additionalMonthly ?? 0} />
 
       <TaxTariffLegend />
     </div>
