@@ -1,14 +1,15 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { CalculatorIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export const Route = createFileRoute('/home/')({
   component: HomePage,
 });
 
-function HomePage() {
+export function HomePage({ className, children, ...rest }: React.ComponentProps<'div'>) {
   return (
-    <div className="flex flex-col items-center justify-center h-full p-6">
-      <h2 className="text-2xl font-bold mb-8 text-gray-700">Pasirinkite skaičiuoklę</h2>
+    <div className={cn('flex flex-col items-center justify-center h-full p-6', className)} {...rest}>
+      {children || <h2 className="text-2xl font-bold mb-8 text-gray-700">Pasirinkite skaičiuoklę</h2>}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-4xl w-full">
         <Link
           to="/mokesciai"

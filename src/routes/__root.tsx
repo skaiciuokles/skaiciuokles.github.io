@@ -1,10 +1,38 @@
-import { createRootRoute, Navigate, Outlet } from '@tanstack/react-router';
+import { UnlinkIcon } from 'lucide-react';
+import { createRootRoute, Link, Navigate, Outlet } from '@tanstack/react-router';
 import { BuildNumber } from '@/components/layouts/build-number';
 import { Header } from '@/components/layouts/header';
+import { HomePage } from './home';
+
+function NotFoundPage() {
+  return (
+    <div className="flex flex-col items-center justify-center h-screen">
+      <HomePage>
+        <div className="mb-8 space-y-3">
+          <h1 className="text-4xl font-bold flex items-center justify-center gap-2 text-gray-700 ">
+            <UnlinkIcon className="size-8" strokeWidth={3} /> 404 | Puslapis nerastas
+          </h1>
+          <p className="text-lg text-gray-600">
+            Prašome pasirinkti skaičiuoklę iš sąrašo arba{' '}
+            <Link to="/home" className="underline text-blue-500 hover:text-blue-600">
+              grįžkite į pagrindinį puslapį
+            </Link>
+            .
+          </p>
+        </div>
+      </HomePage>
+    </div>
+  );
+}
 
 export const Route = createRootRoute({
   component: RootLayout,
-  notFoundComponent: () => <Navigate to="/mokesciai" />,
+  notFoundComponent: () => {
+    if (location.pathname === '/') {
+      return <Navigate to="/mokesciai" />;
+    }
+    return <NotFoundPage />;
+  },
 });
 
 function RootLayout() {
