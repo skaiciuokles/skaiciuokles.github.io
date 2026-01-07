@@ -8,7 +8,7 @@ import { SimpleIcon } from '@/components/ui/simple-icon';
 import { TaxSummaryTable } from './tax-summary-table';
 import { TaxTariffLegend } from './tax-tariff-legend';
 import { TotalTaxes } from './total-taxes';
-import { calculateIVGpm, formatCurrency, ivTaxRates, mbTaxRates, taxRates, VDU, type Income } from './utils';
+import { calculateIVGpm, formatCurrency, ivTaxRates, mbTaxRates, MMA, taxRates, VDU, type Income } from './utils';
 
 const INCOME_STORAGE_KEY = 'tax-calculator-income';
 
@@ -109,14 +109,19 @@ export function TaxCalculatorPage() {
           </div>
           <div className="border-t pt-3 space-y-3 -mx-3 px-3 mt-auto not-md:hidden">
             <TaxTariffLegend year={income.year} />
-            <div className="text-xs text-gray-500">
-              *VDU {income.year} m. = {formatCurrency(VDU)} €
+            <div>
+              <div className="text-xs text-gray-500">
+                *VDU {income.year} m. = {formatCurrency(VDU)} €
+              </div>
+              <div className="text-xs text-gray-500">
+                *MMA {income.year} m. = {formatCurrency(MMA[income.year])} €
+              </div>
             </div>
           </div>
         </div>
 
         <div className="md:overflow-y-auto">
-          <TotalTaxes className="p-3 border-b" />
+          <TotalTaxes className="p-3 border-b" year={income.year} />
 
           <TaxSummaryTable
             label="Metinė darbo santykių mokesčių suvestinė"

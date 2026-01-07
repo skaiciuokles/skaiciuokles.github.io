@@ -1,4 +1,14 @@
-export const VDU = 2312.15; // Vidutinis darbo užmokestis Lietuvoje 2026 m.
+// Vidutinis darbo užmokestis Lietuvoje 2026 m.
+export const VDU = 2312.15;
+
+// Minimali mėnesinės alga Lietuvoje
+export const MMA = {
+  2025: 1038,
+  2026: 1153,
+};
+
+export type Year = keyof typeof MMA;
+
 function getGpmRates<InitialThreshold extends number>(initialThreshold: InitialThreshold) {
   return [
     { threshold: initialThreshold, rate: 0.2 },
