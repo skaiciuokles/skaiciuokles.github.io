@@ -138,8 +138,8 @@ const result = await Bun.build({
 });
 
 const routes: Record<FileRouteTypes['fullPaths'] | '/404', boolean> = {
+  '/': false,
   '/404': true,
-  '/home': true,
   '/mokesciai': true,
 };
 

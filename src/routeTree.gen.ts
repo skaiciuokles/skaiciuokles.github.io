@@ -9,48 +9,55 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as MokesciaiIndexRouteImport } from './routes/mokesciai/index'
-import { Route as HomeIndexRouteImport } from './routes/home/index'
 
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MokesciaiIndexRoute = MokesciaiIndexRouteImport.update({
   id: '/mokesciai/',
   path: '/mokesciai/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HomeIndexRoute = HomeIndexRouteImport.update({
-  id: '/home/',
-  path: '/home/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 
 export interface FileRoutesByFullPath {
-  '/home': typeof HomeIndexRoute
+  '/': typeof IndexRoute
   '/mokesciai': typeof MokesciaiIndexRoute
 }
 export interface FileRoutesByTo {
-  '/home': typeof HomeIndexRoute
+  '/': typeof IndexRoute
   '/mokesciai': typeof MokesciaiIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/home/': typeof HomeIndexRoute
+  '/': typeof IndexRoute
   '/mokesciai/': typeof MokesciaiIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/home' | '/mokesciai'
+  fullPaths: '/' | '/mokesciai'
   fileRoutesByTo: FileRoutesByTo
-  to: '/home' | '/mokesciai'
-  id: '__root__' | '/home/' | '/mokesciai/'
+  to: '/' | '/mokesciai'
+  id: '__root__' | '/' | '/mokesciai/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  HomeIndexRoute: typeof HomeIndexRoute
+  IndexRoute: typeof IndexRoute
   MokesciaiIndexRoute: typeof MokesciaiIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/mokesciai/': {
       id: '/mokesciai/'
       path: '/mokesciai'
@@ -58,18 +65,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MokesciaiIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/home/': {
-      id: '/home/'
-      path: '/home'
-      fullPath: '/home'
-      preLoaderRoute: typeof HomeIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
-  HomeIndexRoute: HomeIndexRoute,
+  IndexRoute: IndexRoute,
   MokesciaiIndexRoute: MokesciaiIndexRoute,
 }
 export const routeTree = rootRouteImport

@@ -2,7 +2,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { CalculatorIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-export const Route = createFileRoute('/home/')({
+export const Route = createFileRoute('/')({
   component: HomePage,
 });
 

@@ -1,8 +1,8 @@
 import { UnlinkIcon } from 'lucide-react';
-import { createRootRoute, Link, Navigate, Outlet } from '@tanstack/react-router';
+import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
 import { BuildNumber } from '@/components/layouts/build-number';
 import { Header } from '@/components/layouts/header';
-import { HomePage } from './home';
+import { HomePage } from './index';
 
 function NotFoundPage() {
   return (
@@ -14,7 +14,7 @@ function NotFoundPage() {
           </h1>
           <p className="text-lg text-gray-600">
             Prašome pasirinkti skaičiuoklę iš sąrašo arba{' '}
-            <Link to="/home" className="underline text-blue-500 hover:text-blue-600">
+            <Link to="/" className="underline text-blue-500 hover:text-blue-600">
               grįžkite į pagrindinį puslapį
             </Link>
             .
@@ -27,12 +27,7 @@ function NotFoundPage() {
 
 export const Route = createRootRoute({
   component: RootLayout,
-  notFoundComponent: () => {
-    if (location.pathname === '/') {
-      return <Navigate to="/mokesciai" />;
-    }
-    return <NotFoundPage />;
-  },
+  notFoundComponent: NotFoundPage,
 });
 
 function RootLayout() {
