@@ -1,5 +1,14 @@
 {
   "cSpell.words": [
     "Sodra"
-  ]
+  ],
+  "tailwindCSS.classAttributes": [
+      "class",
+      "className",
+      ".+ClassName",
+  ],
+  "tailwindCSS.classFunctions": [
+      "cn",
+      "cva",
+  ],
 }
