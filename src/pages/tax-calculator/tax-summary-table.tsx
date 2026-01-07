@@ -81,7 +81,6 @@ export function TaxSummaryTable({
     totals.gpm.percentage = totalAnnualTaxable > 0 ? (totals.gpm.amount * 100) / totalAnnualTaxable : 0;
     totals.vsd.percentage = totalSodraTaxable > 0 ? (totals.vsd.amount * 100) / totalSodraTaxable : 0;
     totals.psd.percentage = totalSodraTaxable > 0 ? (totals.psd.amount * 100) / totalSodraTaxable : 0;
-    totals.total.percentage = totalAnnualTaxable > 0 ? (totals.total.amount * 100) / totalAnnualTaxable : 0;
 
     return { calculations: results, totals };
   }, [monthlySalary, additionalForGPM, additionalForSodra, withSodra, taxRates, gpmOverride]);

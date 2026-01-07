@@ -39,7 +39,7 @@ export function TaxCalculatorPage() {
     // A tax credit is available for IV income if the annual taxable income is less than 42,500 EUR
     if (annualTaxableIncome <= 42500) {
       const result = calculateIVGpm(annualTaxableIncome);
-      return { amount: result.amount / 12, percentage: result.percentage * ivTaxRates.gpmBase };
+      return { amount: result.amount / 12, percentage: result.percentage };
     }
   }, [income.ivMonthly]);
 
