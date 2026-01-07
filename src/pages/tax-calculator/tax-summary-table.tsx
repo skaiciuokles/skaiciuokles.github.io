@@ -1,6 +1,6 @@
 import React from 'react';
-import { calculateProgressiveTax, formatCurrency, formatPercent, months, type TaxRates } from './utils';
-import type { IncomeTotals, MonthlyIncomeCalculations } from './utils';
+import { calculateProgressiveTax, formatCurrency, formatPercent, months, TAX_CALCULATION_EVENT } from './utils';
+import type { IncomeTotals, MonthlyIncomeCalculations, TaxCalculationEventDetail, TaxRates } from './utils';
 import {
   TaxSummaryTableBodyColumn,
   TaxSummaryTableBodyRow,
@@ -18,6 +18,7 @@ export function TaxSummaryTable({
   taxRates,
   ...rest
 }: TaxSummaryTableProps) {
+  const id = React.useId();
   const { calculations, totals, averages } = React.useMemo(() => {
     const results: MonthlyIncomeCalculations[] = [];
     const totals: IncomeTotals = {
@@ -90,6 +91,12 @@ export function TaxSummaryTable({
       },
     };
   }, [monthlySalary, additionalForGPM, additionalForSodra, withSodra, taxRates, gpmOverride]);
+
+  // Emit custom event when calculations complete
+  React.useEffect(() => {
+    const event = new CustomEvent<TaxCalculationEventDetail>(TAX_CALCULATION_EVENT, { detail: { id, totals } });
+    document.dispatchEvent(event);
+  }, [id, totals]);
 
   const headers = [
     'Mėnuo',

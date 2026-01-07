@@ -7,6 +7,7 @@ import { Select } from '@/components/forms/select';
 import { SimpleIcon } from '@/components/ui/simple-icon';
 import { TaxSummaryTable } from './tax-summary-table';
 import { TaxTariffLegend } from './tax-tariff-legend';
+import { TotalTaxes } from './total-taxes';
 import { calculateIVGpm, formatCurrency, ivTaxRates, mbTaxRates, taxRates, VDU, type Income } from './utils';
 
 const INCOME_STORAGE_KEY = 'tax-calculator-income';
@@ -115,6 +116,8 @@ export function TaxCalculatorPage() {
         </div>
 
         <div className="md:overflow-y-auto">
+          <TotalTaxes className="p-3 border-b" />
+
           <TaxSummaryTable
             label="Metinė darbo santykių mokesčių suvestinė"
             monthlySalary={income.monthly ?? 0}

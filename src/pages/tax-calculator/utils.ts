@@ -162,3 +162,17 @@ export function formatCurrency(amount: number) {
 export function formatPercent(amount: number) {
   return (amount / 100).toLocaleString('lt-LT', { style: 'percent', minimumFractionDigits: 2 });
 }
+
+// Custom event for tax calculations completed
+export const TAX_CALCULATION_EVENT = 'tax-calculation-complete';
+
+export interface TaxCalculationEventDetail {
+  id: string;
+  totals: IncomeTotals;
+}
+
+declare global {
+  interface DocumentEventMap {
+    [TAX_CALCULATION_EVENT]: CustomEvent<TaxCalculationEventDetail>;
+  }
+}
