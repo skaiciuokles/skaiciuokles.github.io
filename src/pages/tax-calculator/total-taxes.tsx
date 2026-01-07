@@ -12,8 +12,8 @@ const headers = [
   'GPM, EUR (%)',
   'VSD, EUR (%)',
   'PSD, EUR (%)',
+  'Pajamos į rankas, EUR',
   'Prieš mokesčius, EUR',
-  'Į rankas, EUR',
   'Viso mokesčių, EUR (%)',
 ];
 
@@ -81,8 +81,8 @@ export function TotalTaxes({ className }: { className?: string }) {
         <TaxSummaryTableBodyColumn>
           {formatCurrency(totals.psd.amount)} ({formatPercent(totals.psd.percentage)})
         </TaxSummaryTableBodyColumn>
-        <TaxSummaryTableBodyColumn>{formatCurrency(totals.salaryBeforeTaxes)}</TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>{formatCurrency(totals.salaryAfterTaxes)}</TaxSummaryTableBodyColumn>
+        <TaxSummaryTableBodyColumn>{formatCurrency(totals.salaryBeforeTaxes)}</TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>
           {formatCurrency(totals.total.amount)} ({formatPercent(totals.total.percentage)})
         </TaxSummaryTableBodyColumn>
