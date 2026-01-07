@@ -1,6 +1,8 @@
 import React from 'react';
-import { formatCurrency, formatPercent, TAX_CALCULATION_EVENT } from './utils';
-import type { IncomeTotalTaxes, TaxCalculationEventDetail } from './utils';
+import { InfoIcon } from 'lucide-react';
+import { Tooltip } from '@/components/layouts/tooltip';
+import { formatCurrency, formatPercent, MMA, TAX_CALCULATION_EVENT, taxRates } from './utils';
+import type { IncomeTotalTaxes, TaxCalculationEventDetail, Year } from './utils';
 import {
   TaxSummaryTableBodyColumn,
   TaxSummaryTableBodyRow,
@@ -17,7 +19,7 @@ const headers = [
   'Viso mokesčių, EUR (%)',
 ];
 
-export function TotalTaxes({ className }: { className?: string }) {
+export function TotalTaxes({ year, className }: TotalTaxesProps) {
   const [taxData, setTaxData] = React.useState<Map<string, IncomeTotalTaxes>>(new Map());
 
   React.useEffect(() => {
@@ -34,7 +36,7 @@ export function TotalTaxes({ className }: { className?: string }) {
     return () => document.removeEventListener(TAX_CALCULATION_EVENT, handleTaxCalculation);
   }, []);
 
-  const totals = React.useMemo(() => {
+  const { totals, psdRemainder } = React.useMemo(() => {
     const result: IncomeTotalTaxes = {
       gpm: { amount: 0, percentage: 0 },
       vsd: { amount: 0, percentage: 0 },
@@ -53,6 +55,18 @@ export function TotalTaxes({ className }: { className?: string }) {
       result.salaryAfterTaxes += data.salaryAfterTaxes;
     }
 
+    // Minimum annual PSD contribution: MMA × 12 × smallest PSD rate
+    const minimumAnnualPsd = MMA[year] * 12 * taxRates.psd[0].rate;
+    let psdRemainder = 0;
+
+    // If calculated PSD is less than minimum, add the remainder
+    if (result.psd.amount < minimumAnnualPsd) {
+      psdRemainder = minimumAnnualPsd - result.psd.amount;
+      result.psd.amount = minimumAnnualPsd;
+      result.total.amount += psdRemainder;
+      result.salaryAfterTaxes -= psdRemainder;
+    }
+
     const totalAnnual = result.salaryBeforeTaxes;
     result.total.percentage = totalAnnual > 0 ? (result.total.amount * 100) / totalAnnual : 0;
     result.gpm.percentage = totalAnnual > 0 ? (result.gpm.amount * 100) / totalAnnual : 0;
@@ -60,8 +74,8 @@ export function TotalTaxes({ className }: { className?: string }) {
     result.psd.percentage = totalAnnual > 0 ? (result.psd.amount * 100) / totalAnnual : 0;
     result.total.percentage = totalAnnual > 0 ? (result.total.amount * 100) / totalAnnual : 0;
 
-    return result;
-  }, [taxData]);
+    return { totals: result, psdRemainder };
+  }, [taxData, year]);
 
   return (
     <TaxSummaryTableWrapper
@@ -78,8 +92,19 @@ export function TotalTaxes({ className }: { className?: string }) {
         <TaxSummaryTableBodyColumn>
           {formatCurrency(totals.vsd.amount)} ({formatPercent(totals.vsd.percentage)})
         </TaxSummaryTableBodyColumn>
-        <TaxSummaryTableBodyColumn>
+        <TaxSummaryTableBodyColumn className="flex items-center justify-center gap-1">
           {formatCurrency(totals.psd.amount)} ({formatPercent(totals.psd.percentage)})
+          {psdRemainder > 0 && (
+            <Tooltip
+              label={
+                <div className="max-w-48 text-center">
+                  Pridėta papildomai {formatCurrency(psdRemainder)} iki minimalių PSD įmokų
+                </div>
+              }
+            >
+              <InfoIcon className="size-4" />
+            </Tooltip>
+          )}
         </TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>{formatCurrency(totals.salaryAfterTaxes)}</TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>{formatCurrency(totals.salaryBeforeTaxes)}</TaxSummaryTableBodyColumn>
@@ -89,4 +114,9 @@ export function TotalTaxes({ className }: { className?: string }) {
       </TaxSummaryTableBodyRow>
     </TaxSummaryTableWrapper>
   );
+}
+
+interface TotalTaxesProps {
+  year: Year;
+  className?: string;
 }
