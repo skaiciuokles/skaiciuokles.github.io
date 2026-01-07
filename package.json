@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "bun --hot src/index.ts",
-    "start": "http-server dist -p 3000",
+    "dev": "bun --hot --port 5000 src/index.ts",
+    "start": "http-server --port 5000 dist",
     "build": "bun run build.ts",
     "lint": "concurrently 'eslint .' 'tsc --noEmit'"
   },
