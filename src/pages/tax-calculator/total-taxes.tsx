@@ -8,7 +8,14 @@ import {
   TaxSummaryTableWrapper,
 } from './tax-summary-table-wrapper';
 
-const headers = ['GPM, EUR', 'VSD, EUR', 'PSD, EUR', 'Prieš mokesčius, EUR', 'Į rankas, EUR', 'Viso mokesčių, EUR (%)'];
+const headers = [
+  'GPM, EUR (%)',
+  'VSD, EUR (%)',
+  'PSD, EUR (%)',
+  'Prieš mokesčius, EUR',
+  'Į rankas, EUR',
+  'Viso mokesčių, EUR (%)',
+];
 
 export function TotalTaxes({ className }: { className?: string }) {
   const [taxData, setTaxData] = React.useState<Map<string, IncomeTotalTaxes>>(new Map());
@@ -46,7 +53,12 @@ export function TotalTaxes({ className }: { className?: string }) {
       result.salaryAfterTaxes += data.salaryAfterTaxes;
     }
 
-    result.total.percentage = result.salaryBeforeTaxes > 0 ? (result.total.amount * 100) / result.salaryBeforeTaxes : 0;
+    const totalAnnual = result.salaryBeforeTaxes;
+    result.total.percentage = totalAnnual > 0 ? (result.total.amount * 100) / totalAnnual : 0;
+    result.gpm.percentage = totalAnnual > 0 ? (result.gpm.amount * 100) / totalAnnual : 0;
+    result.vsd.percentage = totalAnnual > 0 ? (result.vsd.amount * 100) / totalAnnual : 0;
+    result.psd.percentage = totalAnnual > 0 ? (result.psd.amount * 100) / totalAnnual : 0;
+    result.total.percentage = totalAnnual > 0 ? (result.total.amount * 100) / totalAnnual : 0;
 
     return result;
   }, [taxData]);
@@ -60,9 +72,15 @@ export function TotalTaxes({ className }: { className?: string }) {
       className={className}
     >
       <TaxSummaryTableBodyRow className="font-bold">
-        <TaxSummaryTableBodyColumn>{formatCurrency(totals.gpm.amount)}</TaxSummaryTableBodyColumn>
-        <TaxSummaryTableBodyColumn>{formatCurrency(totals.vsd.amount)}</TaxSummaryTableBodyColumn>
-        <TaxSummaryTableBodyColumn>{formatCurrency(totals.psd.amount)}</TaxSummaryTableBodyColumn>
+        <TaxSummaryTableBodyColumn>
+          {formatCurrency(totals.gpm.amount)} ({formatPercent(totals.gpm.percentage)})
+        </TaxSummaryTableBodyColumn>
+        <TaxSummaryTableBodyColumn>
+          {formatCurrency(totals.vsd.amount)} ({formatPercent(totals.vsd.percentage)})
+        </TaxSummaryTableBodyColumn>
+        <TaxSummaryTableBodyColumn>
+          {formatCurrency(totals.psd.amount)} ({formatPercent(totals.psd.percentage)})
+        </TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>{formatCurrency(totals.salaryBeforeTaxes)}</TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>{formatCurrency(totals.salaryAfterTaxes)}</TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>
