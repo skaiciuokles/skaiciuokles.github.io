@@ -1,6 +1,6 @@
 import React from 'react';
 import { calculateProgressiveTax, formatCurrency, formatPercent, months, TAX_CALCULATION_EVENT } from './utils';
-import type { IncomeTotals, MonthlyIncomeCalculations, TaxCalculationEventDetail, TaxRates } from './utils';
+import type { IncomeTotalTaxes, MonthlyIncomeCalculations, TaxCalculationEventDetail, TaxRates } from './utils';
 import {
   TaxSummaryTableBodyColumn,
   TaxSummaryTableBodyRow,
@@ -19,14 +19,13 @@ export function TaxSummaryTable({
   ...rest
 }: TaxSummaryTableProps) {
   const id = React.useId();
-  const { calculations, totals, averages } = React.useMemo(() => {
+  const { calculations, totals } = React.useMemo(() => {
     const results: MonthlyIncomeCalculations[] = [];
-    const totals: IncomeTotals = {
-      gpm: 0,
-      vsd: 0,
-      psd: 0,
-      totalTaxes: 0,
-      totalTaxesPercentage: 0,
+    const totals: IncomeTotalTaxes = {
+      gpm: { amount: 0, percentage: 0 },
+      vsd: { amount: 0, percentage: 0 },
+      psd: { amount: 0, percentage: 0 },
+      total: { amount: 0, percentage: 0 },
       salaryBeforeTaxes: 0,
       salaryAfterTaxes: 0,
     };
@@ -56,11 +55,11 @@ export function TaxSummaryTable({
       const totalMonthlyTaxes = gpmTax.amount + vsdTax.amount + psdTax.amount;
       const afterTaxes = monthlySalary - totalMonthlyTaxes;
 
-      totals.gpm += gpmTax.amount;
-      totals.vsd += vsdTax.amount;
-      totals.psd += psdTax.amount;
+      totals.gpm.amount += gpmTax.amount;
+      totals.vsd.amount += vsdTax.amount;
+      totals.psd.amount += psdTax.amount;
       totals.salaryAfterTaxes += afterTaxes;
-      totals.totalTaxes += totalMonthlyTaxes;
+      totals.total.amount += totalMonthlyTaxes;
 
       results.push({
         totalAnnualBeforeTaxes: totalAnnual,
@@ -78,18 +77,13 @@ export function TaxSummaryTable({
     }
 
     totals.salaryBeforeTaxes = totalAnnual;
-    totals.totalTaxesPercentage = totalAnnual > 0 ? (totals.totalTaxes * 100) / totalAnnual : 0;
+    totals.total.percentage = totalAnnual > 0 ? (totals.total.amount * 100) / totalAnnual : 0;
+    totals.gpm.percentage = totalAnnualTaxable > 0 ? (totals.gpm.amount * 100) / totalAnnualTaxable : 0;
+    totals.vsd.percentage = totalSodraTaxable > 0 ? (totals.vsd.amount * 100) / totalSodraTaxable : 0;
+    totals.psd.percentage = totalSodraTaxable > 0 ? (totals.psd.amount * 100) / totalSodraTaxable : 0;
+    totals.total.percentage = totalAnnualTaxable > 0 ? (totals.total.amount * 100) / totalAnnualTaxable : 0;
 
-    return {
-      calculations: results,
-      totals,
-      averages: {
-        gpmPercent: totalAnnualTaxable > 0 ? (totals.gpm * 100) / totalAnnualTaxable : 0,
-        vsdPercent: totalSodraTaxable > 0 ? (totals.vsd * 100) / totalSodraTaxable : 0,
-        psdPercent: totalSodraTaxable > 0 ? (totals.psd * 100) / totalSodraTaxable : 0,
-        taxPercent: totalAnnualTaxable > 0 ? ((totals.gpm + totals.vsd + totals.psd) * 100) / totalAnnualTaxable : 0,
-      },
-    };
+    return { calculations: results, totals };
   }, [monthlySalary, additionalForGPM, additionalForSodra, withSodra, taxRates, gpmOverride]);
 
   // Emit custom event when calculations complete
@@ -159,26 +153,26 @@ export function TaxSummaryTable({
           {taxRates.gpmBase < 1 && <small> ({formatCurrency(totals.salaryBeforeTaxes * taxRates.gpmBase)})</small>}
         </TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>
-          {formatPercent(averages.gpmPercent * taxRates.gpmBase)}
-          {taxRates.gpmBase < 1 && <small> ({formatPercent(averages.gpmPercent)})</small>}
+          {formatPercent(totals.gpm.percentage * taxRates.gpmBase)}
+          {taxRates.gpmBase < 1 && <small> ({formatPercent(totals.gpm.percentage)})</small>}
         </TaxSummaryTableBodyColumn>
-        <TaxSummaryTableBodyColumn>{formatCurrency(totals.gpm)}</TaxSummaryTableBodyColumn>
+        <TaxSummaryTableBodyColumn>{formatCurrency(totals.gpm.amount)}</TaxSummaryTableBodyColumn>
         {withSodra && (
           <>
             <TaxSummaryTableBodyColumn>
-              {formatPercent(averages.vsdPercent * taxRates.sodraBase)}
-              {taxRates.sodraBase < 1 && <small> ({formatPercent(averages.vsdPercent)})</small>}
+              {formatPercent(totals.vsd.percentage * taxRates.sodraBase)}
+              {taxRates.sodraBase < 1 && <small> ({formatPercent(totals.vsd.percentage)})</small>}
             </TaxSummaryTableBodyColumn>
-            <TaxSummaryTableBodyColumn>{formatCurrency(totals.vsd)}</TaxSummaryTableBodyColumn>
+            <TaxSummaryTableBodyColumn>{formatCurrency(totals.vsd.amount)}</TaxSummaryTableBodyColumn>
             <TaxSummaryTableBodyColumn>
-              {formatPercent(averages.psdPercent * taxRates.sodraBase)}
-              {taxRates.sodraBase < 1 && <small> ({formatPercent(averages.psdPercent)})</small>}
+              {formatPercent(totals.psd.percentage * taxRates.sodraBase)}
+              {taxRates.sodraBase < 1 && <small> ({formatPercent(totals.psd.percentage)})</small>}
             </TaxSummaryTableBodyColumn>
-            <TaxSummaryTableBodyColumn>{formatCurrency(totals.psd)}</TaxSummaryTableBodyColumn>
+            <TaxSummaryTableBodyColumn>{formatCurrency(totals.psd.amount)}</TaxSummaryTableBodyColumn>
           </>
         )}
         <TaxSummaryTableBodyColumn>
-          {formatCurrency(totals.totalTaxes)} ({formatPercent(totals.totalTaxesPercentage)})
+          {formatCurrency(totals.total.amount)} ({formatPercent(totals.total.percentage)})
         </TaxSummaryTableBodyColumn>
       </TaxSummaryTableBodyRow>
     </TaxSummaryTableWrapper>

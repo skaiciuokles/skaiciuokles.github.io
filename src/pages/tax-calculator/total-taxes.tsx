@@ -1,6 +1,6 @@
 import React from 'react';
 import { formatCurrency, formatPercent, TAX_CALCULATION_EVENT } from './utils';
-import type { IncomeTotals, TaxCalculationEventDetail } from './utils';
+import type { IncomeTotalTaxes, TaxCalculationEventDetail } from './utils';
 import {
   TaxSummaryTableBodyColumn,
   TaxSummaryTableBodyRow,
@@ -11,7 +11,7 @@ import {
 const headers = ['GPM, EUR', 'VSD, EUR', 'PSD, EUR', 'Prieš mokesčius, EUR', 'Į rankas, EUR', 'Viso mokesčių, EUR (%)'];
 
 export function TotalTaxes({ className }: { className?: string }) {
-  const [taxData, setTaxData] = React.useState<Map<string, IncomeTotals>>(new Map());
+  const [taxData, setTaxData] = React.useState<Map<string, IncomeTotalTaxes>>(new Map());
 
   React.useEffect(() => {
     const handleTaxCalculation = (event: CustomEvent<TaxCalculationEventDetail>) => {
@@ -28,27 +28,25 @@ export function TotalTaxes({ className }: { className?: string }) {
   }, []);
 
   const totals = React.useMemo(() => {
-    const result: IncomeTotals = {
-      gpm: 0,
-      vsd: 0,
-      psd: 0,
-      totalTaxes: 0,
-      totalTaxesPercentage: 0,
+    const result: IncomeTotalTaxes = {
+      gpm: { amount: 0, percentage: 0 },
+      vsd: { amount: 0, percentage: 0 },
+      psd: { amount: 0, percentage: 0 },
+      total: { amount: 0, percentage: 0 },
       salaryBeforeTaxes: 0,
       salaryAfterTaxes: 0,
     };
 
     for (const data of taxData.values()) {
-      result.gpm += data.gpm;
-      result.vsd += data.vsd;
-      result.psd += data.psd;
-      result.totalTaxes += data.totalTaxes;
+      result.gpm.amount += data.gpm.amount;
+      result.vsd.amount += data.vsd.amount;
+      result.psd.amount += data.psd.amount;
+      result.total.amount += data.total.amount;
       result.salaryBeforeTaxes += data.salaryBeforeTaxes;
       result.salaryAfterTaxes += data.salaryAfterTaxes;
     }
 
-    result.totalTaxesPercentage =
-      result.salaryBeforeTaxes > 0 ? (result.totalTaxes * 100) / result.salaryBeforeTaxes : 0;
+    result.total.percentage = result.salaryBeforeTaxes > 0 ? (result.total.amount * 100) / result.salaryBeforeTaxes : 0;
 
     return result;
   }, [taxData]);
@@ -62,13 +60,13 @@ export function TotalTaxes({ className }: { className?: string }) {
       className={className}
     >
       <TaxSummaryTableBodyRow className="font-bold">
-        <TaxSummaryTableBodyColumn>{formatCurrency(totals.gpm)}</TaxSummaryTableBodyColumn>
-        <TaxSummaryTableBodyColumn>{formatCurrency(totals.vsd)}</TaxSummaryTableBodyColumn>
-        <TaxSummaryTableBodyColumn>{formatCurrency(totals.psd)}</TaxSummaryTableBodyColumn>
+        <TaxSummaryTableBodyColumn>{formatCurrency(totals.gpm.amount)}</TaxSummaryTableBodyColumn>
+        <TaxSummaryTableBodyColumn>{formatCurrency(totals.vsd.amount)}</TaxSummaryTableBodyColumn>
+        <TaxSummaryTableBodyColumn>{formatCurrency(totals.psd.amount)}</TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>{formatCurrency(totals.salaryBeforeTaxes)}</TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>{formatCurrency(totals.salaryAfterTaxes)}</TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>
-          {formatCurrency(totals.totalTaxes)} ({formatPercent(totals.totalTaxesPercentage)})
+          {formatCurrency(totals.total.amount)} ({formatPercent(totals.total.percentage)})
         </TaxSummaryTableBodyColumn>
       </TaxSummaryTableBodyRow>
     </TaxSummaryTableWrapper>

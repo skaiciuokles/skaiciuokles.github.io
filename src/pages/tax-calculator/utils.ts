@@ -47,12 +47,11 @@ export interface MonthlyIncomeCalculations {
   taxes: { gpm: Tax; vsd: Tax; psd: Tax; total: Tax };
 }
 
-export interface IncomeTotals {
-  gpm: number;
-  vsd: number;
-  psd: number;
-  totalTaxes: number;
-  totalTaxesPercentage: number;
+export interface IncomeTotalTaxes {
+  gpm: Tax;
+  vsd: Tax;
+  psd: Tax;
+  total: Tax;
   salaryBeforeTaxes: number;
   salaryAfterTaxes: number;
 }
@@ -168,7 +167,7 @@ export const TAX_CALCULATION_EVENT = 'tax-calculation-complete';
 
 export interface TaxCalculationEventDetail {
   id: string;
-  totals: IncomeTotals;
+  totals: IncomeTotalTaxes;
 }
 
 declare global {
