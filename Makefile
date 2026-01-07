@@ -20,3 +20,6 @@ clean-files: ## Remove all generated files
 
 lint: ## Run linters
 	bun run lint
+
+routes: ## Generate routes
+	bun run routes:generate

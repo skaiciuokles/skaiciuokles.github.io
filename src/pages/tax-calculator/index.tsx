@@ -1,10 +1,7 @@
 import React from 'react';
-import { ChartNoAxesCombinedIcon } from 'lucide-react';
-import { siGithub } from 'simple-icons';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/forms/select';
-import { SimpleIcon } from '@/components/ui/simple-icon';
 import { TaxSummaryTable } from './tax-summary-table';
 import { TaxTariffLegend } from './tax-tariff-legend';
 import { TotalTaxes } from './total-taxes';
@@ -45,21 +42,6 @@ export function TaxCalculatorPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <header className="flex items-center justify-between px-3 py-2 border-b">
-        <h1 className="text-lg font-semibold flex items-center gap-2">
-          <ChartNoAxesCombinedIcon className="size-6" />
-          Mokesčių Skaičiuoklė
-        </h1>
-        <a
-          href="https://github.com/skaiciuokles/skaiciuokles.github.io"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="opacity-80 hover:opacity-100 transition-opacity"
-        >
-          <SimpleIcon icon={siGithub} className="size-6" />
-        </a>
-      </header>
-
       <div className="md:grid md:grid-cols-[325px_auto] md:overflow-hidden md:h-full">
         <div className="flex overflow-x-auto md:flex-col gap-4 p-3 border-r md:overflow-y-auto">
           <div className="p-3 border rounded-sm min-w-42">

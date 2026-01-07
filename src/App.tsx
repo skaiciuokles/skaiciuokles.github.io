@@ -1,14 +1,17 @@
-import { TaxCalculatorPage } from './pages/tax-calculator';
-import { BuildNumber } from './components/layouts/build-number';
+import { createRouter, RouterProvider } from '@tanstack/react-router';
+import { routeTree } from './routeTree.gen';
 import './index.css';
 
+const router = createRouter({ routeTree });
+
+declare module '@tanstack/react-router' {
+  interface Register {
+    router: typeof router;
+  }
+}
+
 export function App() {
-  return (
-    <div className="max-w-480 mx-auto text-center relative z-10 h-screen">
-      <TaxCalculatorPage />
-      <BuildNumber />
-    </div>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
