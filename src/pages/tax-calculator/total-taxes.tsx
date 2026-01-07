@@ -92,19 +92,21 @@ export function TotalTaxes({ year, className }: TotalTaxesProps) {
         <TaxSummaryTableBodyColumn>
           {formatCurrency(totals.vsd.amount)} ({formatPercent(totals.vsd.percentage)})
         </TaxSummaryTableBodyColumn>
-        <TaxSummaryTableBodyColumn className="flex items-center justify-center gap-1">
-          {formatCurrency(totals.psd.amount)} ({formatPercent(totals.psd.percentage)})
-          {psdRemainder > 0 && (
-            <Tooltip
-              label={
-                <div className="max-w-48 text-center">
-                  Pridėta papildomai {formatCurrency(psdRemainder)} iki minimalių PSD įmokų
-                </div>
-              }
-            >
-              <InfoIcon className="size-4" />
-            </Tooltip>
-          )}
+        <TaxSummaryTableBodyColumn>
+          <div className="flex items-center justify-center gap-1">
+            {formatCurrency(totals.psd.amount)} ({formatPercent(totals.psd.percentage)})
+            {psdRemainder > 0 && (
+              <Tooltip
+                label={
+                  <div className="max-w-48 text-center">
+                    Pridėta papildomai {formatCurrency(psdRemainder)} iki minimalių PSD įmokų
+                  </div>
+                }
+              >
+                <InfoIcon className="size-4" />
+              </Tooltip>
+            )}
+          </div>
         </TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>{formatCurrency(totals.salaryAfterTaxes)}</TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>{formatCurrency(totals.salaryBeforeTaxes)}</TaxSummaryTableBodyColumn>
