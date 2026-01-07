@@ -1,4 +1,5 @@
 #!/usr/bin/env bun
+import { type FileRouteTypes } from '@/routeTree.gen';
 import plugin from 'bun-plugin-tailwind';
 import { existsSync } from 'fs';
 import { rm } from 'fs/promises';
@@ -135,6 +136,24 @@ const result = await Bun.build({
   },
   ...cliConfig,
 });
+
+const routes: Record<FileRouteTypes['fullPaths'] | '/404', boolean> = {
+  '/404': true,
+  '/home': true,
+  '/mokesciai': true,
+};
+
+await Promise.all(
+  Object.entries(routes).map(([route, value]) => {
+    if (value) {
+      console.log(`Copying index.html to ${route}.html`);
+      return Bun.write(`dist/${route}.html`, Bun.file('dist/index.html'));
+    } else {
+      console.log(`Skipping ${route}.html`);
+      return Promise.resolve();
+    }
+  }),
+);
 
 const end = performance.now();
 
