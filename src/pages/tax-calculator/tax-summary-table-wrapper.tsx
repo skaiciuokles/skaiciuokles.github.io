@@ -1,7 +1,6 @@
 import React from 'react';
 import { ChevronDown, ChevronUp, InfoIcon } from 'lucide-react';
 import { Collapsible, CollapsibleTrigger } from '@/components/layouts/collapsible';
-import { Tooltip } from '@/components/layouts/tooltip';
 import { cn } from '@/lib/utils';
 import type { Year } from './utils';
 import type { TariffInfoComponentProps } from './tariff-info/tariff-drawer';
@@ -42,10 +41,8 @@ export function TaxSummaryTableWrapper({
                   year={year}
                   direction="right"
                   trigger={
-                    <span className="ml-auto" onClick={e => e.stopPropagation()}>
-                      <Tooltip label="Mokesčių tarifai">
-                        <InfoIcon className="size-5 text-muted-foreground" />
-                      </Tooltip>
+                    <span className="ml-auto" onClick={e => e.stopPropagation()} title="Mokesčių tarifai">
+                      <InfoIcon className="size-5 text-muted-foreground" />
                     </span>
                   }
                 />
