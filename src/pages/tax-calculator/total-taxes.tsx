@@ -57,8 +57,12 @@ export function TotalTaxes({ year, className }: TotalTaxesProps) {
     }
 
     // Minimum annual PSD contribution: MMA × 12 × smallest PSD rate
-    const minimumAnnualPsd = MMA[year] * 12 * taxRates.psd[0].rate;
+    const minimumAnnualPsd = Number((MMA[year] * 12 * taxRates.psd[0].rate).toFixed(2));
     let psdRemainder = 0;
+
+    result.gpm.amount = Number(result.gpm.amount.toFixed(2));
+    result.psd.amount = Number(result.psd.amount.toFixed(2));
+    result.vsd.amount = Number(result.vsd.amount.toFixed(2));
 
     // If calculated PSD is less than minimum, add the remainder
     if (result.psd.amount < minimumAnnualPsd) {
