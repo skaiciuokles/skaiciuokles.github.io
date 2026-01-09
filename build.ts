@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 import { type FileRouteTypes } from '@/routeTree.gen';
 import plugin from 'bun-plugin-tailwind';
+import { prettify } from 'htmlfy';
 import { existsSync } from 'fs';
 import { rm } from 'fs/promises';
 import path from 'path';
@@ -167,7 +168,7 @@ await Promise.all(
     } else {
       console.log(`Skipping ${page}.html`);
     }
-    return Bun.write(`dist/${page}.html`, newHtml);
+    return Bun.write(`dist/${page}.html`, prettify(newHtml));
   }),
 );
 
