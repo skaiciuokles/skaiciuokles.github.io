@@ -33,7 +33,7 @@ export function IVTariffDrawer({ year, ...rest }: TariffInfoComponentProps) {
       gpmNote: 'mažėjantis kreditas',
       vsd: `${(taxRates.vsd[0].rate * 100).toFixed(2)}%`,
       psd: `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
-      className: cn('border-amber-200 bg-amber-50'),
+      className: cn('border-emerald-200 bg-emerald-50'),
     },
     ...baseBrackets,
   ];

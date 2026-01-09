@@ -21,6 +21,7 @@ export function getBaseBrackets(year: Year, options: GetBaseBracketsOptions = {}
       gpm: `${(taxRates.gpm[1].rate * 100).toFixed(0)}%`,
       vsd: options.vsd ?? `${(taxRates.vsd[0].rate * 100).toFixed(2)}%`,
       psd: options.psd ?? `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
+      className: cn('border-amber-200 bg-amber-50'),
     },
     {
       label: 'virš 60 VDU',
