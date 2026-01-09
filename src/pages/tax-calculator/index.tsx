@@ -47,7 +47,7 @@ export function TaxCalculatorPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="md:grid md:grid-cols-[325px_auto] md:overflow-hidden md:h-full">
+      <div className="md:grid md:grid-cols-[325px_auto] md:overflow-hidden md:h-full not-md:overflow-y-auto">
         <div className="flex md:flex-col md:border-r not-md:border-b">
           <div className="p-2 flex overflow-x-auto md:flex-col gap-2 md:overflow-y-auto">
             <div className="p-3 border rounded-sm min-w-42">
