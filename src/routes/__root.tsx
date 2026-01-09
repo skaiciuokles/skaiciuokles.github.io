@@ -1,5 +1,5 @@
 import { UnlinkIcon } from 'lucide-react';
-import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
+import { createRootRoute, HeadContent, Link, Outlet } from '@tanstack/react-router';
 import { BuildNumber } from '@/components/layouts/build-number';
 import { Header } from '@/components/layouts/header';
 import { HomePage } from './index';
@@ -28,16 +28,28 @@ function NotFoundPage() {
 export const Route = createRootRoute({
   component: RootLayout,
   notFoundComponent: NotFoundPage,
+  head: ({ matches }) => {
+    return {
+      meta: [
+        {
+          title: matches.length > 1 ? 'Skaičiuoklės' : 'Skaičiuoklės | 404 Puslapis nerastas',
+        },
+      ],
+    };
+  },
 });
 
 function RootLayout() {
   return (
-    <div className="max-w-480 mx-auto text-center relative z-10 h-screen flex flex-col">
-      <Header />
-      <div className="flex-1 overflow-hidden">
-        <Outlet />
+    <>
+      <HeadContent />
+      <div className="max-w-480 mx-auto text-center relative z-10 h-screen flex flex-col">
+        <Header />
+        <div className="flex-1 overflow-hidden">
+          <Outlet />
+        </div>
+        <BuildNumber />
       </div>
-      <BuildNumber />
-    </div>
+    </>
   );
 }

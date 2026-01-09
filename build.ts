@@ -137,21 +137,37 @@ const result = await Bun.build({
   ...cliConfig,
 });
 
-const routes: Record<FileRouteTypes['fullPaths'] | '/404', boolean> = {
+interface PageInfo {
+  title: string;
+  description: string;
+}
+
+const routes: Record<FileRouteTypes['fullPaths'] | '/404', PageInfo | false> = {
   '/': false,
-  '/404': true,
-  '/mokesciai': true,
+  '/404': {
+    title: 'Skaičiuoklės | 404 Puslapis nerastas',
+    description: 'Puslapis kurio ieškote nerastas.',
+  },
+  '/mokesciai': {
+    title: 'Skaičiuoklės | Mokesčių skaičiuoklė',
+    description: 'GPM, PSD, VDU, mokesčių skaičiuoklė darbo santykių, individualios veiklos ir MB mokesčiams.',
+  },
 };
 
+const html = await Bun.file('dist/index.html').text();
 await Promise.all(
-  Object.entries(routes).map(([route, value]) => {
+  Object.entries(routes).map(async ([route, value]) => {
+    const page = route.replace(/^\//, '') || 'index';
+    let newHtml = html;
     if (value) {
-      console.log(`Copying index.html to ${route}.html`);
-      return Bun.write(`dist/${route}.html`, Bun.file('dist/index.html'));
+      console.log(`Copying index.html to ${page}.html`);
+      newHtml = newHtml
+        .replace(/<title>.*<\/title>/, `<title>${value.title}</title>`)
+        .replace('</head>', ['', `<meta name="description" content="${value.description}">`, '</head>'].join('\n'));
     } else {
-      console.log(`Skipping ${route}.html`);
-      return Promise.resolve();
+      console.log(`Skipping ${page}.html`);
     }
+    return Bun.write(`dist/${page}.html`, newHtml);
   }),
 );
 
