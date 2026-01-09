@@ -32,6 +32,9 @@ const app = (
   </StrictMode>
 );
 
+// Remove the original title hardcoded in source HTML
+document.head.querySelector('title')?.remove();
+
 if (import.meta.hot) {
   // With hot module reloading, `import.meta.hot.data` is persisted.
   const root = (import.meta.hot.data.root ??= createRoot(elem));

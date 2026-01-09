@@ -141,7 +141,19 @@ const result = await Bun.build({
 interface PageInfo {
   title: string;
   description: string;
+  keywords?: string;
+  canonical?: string;
+  og?: {
+    title?: string;
+    description?: string;
+    type?: string;
+    locale?: string;
+    siteName?: string;
+    url?: string;
+  };
 }
+
+const SITE_URL = 'https://skaiciuoklems.lt';
 
 const routes: Record<FileRouteTypes['fullPaths'] | '/404', PageInfo | false> = {
   '/': false,
@@ -150,8 +162,21 @@ const routes: Record<FileRouteTypes['fullPaths'] | '/404', PageInfo | false> = {
     description: 'Puslapis kurio ieškote nerastas.',
   },
   '/mokesciai': {
-    title: 'Skaičiuoklės | Mokesčių skaičiuoklė',
-    description: 'GPM, PSD, VDU, mokesčių skaičiuoklė darbo santykių, individualios veiklos ir MB mokesčiams.',
+    title: 'Mokesčių skaičiuoklė 2026 | GPM, Sodra, PSD, VSD | Lietuvos mokesčiai',
+    description:
+      'Nemokama Lietuvos mokesčių skaičiuoklė 2026 metams. Apskaičiuokite GPM, Sodros įmokas (PSD, VSD), darbo užmokestį „ant popieriaus&quot; ir „į rankas&quot;, individualios veiklos bei mažosios bendrijos mokesčius.',
+    keywords:
+      'mokesčių skaičiuoklė, GPM skaičiuoklė, Sodra skaičiuoklė, PSD, VSD, darbo užmokestis, atlyginimo skaičiuoklė, neto bruto, individualios veiklos mokesčiai, MB mokesčiai, Lietuvos mokesčiai, VMI, 2026, algos skaičiuoklė, mokesčiai Lietuvoje',
+    canonical: `${SITE_URL}/mokesciai`,
+    og: {
+      title: 'Mokesčių skaičiuoklė 2026 | Lietuvos mokesčių apskaičiavimas',
+      description:
+        'Apskaičiuokite savo mokesčius Lietuvoje: GPM, Sodros įmokas, atlyginimą neto ir bruto. Tinka darbuotojams, individualios veiklos vykdytojams ir MB.',
+      type: 'website',
+      locale: 'lt_LT',
+      siteName: 'Skaičiuoklės',
+      url: `${SITE_URL}/mokesciai`,
+    },
   },
 };
 
@@ -162,9 +187,31 @@ await Promise.all(
     let newHtml = html;
     if (value) {
       console.log(`Copying index.html to ${page}.html`);
+
+      const metaTags: string[] = ['', `<meta name="description" content="${value.description}">`];
+
+      if (value.keywords) {
+        metaTags.push(`<meta name="keywords" content="${value.keywords}">`);
+      }
+
+      if (value.canonical) {
+        metaTags.push(`<link rel="canonical" href="${value.canonical}">`);
+      }
+
+      if (value.og) {
+        if (value.og.title) metaTags.push(`<meta property="og:title" content="${value.og.title}">`);
+        if (value.og.description) metaTags.push(`<meta property="og:description" content="${value.og.description}">`);
+        if (value.og.type) metaTags.push(`<meta property="og:type" content="${value.og.type}">`);
+        if (value.og.locale) metaTags.push(`<meta property="og:locale" content="${value.og.locale}">`);
+        if (value.og.siteName) metaTags.push(`<meta property="og:site_name" content="${value.og.siteName}">`);
+        if (value.og.url) metaTags.push(`<meta property="og:url" content="${value.og.url}">`);
+      }
+
+      metaTags.push('</head>');
+
       newHtml = newHtml
         .replace(/<title>.*<\/title>/, `<title>${value.title}</title>`)
-        .replace('</head>', ['', `<meta name="description" content="${value.description}">`, '</head>'].join('\n'));
+        .replace('</head>', metaTags.join('\n'));
     } else {
       console.log(`Skipping ${page}.html`);
     }
