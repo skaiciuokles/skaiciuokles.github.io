@@ -2,9 +2,9 @@ import React from 'react';
 import { ChevronDown, ChevronUp, InfoIcon } from 'lucide-react';
 import { Collapsible, CollapsibleTrigger } from '@/components/layouts/collapsible';
 import { Tooltip } from '@/components/layouts/tooltip';
-import { Drawer } from '@/components/layouts/drawer';
 import { cn } from '@/lib/utils';
 import type { Year } from './utils';
+import type { TariffInfoComponentProps } from './tariff-info/tariff-drawer';
 
 export function TaxSummaryTableHeaderRow({ className, ...rest }: React.ComponentProps<'tr'>) {
   return <tr className={cn('bg-stone-200', className)} {...rest} />;
@@ -26,7 +26,7 @@ export function TaxSummaryTableWrapper({
   tableHeader,
   children,
   className,
-  InfoComponent,
+  InfoDrawer,
   ...rest
 }: TaxSummaryTableWrapperProps) {
   return (
@@ -37,8 +37,9 @@ export function TaxSummaryTableWrapper({
             <h2 className="text-lg font-bold text-left flex items-center gap-2 cursor-pointer">
               {label}
               {isOpen ? <ChevronUp className="size-4 shrink-0" /> : <ChevronDown className="size-4 shrink-0" />}
-              {InfoComponent && (
-                <Drawer
+              {InfoDrawer && (
+                <InfoDrawer
+                  year={year}
                   direction="right"
                   trigger={
                     <span className="ml-auto" onClick={e => e.stopPropagation()}>
@@ -47,9 +48,7 @@ export function TaxSummaryTableWrapper({
                       </Tooltip>
                     </span>
                   }
-                >
-                  <InfoComponent year={year} />
-                </Drawer>
+                />
               )}
             </h2>
           </CollapsibleTrigger>
@@ -75,5 +74,5 @@ export interface TaxSummaryTableWrapperProps extends React.ComponentProps<'div'>
   label: React.ReactNode;
   children: React.ReactNode;
   tableHeader: React.ReactNode;
-  InfoComponent?: React.FC<{ year: Year }>;
+  InfoDrawer?: React.FC<TariffInfoComponentProps & { trigger?: React.ReactNode }>;
 }

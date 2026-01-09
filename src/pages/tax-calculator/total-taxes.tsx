@@ -89,6 +89,7 @@ export function TotalTaxes({ year, className }: TotalTaxesProps) {
         <TaxSummaryTableHeaderColumn key={index}>{header}</TaxSummaryTableHeaderColumn>
       ))}
       className={className}
+      year={year}
     >
       <TaxSummaryTableBodyRow className="font-bold">
         <TaxSummaryTableBodyColumn>

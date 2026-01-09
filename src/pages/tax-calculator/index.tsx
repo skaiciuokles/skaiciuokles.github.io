@@ -3,7 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/forms/select';
 import { TaxSummaryTable } from './tax-summary-table';
-import { TaxTariffLegend } from './tax-tariff-legend';
+import { EmploymentTariffDrawer, IVTariffDrawer, MBTariffDrawer } from './tariff-info';
 import { TotalTaxes } from './total-taxes';
 import { calculateIVGpm, formatCurrency, ivYearlyTaxRates, mbYearlyTaxRates, MMA, yearlyTaxRates, VDU } from './utils';
 import type { Income } from './utils';
@@ -122,7 +122,7 @@ export function TaxCalculatorPage() {
             additionalForSodra={(income.ivMonthly ?? 0) * ivTaxRates.sodraBase * 12}
             className="border-b p-3"
             taxRates={taxRates}
-            InfoComponent={TaxTariffLegend}
+            InfoDrawer={EmploymentTariffDrawer}
             year={income.year}
             withSodra
           />
@@ -133,7 +133,7 @@ export function TaxCalculatorPage() {
             className="p-3 border-b"
             taxRates={ivTaxRates}
             gpmOverride={ivGpmOverride}
-            InfoComponent={TaxTariffLegend}
+            InfoDrawer={IVTariffDrawer}
             year={income.year}
             withSodra
           />
@@ -143,7 +143,7 @@ export function TaxCalculatorPage() {
             monthlySalary={income.mbMonthly ?? 0}
             className="p-3"
             taxRates={mbTaxRates}
-            InfoComponent={TaxTariffLegend}
+            InfoDrawer={MBTariffDrawer}
             year={income.year}
           />
 
