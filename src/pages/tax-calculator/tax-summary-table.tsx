@@ -141,24 +141,88 @@ export function TaxSummaryTable({
             </div>
           </TaxSummaryTableBodyColumn>
           <TaxSummaryTableBodyColumn>
-            {formatCurrency(calc.totalAnnualBeforeTaxes)}
-            {taxRates.gpmBase < 1 && <small> ({formatCurrency(calc.totalAnnualBeforeTaxes * taxRates.gpmBase)})</small>}
+            {taxRates.gpmBase < 1 ? (
+              <Tooltip
+                label={
+                  <div className="max-w-sm">
+                    Metinės pajamos: {formatCurrency(calc.totalAnnualBeforeTaxes)}
+                    <br />
+                    Apmokestinamos pajamos (70%): {formatCurrency(calc.totalAnnualBeforeTaxes * taxRates.gpmBase)}
+                  </div>
+                }
+              >
+                <div className="flex items-center justify-center gap-1">
+                  {formatCurrency(calc.totalAnnualBeforeTaxes)}
+                  <small> ({formatCurrency(calc.totalAnnualBeforeTaxes * taxRates.gpmBase)})</small>
+                </div>
+              </Tooltip>
+            ) : (
+              formatCurrency(calc.totalAnnualBeforeTaxes)
+            )}
           </TaxSummaryTableBodyColumn>
           <TaxSummaryTableBodyColumn>
-            {formatPercent(calc.taxes.gpm.percentage * taxRates.gpmBase)}
-            {taxRates.gpmBase < 1 && <small> ({formatPercent(calc.taxes.gpm.percentage)})</small>}
+            {taxRates.gpmBase < 1 ? (
+              <Tooltip
+                label={
+                  <div className="max-w-sm">
+                    Efektyvus GPM tarifas: {formatPercent(calc.taxes.gpm.percentage * taxRates.gpmBase)}
+                    <br />
+                    GPM tarifas nuo apmokestinamų pajamų: {formatPercent(calc.taxes.gpm.percentage)}
+                  </div>
+                }
+              >
+                <div className="flex items-center justify-center gap-1">
+                  {formatPercent(calc.taxes.gpm.percentage * taxRates.gpmBase)}
+                  <small> ({formatPercent(calc.taxes.gpm.percentage)})</small>
+                </div>
+              </Tooltip>
+            ) : (
+              formatPercent(calc.taxes.gpm.percentage)
+            )}
           </TaxSummaryTableBodyColumn>
           <TaxSummaryTableBodyColumn>{formatCurrency(calc.taxes.gpm.amount)}</TaxSummaryTableBodyColumn>
           {withSodra && (
             <>
               <TaxSummaryTableBodyColumn>
-                {formatPercent(calc.taxes.vsd.percentage * taxRates.sodraBase)}
-                {taxRates.sodraBase < 1 && <small> ({formatPercent(calc.taxes.vsd.percentage)})</small>}
+                {taxRates.sodraBase < 1 ? (
+                  <Tooltip
+                    label={
+                      <div className="max-w-sm">
+                        Efektyvus VSD tarifas: {formatPercent(calc.taxes.vsd.percentage * taxRates.sodraBase)}
+                        <br />
+                        VSD tarifas nuo apmokestinamų pajamų: {formatPercent(calc.taxes.vsd.percentage)}
+                      </div>
+                    }
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      {formatPercent(calc.taxes.vsd.percentage * taxRates.sodraBase)}
+                      <small> ({formatPercent(calc.taxes.vsd.percentage)})</small>
+                    </div>
+                  </Tooltip>
+                ) : (
+                  formatPercent(calc.taxes.vsd.percentage)
+                )}
               </TaxSummaryTableBodyColumn>
               <TaxSummaryTableBodyColumn>{formatCurrency(calc.taxes.vsd.amount)}</TaxSummaryTableBodyColumn>
               <TaxSummaryTableBodyColumn>
-                {formatPercent(calc.taxes.psd.percentage * taxRates.sodraBase)}
-                {taxRates.sodraBase < 1 && <small> ({formatPercent(calc.taxes.psd.percentage)})</small>}
+                {taxRates.sodraBase < 1 ? (
+                  <Tooltip
+                    label={
+                      <div className="max-w-sm">
+                        Efektyvus PSD tarifas: {formatPercent(calc.taxes.psd.percentage * taxRates.sodraBase)}
+                        <br />
+                        PSD tarifas nuo apmokestinamų pajamų: {formatPercent(calc.taxes.psd.percentage)}
+                      </div>
+                    }
+                  >
+                    <div className="flex items-center justify-center gap-1">
+                      {formatPercent(calc.taxes.psd.percentage * taxRates.sodraBase)}
+                      <small> ({formatPercent(calc.taxes.psd.percentage)})</small>
+                    </div>
+                  </Tooltip>
+                ) : (
+                  formatPercent(calc.taxes.psd.percentage)
+                )}
               </TaxSummaryTableBodyColumn>
               <TaxSummaryTableBodyColumn>{formatCurrency(calc.taxes.psd.amount)}</TaxSummaryTableBodyColumn>
             </>
@@ -175,24 +239,88 @@ export function TaxSummaryTable({
         <TaxSummaryTableBodyColumn>Viso</TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>{formatCurrency(totals.salaryAfterTaxes)}</TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>
-          {formatCurrency(totals.salaryBeforeTaxes)}
-          {taxRates.gpmBase < 1 && <small> ({formatCurrency(totals.salaryBeforeTaxes * taxRates.gpmBase)})</small>}
+          {taxRates.gpmBase < 1 ? (
+            <Tooltip
+              label={
+                <div className="max-w-sm">
+                  Metinės pajamos: {formatCurrency(totals.salaryBeforeTaxes)}
+                  <br />
+                  Pajamos mokesčių skaičiavimams (70%): {formatCurrency(totals.salaryBeforeTaxes * taxRates.gpmBase)}
+                </div>
+              }
+            >
+              <div className="flex items-center justify-center gap-1">
+                {formatCurrency(totals.salaryBeforeTaxes)}
+                <small> ({formatCurrency(totals.salaryBeforeTaxes * taxRates.gpmBase)})</small>
+              </div>
+            </Tooltip>
+          ) : (
+            formatCurrency(totals.salaryBeforeTaxes)
+          )}
         </TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>
-          {formatPercent(totals.gpm.percentage * taxRates.gpmBase)}
-          {taxRates.gpmBase < 1 && <small> ({formatPercent(totals.gpm.percentage)})</small>}
+          {taxRates.gpmBase < 1 ? (
+            <Tooltip
+              label={
+                <div className="max-w-sm">
+                  Efektyvus GPM tarifas: {formatPercent(totals.gpm.percentage * taxRates.gpmBase)}
+                  <br />
+                  GPM tarifas nuo apmokestinamų pajamų: {formatPercent(totals.gpm.percentage)}
+                </div>
+              }
+            >
+              <div className="flex items-center justify-center gap-1">
+                {formatPercent(totals.gpm.percentage * taxRates.gpmBase)}
+                <small> ({formatPercent(totals.gpm.percentage)})</small>
+              </div>
+            </Tooltip>
+          ) : (
+            formatPercent(totals.gpm.percentage)
+          )}
         </TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>{formatCurrency(totals.gpm.amount)}</TaxSummaryTableBodyColumn>
         {withSodra && (
           <>
             <TaxSummaryTableBodyColumn>
-              {formatPercent(totals.vsd.percentage * taxRates.sodraBase)}
-              {taxRates.sodraBase < 1 && <small> ({formatPercent(totals.vsd.percentage)})</small>}
+              {taxRates.sodraBase < 1 ? (
+                <Tooltip
+                  label={
+                    <div className="max-w-sm">
+                      Efektyvus VSD tarifas: {formatPercent(totals.vsd.percentage * taxRates.sodraBase)}
+                      <br />
+                      VSD tarifas nuo apmokestinamų pajamų: {formatPercent(totals.vsd.percentage)}
+                    </div>
+                  }
+                >
+                  <div className="flex items-center justify-center gap-1">
+                    {formatPercent(totals.vsd.percentage * taxRates.sodraBase)}
+                    <small> ({formatPercent(totals.vsd.percentage)})</small>
+                  </div>
+                </Tooltip>
+              ) : (
+                formatPercent(totals.vsd.percentage)
+              )}
             </TaxSummaryTableBodyColumn>
             <TaxSummaryTableBodyColumn>{formatCurrency(totals.vsd.amount)}</TaxSummaryTableBodyColumn>
             <TaxSummaryTableBodyColumn>
-              {formatPercent(totals.psd.percentage * taxRates.sodraBase)}
-              {taxRates.sodraBase < 1 && <small> ({formatPercent(totals.psd.percentage)})</small>}
+              {taxRates.sodraBase < 1 ? (
+                <Tooltip
+                  label={
+                    <div className="max-w-sm">
+                      Efektyvus PSD tarifas: {formatPercent(totals.psd.percentage * taxRates.sodraBase)}
+                      <br />
+                      PSD tarifas nuo apmokestinamų pajamų: {formatPercent(totals.psd.percentage)}
+                    </div>
+                  }
+                >
+                  <div className="flex items-center justify-center gap-1">
+                    {formatPercent(totals.psd.percentage * taxRates.sodraBase)}
+                    <small> ({formatPercent(totals.psd.percentage)})</small>
+                  </div>
+                </Tooltip>
+              ) : (
+                formatPercent(totals.psd.percentage)
+              )}
             </TaxSummaryTableBodyColumn>
             <TaxSummaryTableBodyColumn>{formatCurrency(totals.psd.amount)}</TaxSummaryTableBodyColumn>
           </>
