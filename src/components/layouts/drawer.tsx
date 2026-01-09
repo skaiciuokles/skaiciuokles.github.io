@@ -24,7 +24,7 @@ export function Drawer({ trigger, children, title, description, footer, size, ..
           </DrawerHeader>
         )}
         {children}
-        <DrawerFooter>{footer}</DrawerFooter>
+        {footer && <DrawerFooter>{footer}</DrawerFooter>}
       </DrawerContent>
     </DrawerBase>
   );
