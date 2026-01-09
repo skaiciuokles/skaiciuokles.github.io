@@ -9,13 +9,14 @@ import {
   DrawerTitle,
   DrawerDescription,
   DrawerFooter,
+  type DrawerContentProps,
 } from '../ui/drawer';
 
-export function Drawer({ trigger, children, title, description, footer, ...rest }: DrawerProps) {
+export function Drawer({ trigger, children, title, description, footer, size, ...rest }: DrawerProps) {
   return (
     <DrawerBase {...rest}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
-      <DrawerContent>
+      <DrawerContent size={size}>
         {title && description && (
           <DrawerHeader>
             <DrawerTitle>{title}</DrawerTitle>
@@ -29,9 +30,10 @@ export function Drawer({ trigger, children, title, description, footer, ...rest 
   );
 }
 
-type DrawerProps = React.ComponentProps<typeof DrawerBase> & {
-  trigger: React.ReactNode;
-  title?: React.ReactNode;
-  description?: React.ReactNode;
-  footer?: React.ReactNode;
-};
+export type DrawerProps = React.ComponentProps<typeof DrawerBase> &
+  Pick<DrawerContentProps, 'size'> & {
+    trigger: React.ReactNode;
+    title?: React.ReactNode;
+    description?: React.ReactNode;
+    footer?: React.ReactNode;
+  };
