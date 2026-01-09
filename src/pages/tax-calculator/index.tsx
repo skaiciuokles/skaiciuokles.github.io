@@ -1,4 +1,5 @@
 import React from 'react';
+import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/forms/select';
@@ -45,6 +46,10 @@ export function TaxCalculatorPage() {
     }
   }, [income.ivMonthly, ivTaxRates]);
 
+  const mbIncomeLimitPerYear = 100000;
+  const mbIncomeLimit = mbIncomeLimitPerYear / 12;
+  const mbIncomeExceedsLimit = (income.mbMonthly ?? 0) > mbIncomeLimit;
+
   return (
     <div className="flex flex-col h-full">
       <div className="md:grid md:grid-cols-[325px_auto] md:overflow-hidden md:h-full not-md:overflow-y-auto">
@@ -88,7 +93,7 @@ export function TaxCalculatorPage() {
                 30% išlaidų atskaitymas įtrauktas automatiškai
               </p>
             </div>
-            <div className="p-3 border rounded-sm min-w-42">
+            <div className={cn('p-3 border rounded-sm min-w-42', mbIncomeExceedsLimit ? 'text-red-500' : '')}>
               <Label className="mb-2 block text-left font-bold">Mėnesio MB pajamos (prieš mokesčius):</Label>
               <Input
                 type="number"
@@ -98,6 +103,12 @@ export function TaxCalculatorPage() {
                 }
                 placeholder="Pajamos iš MB"
               />
+              {mbIncomeExceedsLimit && (
+                <p className="text-xs text-red-500 mt-1.5 italic text-left not-md:text-xs">
+                  *Pajamos iš MB išmokėtos pagal civilinę vadovavimo sutartį negali viršyti{' '}
+                  {formatCurrency(mbIncomeLimit)} per mėnesį (arba {formatCurrency(mbIncomeLimitPerYear)} per metus).
+                </p>
+              )}
             </div>
           </div>
           <div className="flex flex-col justify-center h-12 border-t px-2 mt-auto not-md:hidden">
