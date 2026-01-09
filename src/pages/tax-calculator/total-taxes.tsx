@@ -104,8 +104,16 @@ export function TotalTaxes({ year, className }: TotalTaxesProps) {
             {psdRemainder > 0 && (
               <Tooltip
                 label={
-                  <div className="max-w-48 text-center">
-                    Pridėta papildomai {formatCurrency(psdRemainder)} iki minimalių PSD įmokų
+                  <div className="max-w-xs text-center">
+                    Pridėta papildomai {formatCurrency(psdRemainder)} iki minimalių PSD įmokų. Skaičiavimai paremti{' '}
+                    <a
+                      href="https://sodra.lt/imoku-tarifai/imoku-tarifai-savarankiskai-privalomuoju-sveikatos-draudimu-besidraudziantiems-asmenims"
+                      className="text-blue-500 underline hover:text-blue-600"
+                      target="_blank"
+                    >
+                      Sodros pateikta informacija
+                    </a>
+                    .
                   </div>
                 }
               >
