@@ -36,10 +36,10 @@ function DrawerOverlay({ className, ...props }: React.ComponentProps<typeof Draw
 const drawerContentVariants = cva(cn('group/drawer-content bg-background fixed z-50 flex h-auto flex-col p-4'), {
   variants: {
     direction: {
-      top: 'inset-x-0 top-0 mb-24 max-h-[80vh] rounded-b-lg border-b',
-      bottom: 'inset-x-0 bottom-0 mt-24 max-h-[80vh] rounded-t-lg border-t',
-      right: 'inset-y-0 right-0 w-3/4 border-l',
-      left: 'inset-y-0 left-0 w-3/4 border-r',
+      top: 'inset-x-0 top-0 mb-24 max-h-[90vh] rounded-b-lg border-b',
+      bottom: 'inset-x-0 bottom-0 mt-24 max-h-[90vh] rounded-t-lg border-t',
+      right: 'inset-y-0 right-0 w-[calc(100vw-2rem)] border-l',
+      left: 'inset-y-0 left-0 w-[calc(100vw-2rem)] border-r',
     },
     size: {
       sm: 'data-[direction=vertical]:max-w-sm',
