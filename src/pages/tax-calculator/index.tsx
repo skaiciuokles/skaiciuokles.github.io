@@ -132,6 +132,7 @@ export function TaxCalculatorPage() {
             monthlySalary={income.ivMonthly ?? 0}
             className="p-3 border-b"
             taxRates={ivTaxRates}
+            additionalForGPM={!income.monthly ? (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 : 0}
             gpmOverride={ivGpmOverride}
             InfoDrawer={IVTariffDrawer}
             year={income.year}
