@@ -34,8 +34,8 @@ export function Collapsible({
       : { x: 0, y: 0 };
 
     return {
-      width: (boxSize?.inlineSize || entry.contentRect.width) + parentPadding.x,
-      height: (boxSize?.blockSize || entry.contentRect.height) + parentPadding.y,
+      width: Math.ceil((boxSize?.inlineSize || entry.contentRect.width) + parentPadding.x),
+      height: Math.ceil((boxSize?.blockSize || entry.contentRect.height) + parentPadding.y),
     };
   }, []);
 
