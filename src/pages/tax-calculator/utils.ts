@@ -42,6 +42,20 @@ export const yearlyTaxRates = {
     ],
     // Privalomojo sveikatos draudimo įmokos
     psd: [{ threshold: 0, rate: 0.0698 }],
+    // Neapmokestinamas pajamų dydis
+    npdBase: 747,
+    getNpd(monthlyIncome: number) {
+      if (monthlyIncome <= MMA[2025]) {
+        return this.npdBase;
+      }
+      if (monthlyIncome < 2387.29) {
+        return Math.max(0, this.npdBase - 0.49 * (monthlyIncome - MMA[2025]));
+      }
+      if (monthlyIncome < 2864.22) {
+        return Math.max(0, 400 - 0.18 * (monthlyIncome - 642));
+      }
+      return 0;
+    },
   },
   2026: {
     gpmBase: 1,
@@ -55,12 +69,24 @@ export const yearlyTaxRates = {
     ],
     // Privalomojo sveikatos draudimo įmokos
     psd: [{ threshold: 0, rate: 0.0698 }],
+    // Neapmokestinamas pajamų dydis.
+    npdBase: 747,
+    getNpd(monthlyIncome: number) {
+      if (monthlyIncome <= MMA[2026]) {
+        return this.npdBase;
+      }
+      if (monthlyIncome < 2677.49) {
+        return Math.max(0, this.npdBase - 0.49 * (monthlyIncome - MMA[2026]));
+      }
+      return 0;
+    },
   },
 } as const satisfies Record<Year, TaxRateShape>;
 
 export const ivYearlyTaxRates = {
   2025: {
     ...yearlyTaxRates[2025],
+    npdBase: 0,
     // GPM is calculated on taxable income (70% of total income - 30% expense deduction)
     // VSD/PSD is calculated on 90% of taxable income
     // Source: https://sodra.lt/imoku-tarifai/imoku-tarifai-taikomi-savarankiskai-dirbantiems-asmenims
@@ -69,6 +95,7 @@ export const ivYearlyTaxRates = {
   },
   2026: {
     ...yearlyTaxRates[2026],
+    npdBase: 0,
     // GPM is calculated on taxable income (70% of total income - 30% expense deduction)
     // VSD/PSD is calculated on 90% of taxable income
     // Source: https://sodra.lt/imoku-tarifai/imoku-tarifai-taikomi-savarankiskai-dirbantiems-asmenims
@@ -80,10 +107,12 @@ export const ivYearlyTaxRates = {
 export const mbYearlyTaxRates = {
   2025: {
     ...yearlyTaxRates[2025],
+    npdBase: 0,
     gpm: [{ threshold: 0, rate: 0.15 }, ...getGpmRates(2025, VDU[2025] * 12)],
   },
   2026: {
     ...yearlyTaxRates[2026],
+    npdBase: 0,
     gpm: [{ threshold: 0, rate: 0.15 }, ...getGpmRates(2026, VDU[2026] * 12)],
   },
 } as const satisfies Record<Year, TaxRateShape>;
@@ -100,6 +129,8 @@ type TaxRateShape = {
   gpm: TaxBracket;
   vsd: TaxBracket;
   psd: TaxBracket;
+  npdBase: number;
+  getNpd(monthlyIncome: number): number;
 };
 
 interface Tax {
@@ -111,6 +142,7 @@ export interface MonthlyIncomeCalculations {
   totalAnnualBeforeTaxes: number;
   totalMonthlyAfterTaxes: number;
   taxes: { gpm: Tax; vsd: Tax; psd: Tax; total: Tax };
+  npd: number;
 }
 
 export interface IncomeTotalTaxes {

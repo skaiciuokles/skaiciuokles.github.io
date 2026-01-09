@@ -1,4 +1,5 @@
 import React from 'react';
+import { Tooltip } from '@/components/layouts/tooltip';
 import { calculateProgressiveTax, formatCurrency, formatPercent, months, TAX_CALCULATION_EVENT } from './utils';
 import type { IncomeTotalTaxes, MonthlyIncomeCalculations, TaxCalculationEventDetail, TaxRates } from './utils';
 import {
@@ -34,7 +35,8 @@ export function TaxSummaryTable({
     let totalSodraTaxable = 0;
 
     for (let month = 1; month <= 12; month++) {
-      const monthlyTaxableIncome = monthlySalary * taxRates.gpmBase;
+      const npd = taxRates.getNpd(monthlySalary);
+      const monthlyTaxableIncome = Math.max(0, monthlySalary * taxRates.gpmBase - npd);
       totalAnnual = totalAnnual + monthlySalary;
       totalAnnualTaxable = totalAnnualTaxable + monthlyTaxableIncome;
 
@@ -64,6 +66,7 @@ export function TaxSummaryTable({
       results.push({
         totalAnnualBeforeTaxes: totalAnnual,
         totalMonthlyAfterTaxes: afterTaxes,
+        npd,
         taxes: {
           gpm: gpmTax,
           vsd: vsdTax,
@@ -112,7 +115,31 @@ export function TaxSummaryTable({
       {calculations.map((calc, index) => (
         <TaxSummaryTableBodyRow key={index}>
           <TaxSummaryTableBodyColumn className="font-medium bg-stone-100">{months[index]}</TaxSummaryTableBodyColumn>
-          <TaxSummaryTableBodyColumn>{formatCurrency(calc.totalMonthlyAfterTaxes)}</TaxSummaryTableBodyColumn>
+          <TaxSummaryTableBodyColumn>
+            <div className="flex items-center justify-center gap-1">
+              {formatCurrency(calc.totalMonthlyAfterTaxes)}
+              {calc.npd > 0 && (
+                <Tooltip
+                  label={
+                    <div className="max-w-sm">
+                      Pritaikytas NPD: <strong>{formatCurrency(calc.npd)}</strong>
+                      <div className="text-muted-foreground text-xs">
+                        Neapmokestinamas pajamų dydis mažina mokestinių pajamų bazę. Skaičiavimai paremti{' '}
+                        <a
+                          href="https://www.vmi.lt/evmi/documents/20142/391008/NPD+dyd%C5%BEiai.pdf/8ddb3f8e-4628-1e17-9711-40d377742105?t=1734335445883"
+                          className="text-blue-500 underline hover:text-blue-600"
+                          target="_blank"
+                        >
+                          VMI pateikta informacija.
+                        </a>
+                      </div>
+                    </div>
+                  }
+                  iconClassName="inline ml-1 size-3 text-muted-foreground"
+                />
+              )}
+            </div>
+          </TaxSummaryTableBodyColumn>
           <TaxSummaryTableBodyColumn>
             {formatCurrency(calc.totalAnnualBeforeTaxes)}
             {taxRates.gpmBase < 1 && <small> ({formatCurrency(calc.totalAnnualBeforeTaxes * taxRates.gpmBase)})</small>}
