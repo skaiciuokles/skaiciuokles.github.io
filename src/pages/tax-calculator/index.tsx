@@ -5,7 +5,8 @@ import { Select } from '@/components/forms/select';
 import { TaxSummaryTable } from './tax-summary-table';
 import { TaxTariffLegend } from './tax-tariff-legend';
 import { TotalTaxes } from './total-taxes';
-import { calculateIVGpm, formatCurrency, ivTaxRates, mbTaxRates, MMA, taxRates, VDU, type Income } from './utils';
+import { calculateIVGpm, formatCurrency, ivYearlyTaxRates, mbYearlyTaxRates, MMA, yearlyTaxRates, VDU } from './utils';
+import type { Income } from './utils';
 
 const INCOME_STORAGE_KEY = 'tax-calculator-income';
 
@@ -28,6 +29,10 @@ export function TaxCalculatorPage() {
     localStorage.setItem(INCOME_STORAGE_KEY, JSON.stringify(income));
   }, [income]);
 
+  const taxRates = yearlyTaxRates[income.year];
+  const mbTaxRates = mbYearlyTaxRates[income.year];
+  const ivTaxRates = ivYearlyTaxRates[income.year];
+
   const ivGpmOverride = React.useMemo(() => {
     if (!income.ivMonthly) return undefined;
     // Taxable income = 70% of total income (30% expense deduction)
@@ -38,7 +43,7 @@ export function TaxCalculatorPage() {
       const result = calculateIVGpm(annualTaxableIncome);
       return { amount: result.amount / 12, percentage: result.percentage };
     }
-  }, [income.ivMonthly]);
+  }, [income.ivMonthly, ivTaxRates]);
 
   return (
     <div className="flex flex-col h-full">
@@ -93,7 +98,7 @@ export function TaxCalculatorPage() {
             <TaxTariffLegend year={income.year} />
             <div>
               <div className="text-xs text-gray-500">
-                *VDU {income.year} m. = {formatCurrency(VDU)} €
+                *VDU {income.year} m. = {formatCurrency(VDU[income.year])} €
               </div>
               <div className="text-xs text-gray-500">
                 *MMA {income.year} m. = {formatCurrency(MMA[income.year])} €

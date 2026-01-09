@@ -1,5 +1,6 @@
 import { cn } from '@/lib/utils';
-import { taxRates, VDU, formatCurrency, ivTaxRates } from '../tax-calculator/utils';
+import { yearlyTaxRates, VDU, formatCurrency, ivYearlyTaxRates, type Year } from '../tax-calculator/utils';
+
 interface TaxBracket {
   label: string;
   income: string;
@@ -8,59 +9,104 @@ interface TaxBracket {
   psd: string;
 }
 
-const taxBrackets: Record<number, TaxBracket[]> = {
-  2026: [
-    {
-      label: 'iki ~12 VDU (tik IV)',
-      income: `0 - ${formatCurrency(20000 / ivTaxRates.gpmBase)}`,
-      gpm: `5%`,
-      vsd: `${(taxRates.vsd[0].rate * 100).toFixed(2)}%`,
-      psd: `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
-    },
-    {
-      label: '~12 - ~26 VDU (tik IV)',
-      income: `${formatCurrency(20000 / ivTaxRates.gpmBase)} - ${formatCurrency(42500 / ivTaxRates.gpmBase)}`,
-      gpm: `5% - 20%`,
-      vsd: `${(taxRates.vsd[0].rate * 100).toFixed(2)}%`,
-      psd: `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
-    },
-    {
-      label: 'iki 12 VDU (tik MB)',
-      income: `0 - ${formatCurrency(VDU * 12)}`,
-      gpm: '15%',
-      vsd: '0%',
-      psd: '0%',
-    },
-    {
-      label: 'iki 36 VDU',
-      income: `0 - ${formatCurrency(VDU * 36)}`,
-      gpm: `${(taxRates.gpm[0].rate * 100).toFixed(0)}%`,
-      vsd: `${(taxRates.vsd[0].rate * 100).toFixed(2)}%`,
-      psd: `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
-    },
-    {
-      label: '36 - 60 VDU',
-      income: `${formatCurrency(VDU * 36)} - ${formatCurrency(VDU * 60)}`,
-      gpm: `${(taxRates.gpm[1].rate * 100).toFixed(0)}%`,
-      vsd: `${(taxRates.vsd[0].rate * 100).toFixed(2)}%`,
-      psd: `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
-    },
-    {
-      label: 'nuo 60 VDU',
-      income: `virš ${formatCurrency(VDU * 60)}`,
-      gpm: `${(taxRates.gpm[2].rate * 100).toFixed(0)}%`,
-      vsd: `${(taxRates.vsd[1].rate * 100).toFixed(0)}%`,
-      psd: `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
-    },
-  ],
-};
+function getTaxBrackets(year: Year) {
+  const taxRates = yearlyTaxRates[year];
+  const ivTaxRates = ivYearlyTaxRates[year];
+  const vdu = VDU[year];
+  const brackets: Record<Year, TaxBracket[]> = {
+    2025: [
+      {
+        label: 'iki ~12 VDU (tik IV)',
+        income: `0 - ${formatCurrency(20000 / ivTaxRates.gpmBase)}`,
+        gpm: `5%`,
+        vsd: `${(taxRates.vsd[0].rate * 100).toFixed(2)}%`,
+        psd: `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
+      },
+      {
+        label: '~12 - ~26 VDU (tik IV)',
+        income: `${formatCurrency(20000 / ivTaxRates.gpmBase)} - ${formatCurrency(42500 / ivTaxRates.gpmBase)}`,
+        gpm: `5% - 20%`,
+        vsd: `${(taxRates.vsd[0].rate * 100).toFixed(2)}%`,
+        psd: `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
+      },
+      {
+        label: 'iki 12 VDU (tik MB)',
+        income: `0 - ${formatCurrency(vdu * 12)}`,
+        gpm: '15%',
+        vsd: '0%',
+        psd: '0%',
+      },
+      {
+        label: 'iki 60 VDU',
+        income: `0 - ${formatCurrency(vdu * 60)}`,
+        gpm: `${(taxRates.gpm[0].rate * 100).toFixed(0)}%`,
+        vsd: `${(taxRates.vsd[0].rate * 100).toFixed(2)}%`,
+        psd: `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
+      },
+      {
+        label: 'nuo 60 VDU',
+        income: `virš ${formatCurrency(vdu * 60)}`,
+        gpm: `${(taxRates.gpm[1].rate * 100).toFixed(0)}%`,
+        vsd: `${(taxRates.vsd[1].rate * 100).toFixed(0)}%`,
+        psd: `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
+      },
+    ],
+    2026: [
+      {
+        label: 'iki ~12 VDU (tik IV)',
+        income: `0 - ${formatCurrency(20000 / ivTaxRates.gpmBase)}`,
+        gpm: `5%`,
+        vsd: `${(taxRates.vsd[0].rate * 100).toFixed(2)}%`,
+        psd: `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
+      },
+      {
+        label: '~12 - ~26 VDU (tik IV)',
+        income: `${formatCurrency(20000 / ivTaxRates.gpmBase)} - ${formatCurrency(42500 / ivTaxRates.gpmBase)}`,
+        gpm: `5% - 20%`,
+        vsd: `${(taxRates.vsd[0].rate * 100).toFixed(2)}%`,
+        psd: `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
+      },
+      {
+        label: 'iki 12 VDU (tik MB)',
+        income: `0 - ${formatCurrency(vdu * 12)}`,
+        gpm: '15%',
+        vsd: '0%',
+        psd: '0%',
+      },
+      {
+        label: 'iki 36 VDU',
+        income: `0 - ${formatCurrency(vdu * 36)}`,
+        gpm: `${(taxRates.gpm[0].rate * 100).toFixed(0)}%`,
+        vsd: `${(taxRates.vsd[0].rate * 100).toFixed(2)}%`,
+        psd: `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
+      },
+      {
+        label: '36 - 60 VDU',
+        income: `${formatCurrency(vdu * 36)} - ${formatCurrency(vdu * 60)}`,
+        gpm: `${(taxRates.gpm[1].rate * 100).toFixed(0)}%`,
+        vsd: `${(taxRates.vsd[0].rate * 100).toFixed(2)}%`,
+        psd: `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
+      },
+      {
+        label: 'nuo 60 VDU',
+        income: `virš ${formatCurrency(vdu * 60)}`,
+        gpm: `${(taxRates.gpm[2].rate * 100).toFixed(0)}%`,
+        vsd: `${(taxRates.vsd[1].rate * 100).toFixed(0)}%`,
+        psd: `${(taxRates.psd[0].rate * 100).toFixed(2)}%`,
+      },
+    ],
+  };
+
+  return brackets[year];
+}
 
 export function TaxTariffLegend({ year, className, ...rest }: TaxTariffLegendProps) {
+  const taxBrackets = getTaxBrackets(year);
   return (
     <div className={cn('text-xs', className)} {...rest}>
       <div className="font-semibold text-sm mb-1.5">Mokesčių tarifai 2026 m.</div>
       <div className="space-y-1">
-        {taxBrackets[year]?.map((bracket, i) => (
+        {taxBrackets.map((bracket, i) => (
           <div key={i} className="border rounded px-2 py-1.5 bg-gray-50">
             <div className="font-medium text-gray-900">
               {bracket.label} <span className="font-normal text-gray-600">({bracket.income})</span>
@@ -78,5 +124,5 @@ export function TaxTariffLegend({ year, className, ...rest }: TaxTariffLegendPro
 }
 
 interface TaxTariffLegendProps extends React.ComponentProps<'div'> {
-  year: number;
+  year: Year;
 }

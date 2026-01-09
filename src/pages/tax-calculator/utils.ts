@@ -1,5 +1,8 @@
 // Vidutinis darbo užmokestis Lietuvoje 2026 m.
-export const VDU = 2312.15;
+export const VDU = {
+  2025: 2108.88,
+  2026: 2312.15,
+};
 
 // Minimali mėnesinės alga Lietuvoje
 export const MMA = {
@@ -9,42 +12,95 @@ export const MMA = {
 
 export type Year = keyof typeof MMA;
 
-function getGpmRates<InitialThreshold extends number>(initialThreshold: InitialThreshold) {
-  return [
-    { threshold: initialThreshold, rate: 0.2 },
-    { threshold: VDU * 36, rate: 0.25 },
-    { threshold: VDU * 60, rate: 0.32 },
-  ] as const;
+function getGpmRates<InitialThreshold extends number>(year: Year, initialThreshold: InitialThreshold) {
+  const gpmRates = {
+    2025: [
+      { threshold: initialThreshold, rate: 0.2 },
+      // This is just to keep the same number of items in the array as in 2026 and make types easier to work with
+      { threshold: VDU[year] * 60, rate: 0.32 },
+      { threshold: VDU[year] * 60, rate: 0.32 },
+    ],
+    2026: [
+      { threshold: initialThreshold, rate: 0.2 },
+      { threshold: VDU[year] * 36, rate: 0.25 },
+      { threshold: VDU[year] * 60, rate: 0.32 },
+    ],
+  } as const satisfies Record<Year, TaxBracket>;
+  return gpmRates[year];
 }
 
-export const taxRates = {
-  gpmBase: 1,
-  sodraBase: 1,
-  // Gyventojų pajamų mokestis
-  gpm: getGpmRates(0),
-  // Valstybinio socialinio draudimo įmokos
-  vsd: [
-    { threshold: 0, rate: 0.1252 },
-    { threshold: VDU * 60, rate: 0 },
-  ],
-  // Privalomojo sveikatos draudimo įmokos
-  psd: [{ threshold: 0, rate: 0.0698 }],
-} as const;
+export const yearlyTaxRates = {
+  2025: {
+    gpmBase: 1,
+    sodraBase: 1,
+    // Gyventojų pajamų mokestis
+    gpm: getGpmRates(2025, 0),
+    // Valstybinio socialinio draudimo įmokos
+    vsd: [
+      { threshold: 0, rate: 0.1252 },
+      { threshold: VDU[2025] * 60, rate: 0 },
+    ],
+    // Privalomojo sveikatos draudimo įmokos
+    psd: [{ threshold: 0, rate: 0.0698 }],
+  },
+  2026: {
+    gpmBase: 1,
+    sodraBase: 1,
+    // Gyventojų pajamų mokestis
+    gpm: getGpmRates(2026, 0),
+    // Valstybinio socialinio draudimo įmokos
+    vsd: [
+      { threshold: 0, rate: 0.1252 },
+      { threshold: VDU[2026] * 60, rate: 0 },
+    ],
+    // Privalomojo sveikatos draudimo įmokos
+    psd: [{ threshold: 0, rate: 0.0698 }],
+  },
+} as const satisfies Record<Year, TaxRateShape>;
 
-export const ivTaxRates = {
-  ...taxRates,
-  // GPM is calculated on taxable income (70% of total income - 30% expense deduction)
-  // VSD/PSD is calculated on 90% of taxable income
-  // Source: https://sodra.lt/imoku-tarifai/imoku-tarifai-taikomi-savarankiskai-dirbantiems-asmenims
-  gpmBase: 0.7,
-  sodraBase: 0.7 * 0.9,
-} as const;
+export const ivYearlyTaxRates = {
+  2025: {
+    ...yearlyTaxRates[2025],
+    // GPM is calculated on taxable income (70% of total income - 30% expense deduction)
+    // VSD/PSD is calculated on 90% of taxable income
+    // Source: https://sodra.lt/imoku-tarifai/imoku-tarifai-taikomi-savarankiskai-dirbantiems-asmenims
+    gpmBase: 0.7,
+    sodraBase: 0.7 * 0.9,
+  },
+  2026: {
+    ...yearlyTaxRates[2026],
+    // GPM is calculated on taxable income (70% of total income - 30% expense deduction)
+    // VSD/PSD is calculated on 90% of taxable income
+    // Source: https://sodra.lt/imoku-tarifai/imoku-tarifai-taikomi-savarankiskai-dirbantiems-asmenims
+    gpmBase: 0.7,
+    sodraBase: 0.7 * 0.9,
+  },
+} as const satisfies Record<Year, TaxRateShape>;
 
-export const mbTaxRates = {
-  ...taxRates,
-  // There's an extra tax bracket for MB income (15% for income up to 12 VDU)
-  gpm: [{ threshold: 0, rate: 0.15 }, ...getGpmRates(VDU * 12)],
-} as const;
+export const mbYearlyTaxRates = {
+  2025: {
+    ...yearlyTaxRates[2025],
+    gpm: [{ threshold: 0, rate: 0.15 }, ...getGpmRates(2025, VDU[2025] * 12)],
+  },
+  2026: {
+    ...yearlyTaxRates[2026],
+    gpm: [{ threshold: 0, rate: 0.15 }, ...getGpmRates(2026, VDU[2026] * 12)],
+  },
+} as const satisfies Record<Year, TaxRateShape>;
+
+export type TaxRates =
+  | (typeof yearlyTaxRates)[Year]
+  | (typeof mbYearlyTaxRates)[Year]
+  | (typeof ivYearlyTaxRates)[Year];
+
+type TaxBracket = { threshold: number; rate: number }[];
+type TaxRateShape = {
+  gpmBase: number;
+  sodraBase: number;
+  gpm: TaxBracket;
+  vsd: TaxBracket;
+  psd: TaxBracket;
+};
 
 interface Tax {
   amount: number;
@@ -129,18 +185,8 @@ export const months = [
   'Gruodis',
 ];
 
-type KeysOfArrayTypes<T> = {
-  [K in keyof T]: T[K] extends any[] ? K : T[K] extends readonly any[] ? K : never;
-}[keyof T];
-
-export type TaxRates = typeof taxRates | typeof mbTaxRates | typeof ivTaxRates;
-
 // Helper function to calculate progressive tax for a monthly salary
-export function calculateProgressiveTax(
-  totalAnnual: number,
-  monthlySalary: number,
-  brackets: TaxRates[KeysOfArrayTypes<TaxRates>],
-) {
+export function calculateProgressiveTax(totalAnnual: number, monthlySalary: number, brackets: TaxBracket) {
   // Sort brackets from highest to lowest threshold
   const sortedBrackets = brackets.toSorted((a, b) => b.threshold - a.threshold);
   const bracketIndex = sortedBrackets.findIndex(b => totalAnnual >= b.threshold);

@@ -1,7 +1,7 @@
 import React from 'react';
 import { InfoIcon } from 'lucide-react';
 import { Tooltip } from '@/components/layouts/tooltip';
-import { formatCurrency, formatPercent, MMA, TAX_CALCULATION_EVENT, taxRates } from './utils';
+import { formatCurrency, formatPercent, MMA, TAX_CALCULATION_EVENT, yearlyTaxRates } from './utils';
 import type { IncomeTotalTaxes, TaxCalculationEventDetail, Year } from './utils';
 import {
   TaxSummaryTableBodyColumn,
@@ -37,6 +37,7 @@ export function TotalTaxes({ year, className }: TotalTaxesProps) {
   }, []);
 
   const { totals, psdRemainder } = React.useMemo(() => {
+    const taxRates = yearlyTaxRates[year];
     const result: IncomeTotalTaxes = {
       gpm: { amount: 0, percentage: 0 },
       vsd: { amount: 0, percentage: 0 },
