@@ -7,6 +7,7 @@ import {
   TaxSummaryTableBodyRow,
   TaxSummaryTableHeaderColumn,
   TaxSummaryTableWrapper,
+  type TaxSummaryTableWrapperProps,
 } from './tax-summary-table-wrapper';
 
 export function TaxSummaryTable({
@@ -333,8 +334,7 @@ export function TaxSummaryTable({
   );
 }
 
-interface TaxSummaryTableProps extends React.ComponentProps<'div'> {
-  label: React.ReactNode;
+interface TaxSummaryTableProps extends Omit<TaxSummaryTableWrapperProps, 'tableHeader' | 'children'> {
   monthlySalary: number;
   taxRates: TaxRates;
   additionalForGPM?: number;

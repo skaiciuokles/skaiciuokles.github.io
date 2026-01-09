@@ -48,61 +48,64 @@ export function TaxCalculatorPage() {
   return (
     <div className="flex flex-col h-full">
       <div className="md:grid md:grid-cols-[325px_auto] md:overflow-hidden md:h-full">
-        <div className="flex overflow-x-auto md:flex-col gap-4 p-3 border-r md:overflow-y-auto">
-          <div className="p-3 border rounded-sm min-w-42">
-            <Label className="mb-2 block text-left font-bold">Mokestiniai metai:</Label>
-            <Select
-              value={income.year.toString()}
-              onValueChange={value => setIncome(prev => ({ ...prev, year: Number(value) as 2026 }))}
-              options={[{ label: '2026', value: '2026' }]}
-              className="w-full"
-            />
+        <div className="flex md:flex-col md:border-r not-md:border-b">
+          <div className="p-2 flex overflow-x-auto md:flex-col gap-2 md:overflow-y-auto">
+            <div className="p-3 border rounded-sm min-w-42">
+              <Label className="mb-2 block text-left font-bold">Mokestiniai metai:</Label>
+              <Select
+                value={income.year.toString()}
+                onValueChange={value => setIncome(prev => ({ ...prev, year: Number(value) as 2026 }))}
+                options={[{ label: '2026', value: '2026' }]}
+                className="w-full"
+              />
+            </div>
+            <div className="p-3 border rounded-sm min-w-52">
+              <Label className="mb-2 block text-left font-bold">
+                Mėnesio darbo santykių pajamos (prieš mokesčius):
+              </Label>
+              <Input
+                type="number"
+                value={income.monthly ?? ''}
+                onChange={e =>
+                  setIncome(prev => ({ ...prev, monthly: e.target.value ? Number(e.target.value) : undefined }))
+                }
+                placeholder="Pajamos iš darbo santykių"
+              />
+            </div>
+            <div className="p-3 border rounded-sm min-w-72">
+              <Label className="mb-2 block text-left font-bold">
+                Mėnesio IV pagal pažymą pajamos (prieš mokesčius):
+              </Label>
+              <Input
+                type="number"
+                value={income.ivMonthly ?? ''}
+                onChange={e =>
+                  setIncome(prev => ({ ...prev, ivMonthly: e.target.value ? Number(e.target.value) : undefined }))
+                }
+                placeholder="Pajamos iš individualios veiklos"
+              />
+              <p className="text-xs text-gray-500 mt-1.5 italic text-left not-md:text-xs">
+                30% išlaidų atskaitymas įtrauktas automatiškai
+              </p>
+            </div>
+            <div className="p-3 border rounded-sm min-w-42">
+              <Label className="mb-2 block text-left font-bold">Mėnesio MB pajamos (prieš mokesčius):</Label>
+              <Input
+                type="number"
+                value={income.mbMonthly ?? ''}
+                onChange={e =>
+                  setIncome(prev => ({ ...prev, mbMonthly: e.target.value ? Number(e.target.value) : undefined }))
+                }
+                placeholder="Pajamos iš MB"
+              />
+            </div>
           </div>
-          <div className="p-3 border rounded-sm min-w-52">
-            <Label className="mb-2 block text-left font-bold">Mėnesio darbo santykių pajamos (prieš mokesčius):</Label>
-            <Input
-              type="number"
-              value={income.monthly ?? ''}
-              onChange={e =>
-                setIncome(prev => ({ ...prev, monthly: e.target.value ? Number(e.target.value) : undefined }))
-              }
-              placeholder="Pajamos iš darbo santykių"
-            />
-          </div>
-          <div className="p-3 border rounded-sm min-w-72">
-            <Label className="mb-2 block text-left font-bold">Mėnesio IV pagal pažymą pajamos (prieš mokesčius):</Label>
-            <Input
-              type="number"
-              value={income.ivMonthly ?? ''}
-              onChange={e =>
-                setIncome(prev => ({ ...prev, ivMonthly: e.target.value ? Number(e.target.value) : undefined }))
-              }
-              placeholder="Pajamos iš individualios veiklos"
-            />
-            <p className="text-xs text-gray-500 mt-1.5 italic text-left not-md:text-xs">
-              30% išlaidų atskaitymas įtrauktas automatiškai
-            </p>
-          </div>
-          <div className="p-3 border rounded-sm min-w-42">
-            <Label className="mb-2 block text-left font-bold">Mėnesio MB pajamos (prieš mokesčius):</Label>
-            <Input
-              type="number"
-              value={income.mbMonthly ?? ''}
-              onChange={e =>
-                setIncome(prev => ({ ...prev, mbMonthly: e.target.value ? Number(e.target.value) : undefined }))
-              }
-              placeholder="Pajamos iš MB"
-            />
-          </div>
-          <div className="border-t pt-3 space-y-3 -mx-3 px-3 mt-auto not-md:hidden">
-            <TaxTariffLegend year={income.year} />
-            <div>
-              <div className="text-xs text-gray-500">
-                *VDU {income.year} m. = {formatCurrency(VDU[income.year])} €
-              </div>
-              <div className="text-xs text-gray-500">
-                *MMA {income.year} m. = {formatCurrency(MMA[income.year])} €
-              </div>
+          <div className="flex flex-col justify-center h-12 border-t px-2 mt-auto not-md:hidden">
+            <div className="text-xs text-gray-500">
+              *VDU {income.year} m. = {formatCurrency(VDU[income.year])} €
+            </div>
+            <div className="text-xs text-gray-500">
+              *MMA {income.year} m. = {formatCurrency(MMA[income.year])} €
             </div>
           </div>
         </div>
@@ -119,6 +122,8 @@ export function TaxCalculatorPage() {
             additionalForSodra={(income.ivMonthly ?? 0) * ivTaxRates.sodraBase * 12}
             className="border-b p-3"
             taxRates={taxRates}
+            InfoComponent={TaxTariffLegend}
+            year={income.year}
             withSodra
           />
 
@@ -128,27 +133,33 @@ export function TaxCalculatorPage() {
             className="p-3 border-b"
             taxRates={ivTaxRates}
             gpmOverride={ivGpmOverride}
+            InfoComponent={TaxTariffLegend}
+            year={income.year}
             withSodra
           />
 
           <TaxSummaryTable
             label="Metinė MB mokesčių suvestinė"
             monthlySalary={income.mbMonthly ?? 0}
-            className="p-3 border-b"
+            className="p-3"
             taxRates={mbTaxRates}
+            InfoComponent={TaxTariffLegend}
+            year={income.year}
           />
 
-          <div className="text-sm text-gray-600 p-3">
-            Skaičiuoklė paremta{' '}
-            <a
-              href="https://www.vmi.lt/evmi/5725"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-700 underline hover:text-blue-900"
-            >
-              VMI pateikta informacija.
-            </a>{' '}
-            Rezultatai yra apytiksliai ir gali skirtis nuo galutinių VMI apskaičiavimų.
+          <div className="text-sm text-gray-600 px-3 py-1 min-h-12 leading-none flex items-center justify-center border-t">
+            <span>
+              Skaičiuoklė paremta{' '}
+              <a
+                href="https://www.vmi.lt/evmi/5725"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-blue-700 underline hover:text-blue-900"
+              >
+                VMI pateikta informacija.
+              </a>{' '}
+              Rezultatai yra apytiksliai ir gali skirtis nuo galutinių VMI apskaičiavimų.
+            </span>
           </div>
         </div>
       </div>
