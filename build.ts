@@ -261,10 +261,7 @@ await Bun.write('dist/sitemap.xml', sitemap);
 console.log(`📍 Generated sitemap.xml with ${sitemapRoutes.length} URLs`);
 
 // Generate robots.txt
-const robotsTxt = `User-agent: *
-Allow: /
-
-Sitemap: ${SITE_URL}/sitemap.xml
+const robotsTxt = `Sitemap: ${SITE_URL}/sitemap.xml
 `;
 
 await Bun.write('dist/robots.txt', robotsTxt);
