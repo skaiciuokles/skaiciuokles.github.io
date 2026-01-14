@@ -139,8 +139,8 @@ const result = await Bun.build({
 });
 
 interface PageInfo {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
   keywords?: string;
   canonical?: string;
   og?: {
@@ -151,12 +151,19 @@ interface PageInfo {
     siteName?: string;
     url?: string;
   };
+  sitemap?: {
+    priority: string;
+  };
 }
 
 const SITE_URL = 'https://skaiciuoklems.lt';
 
-const routes: Record<FileRouteTypes['fullPaths'] | '/404', PageInfo | false> = {
-  '/': false,
+const routes: Record<FileRouteTypes['fullPaths'] | '/404', PageInfo> = {
+  '/': {
+    sitemap: {
+      priority: '1.0',
+    },
+  },
   '/404': {
     title: 'Skaičiuoklės | 404 Puslapis nerastas',
     description: 'Puslapis kurio ieškote nerastas.',
@@ -177,6 +184,9 @@ const routes: Record<FileRouteTypes['fullPaths'] | '/404', PageInfo | false> = {
       siteName: 'Skaičiuoklės',
       url: `${SITE_URL}/mokesciai`,
     },
+    sitemap: {
+      priority: '1.0',
+    },
   },
 };
 
@@ -185,7 +195,7 @@ await Promise.all(
   Object.entries(routes).map(async ([route, value]) => {
     const page = route.replace(/^\//, '') || 'index';
     let newHtml = html;
-    if (value) {
+    if (value.title && value.description) {
       console.log(`Copying index.html to ${page}.html`);
 
       const metaTags: string[] = ['', `<meta name="description" content="${value.description}">`];
@@ -218,6 +228,47 @@ await Promise.all(
     return Bun.write(`dist/${page}.html`, prettify(newHtml));
   }),
 );
+
+// Generate sitemap.xml
+const sitemapRoutes = Object.entries(routes)
+  .map(([route, value]) =>
+    value.sitemap
+      ? {
+          url: `${SITE_URL}${route === '/' ? '' : route}`,
+          priority: value.sitemap.priority,
+        }
+      : null,
+  )
+  .filter(Boolean);
+
+const today = new Date().toISOString().split('T')[0];
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${sitemapRoutes
+  .map(
+    route => `  <url>
+    <loc>${route.url}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>${route.priority}</priority>
+  </url>`,
+  )
+  .join('\n')}
+</urlset>
+`;
+
+await Bun.write('dist/sitemap.xml', sitemap);
+console.log(`📍 Generated sitemap.xml with ${sitemapRoutes.length} URLs`);
+
+// Generate robots.txt
+const robotsTxt = `User-agent: *
+Allow: /
+
+Sitemap: ${SITE_URL}/sitemap.xml
+`;
+
+await Bun.write('dist/robots.txt', robotsTxt);
+console.log(`🤖 Generated robots.txt\n`);
 
 const end = performance.now();
 
