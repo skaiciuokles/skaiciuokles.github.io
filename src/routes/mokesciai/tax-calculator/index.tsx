@@ -17,7 +17,7 @@ export function TaxCalculatorPage() {
     let parsed: Partial<Income> = {};
     if (savedIncome) {
       try {
-        parsed = JSON.parse(savedIncome);
+        parsed = JSON.parse(savedIncome) as Partial<Income>;
       } catch (error) {
         console.error('Error parsing income from localStorage', error);
       }
