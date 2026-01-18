@@ -1,5 +1,5 @@
 import { createFileRoute } from '@tanstack/react-router';
-import { TaxCalculatorPage } from './tax-calculator';
+import { TaxCalculatorPage } from './partials';
 
 export const Route = createFileRoute('/mokesciai/')({
   component: TaxCalculatorPage,
