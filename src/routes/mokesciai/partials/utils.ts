@@ -10,6 +10,8 @@ export const MMA = {
   2026: 1153,
 };
 
+export const MB_INCOME_LIMIT_PER_YEAR = 100000;
+
 export type Year = keyof typeof MMA;
 
 function getGpmRates<InitialThreshold extends number>(year: Year, initialThreshold: InitialThreshold) {

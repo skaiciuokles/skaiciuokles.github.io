@@ -7,7 +7,16 @@ import { TaxSummaryTable } from './tax-summary-table';
 import { EmploymentTariffDrawer, IVTariffDrawer, MBTariffDrawer } from './tariff-info';
 import { TotalTaxes } from './total-taxes';
 import { IncomeOptimizer } from './income-optimizer';
-import { calculateIVGpm, formatCurrency, ivYearlyTaxRates, mbYearlyTaxRates, MMA, yearlyTaxRates, VDU } from './utils';
+import {
+  calculateIVGpm,
+  formatCurrency,
+  ivYearlyTaxRates,
+  MB_INCOME_LIMIT_PER_YEAR,
+  mbYearlyTaxRates,
+  MMA,
+  yearlyTaxRates,
+  VDU,
+} from './utils';
 import type { Income } from './utils';
 
 const INCOME_STORAGE_KEY = 'tax-calculator-income';
@@ -47,8 +56,7 @@ export function TaxCalculatorPage() {
     }
   }, [income.ivMonthly, ivTaxRates]);
 
-  const mbIncomeLimitPerYear = 100000;
-  const mbIncomeLimit = mbIncomeLimitPerYear / 12;
+  const mbIncomeLimit = MB_INCOME_LIMIT_PER_YEAR / 12;
   const mbIncomeExceedsLimit = (income.mbMonthly ?? 0) > mbIncomeLimit;
 
   return (
@@ -119,7 +127,8 @@ export function TaxCalculatorPage() {
               {mbIncomeExceedsLimit && (
                 <p className="text-xs text-red-500 mt-1.5 italic text-left not-md:text-xs">
                   *Pajamos iš MB išmokėtos pagal civilinę vadovavimo sutartį negali viršyti{' '}
-                  {formatCurrency(mbIncomeLimit)} per mėnesį (arba {formatCurrency(mbIncomeLimitPerYear)} per metus).
+                  {formatCurrency(mbIncomeLimit)} per mėnesį (arba {formatCurrency(MB_INCOME_LIMIT_PER_YEAR)} per
+                  metus).
                 </p>
               )}
             </div>

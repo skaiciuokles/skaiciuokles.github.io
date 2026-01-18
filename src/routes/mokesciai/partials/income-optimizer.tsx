@@ -3,7 +3,15 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Drawer } from '@/components/layouts/drawer';
-import { calculateIVGpm, calculateSourceTaxes, ivYearlyTaxRates, mbYearlyTaxRates, MMA, yearlyTaxRates } from './utils';
+import {
+  calculateIVGpm,
+  calculateSourceTaxes,
+  ivYearlyTaxRates,
+  MB_INCOME_LIMIT_PER_YEAR,
+  mbYearlyTaxRates,
+  MMA,
+  yearlyTaxRates,
+} from './utils';
 import type { Income } from './utils';
 
 interface IncomeOptimizerProps {
@@ -64,13 +72,18 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
   const handleOptimize = () => {
     if (extraIncome === undefined) return;
 
-    let bestIV = 0;
-    let bestMB = extraIncome;
+    let bestIV = extraIncome;
+    let bestMB = 0;
     let minTaxes = Infinity;
+
+    const mbMonthlyLimit = MB_INCOME_LIMIT_PER_YEAR / 12;
 
     // Split total extraIncome between IV and MB
     for (let totalIV = 0; totalIV <= extraIncome; totalIV += 10) {
       const totalMB = extraIncome - totalIV;
+
+      if (totalMB > mbMonthlyLimit) continue;
+
       const taxes = calculateTotalTaxes(totalIV, totalMB);
 
       if (taxes < minTaxes) {
@@ -81,12 +94,10 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
     }
 
     // Final check for the exact extraIncome value
-    const lastTotalIV = extraIncome;
-    const lastTotalMB = 0;
-    const lastTaxes = calculateTotalTaxes(lastTotalIV, lastTotalMB);
+    const lastTaxes = calculateTotalTaxes(extraIncome, 0);
     if (lastTaxes < minTaxes) {
-      bestIV = lastTotalIV;
-      bestMB = lastTotalMB;
+      bestIV = extraIncome;
+      bestMB = 0;
     }
 
     setIncome(prev => ({ ...prev, ivMonthly: bestIV, mbMonthly: bestMB }));
