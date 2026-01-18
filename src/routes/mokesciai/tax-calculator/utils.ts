@@ -166,6 +166,7 @@ export interface Income {
   monthly?: number; // Pajamos iš darbo santykių
   mbMonthly?: number; // Pajamos iš Mažosios Bedrijos
   ivMonthly?: number; // Individuali veikla pagal pažymą
+  pensionAccumulation: boolean; // Papildomas kaupimas pensijai 3%
 }
 
 /**

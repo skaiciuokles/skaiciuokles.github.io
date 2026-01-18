@@ -23,7 +23,7 @@ export function TaxCalculatorPage() {
       }
     }
 
-    return { year: 2026, ...parsed };
+    return { year: 2026, pensionAccumulation: true, ...parsed };
   });
 
   React.useEffect(() => {
@@ -76,6 +76,18 @@ export function TaxCalculatorPage() {
                 }
                 placeholder="Pajamos iš darbo santykių"
               />
+              <div className="flex items-center mt-2">
+                <input
+                  type="checkbox"
+                  id="pensionAccumulation"
+                  checked={income.pensionAccumulation}
+                  onChange={e => setIncome(prev => ({ ...prev, pensionAccumulation: e.target.checked }))}
+                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                />
+                <Label htmlFor="pensionAccumulation" className="text-xs font-medium cursor-pointer pl-1">
+                  Papildomai kaupiu 3% pensijai
+                </Label>
+              </div>
             </div>
             <div className="p-3 border rounded-sm min-w-72">
               <Label className="mb-2 block text-left font-bold">
@@ -133,6 +145,7 @@ export function TaxCalculatorPage() {
             additionalForSodra={(income.ivMonthly ?? 0) * ivTaxRates.sodraBase * 12}
             className="border-b p-3"
             taxRates={taxRates}
+            pensionAccumulation={income.pensionAccumulation}
             InfoDrawer={EmploymentTariffDrawer}
             year={income.year}
             withSodra

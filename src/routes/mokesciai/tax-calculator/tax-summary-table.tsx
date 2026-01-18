@@ -18,6 +18,7 @@ export function TaxSummaryTable({
   gpmOverride,
   withSodra,
   taxRates,
+  pensionAccumulation,
   ...rest
 }: TaxSummaryTableProps) {
   const id = React.useId();
@@ -51,6 +52,15 @@ export function TaxSummaryTable({
       const vsdTax = withSodra
         ? calculateProgressiveTax(totalAnnualForSodra, sodraTaxableIncome, taxRates.vsd)
         : { amount: 0, percentage: 0 };
+
+      if (withSodra && pensionAccumulation) {
+        const extraPensionAmount = sodraTaxableIncome * 0.03;
+        vsdTax.amount += extraPensionAmount;
+        if (sodraTaxableIncome > 0) {
+          vsdTax.percentage = (vsdTax.amount / sodraTaxableIncome) * 100;
+        }
+      }
+
       const psdTax = withSodra
         ? calculateProgressiveTax(totalAnnualForSodra, sodraTaxableIncome, taxRates.psd)
         : { amount: 0, percentage: 0 };
@@ -87,7 +97,7 @@ export function TaxSummaryTable({
     totals.psd.percentage = totalSodraTaxable > 0 ? (totals.psd.amount * 100) / totalSodraTaxable : 0;
 
     return { calculations: results, totals };
-  }, [monthlySalary, additionalForGPM, additionalForSodra, withSodra, taxRates, gpmOverride]);
+  }, [monthlySalary, additionalForGPM, additionalForSodra, withSodra, taxRates, gpmOverride, pensionAccumulation]);
 
   // Emit custom event when calculations complete
   React.useEffect(() => {
@@ -341,4 +351,5 @@ interface TaxSummaryTableProps extends Omit<TaxSummaryTableWrapperProps, 'tableH
   additionalForSodra?: number;
   gpmOverride?: { amount: number; percentage: number };
   withSodra?: boolean;
+  pensionAccumulation?: boolean;
 }
