@@ -6,6 +6,7 @@ import { Select } from '@/components/forms/select';
 import { TaxSummaryTable } from './tax-summary-table';
 import { EmploymentTariffDrawer, IVTariffDrawer, MBTariffDrawer } from './tariff-info';
 import { TotalTaxes } from './total-taxes';
+import { IncomeOptimizer } from './income-optimizer';
 import { calculateIVGpm, formatCurrency, ivYearlyTaxRates, mbYearlyTaxRates, MMA, yearlyTaxRates, VDU } from './utils';
 import type { Income } from './utils';
 
@@ -54,7 +55,7 @@ export function TaxCalculatorPage() {
     <div className="flex flex-col h-full">
       <div className="md:grid md:grid-cols-[325px_auto] md:overflow-hidden md:h-full not-md:overflow-y-auto">
         <div className="flex md:flex-col md:border-r not-md:border-b">
-          <div className="p-2 flex overflow-x-auto md:flex-col gap-2 md:overflow-y-auto">
+          <div className="p-2 flex overflow-x-auto md:flex-col gap-2 md:overflow-y-auto md:max-h-[calc(100vh-93px)]">
             <div className="p-3 border rounded-sm min-w-42">
               <Label className="mb-2 block text-left font-bold">Mokestiniai metai:</Label>
               <Select
@@ -64,7 +65,7 @@ export function TaxCalculatorPage() {
                 className="w-full"
               />
             </div>
-            <div className="p-3 border rounded-sm min-w-52">
+            <div className="p-3 border rounded-sm min-w-60">
               <Label className="mb-2 block text-left font-bold">
                 Mėnesio darbo santykių pajamos (prieš mokesčius):
               </Label>
@@ -105,7 +106,7 @@ export function TaxCalculatorPage() {
                 30% išlaidų atskaitymas įtrauktas automatiškai
               </p>
             </div>
-            <div className={cn('p-3 border rounded-sm min-w-42', mbIncomeExceedsLimit ? 'text-red-500' : '')}>
+            <div className={cn('p-3 border rounded-sm min-w-48', mbIncomeExceedsLimit ? 'text-red-500' : '')}>
               <Label className="mb-2 block text-left font-bold">Mėnesio MB pajamos (prieš mokesčius):</Label>
               <Input
                 type="number"
@@ -122,6 +123,7 @@ export function TaxCalculatorPage() {
                 </p>
               )}
             </div>
+            <IncomeOptimizer income={income} setIncome={setIncome} />
           </div>
           <div className="flex flex-col justify-center h-12 border-t px-2 mt-auto not-md:hidden">
             <div className="text-xs text-gray-500">

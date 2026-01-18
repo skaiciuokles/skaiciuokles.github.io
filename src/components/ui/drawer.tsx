@@ -60,12 +60,12 @@ function DrawerContent({ className, size, direction, children, ...props }: Drawe
       <DrawerPrimitive.Content
         onClick={e => e.stopPropagation()}
         data-slot="drawer-content"
-        className={cn(drawerContentVariants({ size, direction, className }))}
+        className={cn('overflow-y-auto', drawerContentVariants({ size, direction, className }))}
         data-direction={direction && ['top', 'bottom'].includes(direction) ? 'horizontal' : 'vertical'}
         {...props}
       >
         <div className="bg-muted mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
-        <div className="overflow-y-auto">{children}</div>
+        <div>{children}</div>
       </DrawerPrimitive.Content>
     </DrawerPortal>
   );
@@ -88,7 +88,7 @@ function DrawerHeader({ className, ...props }: React.ComponentProps<'div'>) {
 }
 
 function DrawerFooter({ className, ...props }: React.ComponentProps<'div'>) {
-  return <div data-slot="drawer-footer" className={cn('mt-auto flex flex-col gap-2 p-4', className)} {...props} />;
+  return <div data-slot="drawer-footer" className={cn('mt-auto flex flex-col gap-2 py-4', className)} {...props} />;
 }
 
 function DrawerTitle({ className, ...props }: React.ComponentProps<typeof DrawerPrimitive.Title>) {

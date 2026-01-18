@@ -243,6 +243,93 @@ export function calculateProgressiveTax(totalAnnual: number, monthlySalary: numb
   return { amount: monthlySalary * bracket.rate, percentage: bracket.rate * 100 };
 }
 
+export function calculateSourceTaxes({ monthlySalary, taxRates, withSodra, ...opts }: CalculateSourceTaxesOptions) {
+  const results: MonthlyIncomeCalculations[] = [];
+  const totals: IncomeTotalTaxes = {
+    gpm: { amount: 0, percentage: 0 },
+    vsd: { amount: 0, percentage: 0 },
+    psd: { amount: 0, percentage: 0 },
+    total: { amount: 0, percentage: 0 },
+    salaryBeforeTaxes: 0,
+    salaryAfterTaxes: 0,
+  };
+  let totalAnnual = 0;
+  let totalAnnualTaxable = 0;
+  let totalSodraTaxable = 0;
+
+  for (let month = 1; month <= 12; month++) {
+    const npd = taxRates.getNpd(monthlySalary);
+    const monthlyTaxableIncome = Math.max(0, monthlySalary * taxRates.gpmBase - npd);
+    totalAnnual = totalAnnual + monthlySalary;
+    totalAnnualTaxable = totalAnnualTaxable + monthlyTaxableIncome;
+
+    const totalAnnualForGPM = totalAnnualTaxable + (opts.additionalForGPM ?? 0);
+    const gpmTax = opts.gpmOverride ?? calculateProgressiveTax(totalAnnualForGPM, monthlyTaxableIncome, taxRates.gpm);
+
+    const sodraTaxableIncome = monthlySalary * taxRates.sodraBase;
+    totalSodraTaxable = totalSodraTaxable + sodraTaxableIncome;
+
+    const totalAnnualForSodra = totalSodraTaxable + (opts.additionalForSodra ?? 0);
+    const vsdTax = withSodra
+      ? calculateProgressiveTax(totalAnnualForSodra, sodraTaxableIncome, taxRates.vsd)
+      : { amount: 0, percentage: 0 };
+
+    if (withSodra && opts.pensionAccumulation) {
+      const extraPensionAmount = sodraTaxableIncome * 0.03;
+      vsdTax.amount += extraPensionAmount;
+      if (sodraTaxableIncome > 0) {
+        vsdTax.percentage = (vsdTax.amount / sodraTaxableIncome) * 100;
+      }
+    }
+
+    const psdTax = withSodra
+      ? calculateProgressiveTax(totalAnnualForSodra, sodraTaxableIncome, taxRates.psd)
+      : { amount: 0, percentage: 0 };
+
+    const totalMonthlyTaxes = gpmTax.amount + vsdTax.amount + psdTax.amount;
+    const afterTaxes = monthlySalary - totalMonthlyTaxes;
+
+    totals.gpm.amount += gpmTax.amount;
+    totals.vsd.amount += vsdTax.amount;
+    totals.psd.amount += psdTax.amount;
+    totals.salaryAfterTaxes += afterTaxes;
+    totals.total.amount += totalMonthlyTaxes;
+
+    results.push({
+      totalAnnualBeforeTaxes: totalAnnual,
+      totalMonthlyAfterTaxes: afterTaxes,
+      npd,
+      taxes: {
+        gpm: gpmTax,
+        vsd: vsdTax,
+        psd: psdTax,
+        total: {
+          amount: totalMonthlyTaxes,
+          percentage: monthlySalary ? (totalMonthlyTaxes / monthlySalary) * 100 : 0,
+        },
+      },
+    });
+  }
+
+  totals.salaryBeforeTaxes = totalAnnual;
+  totals.total.percentage = totalAnnual > 0 ? (totals.total.amount * 100) / totalAnnual : 0;
+  totals.gpm.percentage = totalAnnualTaxable > 0 ? (totals.gpm.amount * 100) / totalAnnualTaxable : 0;
+  totals.vsd.percentage = totalSodraTaxable > 0 ? (totals.vsd.amount * 100) / totalSodraTaxable : 0;
+  totals.psd.percentage = totalSodraTaxable > 0 ? (totals.psd.amount * 100) / totalSodraTaxable : 0;
+
+  return { results, totals };
+}
+
+interface CalculateSourceTaxesOptions {
+  monthlySalary: number;
+  taxRates: TaxRates;
+  additionalForGPM?: number;
+  additionalForSodra?: number;
+  gpmOverride?: { amount: number; percentage: number };
+  withSodra?: boolean;
+  pensionAccumulation?: boolean;
+}
+
 export function formatCurrency(amount: number) {
   return amount.toLocaleString('lt-LT', { style: 'currency', currency: 'EUR' });
 }

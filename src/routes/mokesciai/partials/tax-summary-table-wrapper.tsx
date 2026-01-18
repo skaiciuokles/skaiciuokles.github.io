@@ -39,7 +39,6 @@ export function TaxSummaryTableWrapper({
               {InfoDrawer && (
                 <InfoDrawer
                   year={year}
-                  direction="right"
                   trigger={
                     <span className="ml-auto" onClick={e => e.stopPropagation()} title="Mokesčių tarifai">
                       <InfoIcon className="size-5 text-muted-foreground" />

@@ -12,9 +12,18 @@ import {
   type DrawerContentProps,
 } from '../ui/drawer';
 
-export function Drawer({ trigger, children, title, description, footer, size, ...rest }: DrawerProps) {
+export function Drawer({
+  trigger,
+  children,
+  title,
+  description,
+  footer,
+  size,
+  direction = 'right',
+  ...rest
+}: DrawerProps) {
   return (
-    <DrawerBase {...rest}>
+    <DrawerBase direction={direction} {...rest}>
       <DrawerTrigger asChild>{trigger}</DrawerTrigger>
       <DrawerContent size={size}>
         {title && description && (
