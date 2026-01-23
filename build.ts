@@ -3,7 +3,7 @@ import { type FileRouteTypes } from '@/routeTree.gen';
 import plugin from 'bun-plugin-tailwind';
 import { prettify } from 'htmlfy';
 import { existsSync } from 'fs';
-import { rm, cp } from 'fs/promises';
+import { rm } from 'fs/promises';
 import path from 'path';
 
 if (process.argv.includes('--help') || process.argv.includes('-h')) {
@@ -138,11 +138,6 @@ const result = await Bun.build({
   ...cliConfig,
 });
 
-if (existsSync('src/public')) {
-  console.log('📂 Copying public assets...');
-  await cp('src/public', outdir, { recursive: true });
-}
-
 interface PageInfo {
   title?: string;
   description?: string;
@@ -185,7 +180,7 @@ const routes: Record<FileRouteTypes['fullPaths'] | '/404', PageInfo> = {
       title: 'Mokesčių skaičiuoklė ir optimizavimas 2026',
       description:
         'Palyginkite mokesčius pagal veiklos formas (IV, MB, Darbo sutartis) ir optimizuokite savo pajamas. Tinka darbuotojams, IV vykdytojams ir MB nariams.',
-      image: `${SITE_URL}/mokesciu-optimizatorius.png`,
+      image: `mokesciu-optimizatorius.png`,
       type: 'website',
       locale: 'lt_LT',
       siteName: 'Skaičiuoklės',
@@ -222,7 +217,15 @@ await Promise.all(
         if (value.og.locale) metaTags.push(`<meta property="og:locale" content="${value.og.locale}">`);
         if (value.og.siteName) metaTags.push(`<meta property="og:site_name" content="${value.og.siteName}">`);
         if (value.og.url) metaTags.push(`<meta property="og:url" content="${value.og.url}">`);
-        if (value.og.image) metaTags.push(`<meta property="og:image" content="${value.og.image}">`);
+        if (value.og.image) {
+          const [, ext] = value.og.image.match(/.+\.(svg|png|jpg|jpeg|gif|webp)$/) ?? [];
+          const ogImageContent = await Bun.file(`src/assets/${value.og.image}`).arrayBuffer();
+          const ogImageHash = Bun.hash(ogImageContent).toString(16).slice(0, 8);
+          const hashImageName = value.og.image.replace(`.${ext}`, `-${ogImageHash}.${ext}`);
+          await Bun.write(`dist/${hashImageName}`, ogImageContent);
+
+          metaTags.push(`<meta property="og:image" content="${SITE_URL}/${hashImageName}">`);
+        }
       }
 
       metaTags.push('</head>');
