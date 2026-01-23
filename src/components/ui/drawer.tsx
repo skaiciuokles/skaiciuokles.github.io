@@ -33,7 +33,7 @@ function DrawerOverlay({ className, ...props }: React.ComponentProps<typeof Draw
   );
 }
 
-const drawerContentVariants = cva(cn('group/drawer-content bg-background fixed z-50 flex h-auto flex-col p-4'), {
+const drawerContentVariants = cva(cn('group/drawer-content bg-background fixed z-50 flex h-auto flex-col'), {
   variants: {
     direction: {
       top: 'inset-x-0 top-0 mb-24 max-h-[90vh] rounded-b-lg border-b',
@@ -60,12 +60,12 @@ function DrawerContent({ className, size, direction, children, ...props }: Drawe
       <DrawerPrimitive.Content
         onClick={e => e.stopPropagation()}
         data-slot="drawer-content"
-        className={cn('overflow-y-auto', drawerContentVariants({ size, direction, className }))}
+        className={drawerContentVariants({ size, direction, className })}
         data-direction={direction && ['top', 'bottom'].includes(direction) ? 'horizontal' : 'vertical'}
         {...props}
       >
         <div className="bg-muted mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
-        <div>{children}</div>
+        <div className="overflow-y-auto p-4">{children}</div>
       </DrawerPrimitive.Content>
     </DrawerPortal>
   );
