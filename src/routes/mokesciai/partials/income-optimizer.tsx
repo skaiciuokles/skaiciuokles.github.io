@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Drawer } from '@/components/layouts/drawer';
 import {
   calculateIVGpm,
+  calculateMBProfitTaxRate,
   calculateSourceTaxes,
   ivYearlyTaxRates,
   MB_INCOME_LIMIT_PER_YEAR,
@@ -27,7 +28,8 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
   const mbTaxRates = mbYearlyTaxRates[income.year];
   const ivTaxRates = ivYearlyTaxRates[income.year];
 
-  const calculateTotalTaxes = (ivMonthly: number, mbMonthly: number) => {
+  const mbProfitTaxRate = calculateMBProfitTaxRate(income);
+  const calculateTotalTaxes = (ivMonthly: number, mbMonthly: number, mbDividendsMonthly: number) => {
     const mbTaxableMonthly = mbMonthly * mbTaxRates.gpmBase;
     const ivTaxableMonthly = ivMonthly * ivTaxRates.gpmBase;
 
@@ -36,6 +38,10 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
       taxRates: mbTaxRates,
       withSodra: false,
     });
+
+    const profitTax = mbDividendsMonthly * 12 * mbProfitTaxRate;
+    const mbDividendsGpm = (mbDividendsMonthly * 12 - profitTax) * 0.15;
+    const mbDividendsTotTaxes = profitTax + mbDividendsGpm;
 
     const ivAnnualTaxable = ivMonthly * 12 * ivTaxRates.gpmBase;
     const ivGpmResult = ivMonthly && ivAnnualTaxable <= 42500 ? calculateIVGpm(ivAnnualTaxable) : undefined;
@@ -56,7 +62,7 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
       pensionAccumulation: income.pensionAccumulation,
     });
 
-    let totalTaxesAmount = mbTotals.total.amount + ivTotals.total.amount + duTotals.total.amount;
+    let totalTaxesAmount = mbTotals.total.amount + ivTotals.total.amount + duTotals.total.amount + mbDividendsTotTaxes;
 
     const minimumAnnualPsd = Number((MMA[income.year] * 12 * taxRates.psd[0].rate).toFixed(2));
     const totalPsd = mbTotals.psd.amount + ivTotals.psd.amount + duTotals.psd.amount;
@@ -70,35 +76,50 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
   const handleOptimize = () => {
     if (extraIncome === undefined) return;
 
-    let bestIV = extraIncome;
+    const totalToOptimize = extraIncome;
+    let bestIV = 0;
     let bestMB = 0;
+    let bestDividends = 0;
     let minTaxes = Infinity;
 
     const mbMonthlyLimit = MB_INCOME_LIMIT_PER_YEAR / 12;
+    const maxMbAmount = Math.min(totalToOptimize, mbMonthlyLimit);
+    // Using steps that scale with extra income to maintain performance
+    const mbStep = Math.max(10, Math.ceil(maxMbAmount / 400));
+    const ivStep = Math.max(10, Math.ceil(totalToOptimize / 400));
 
-    // Split total extraIncome between IV and MB
-    for (let totalIV = 0; totalIV <= extraIncome; totalIV += 10) {
-      const totalMB = extraIncome - totalIV;
+    for (let totalMB = 0; totalMB <= maxMbAmount; totalMB += mbStep) {
+      for (let totalIV = 0; totalIV <= totalToOptimize - totalMB; totalIV += ivStep) {
+        const totalDividends = totalToOptimize - totalMB - totalIV;
+        const taxes = calculateTotalTaxes(totalIV, totalMB, totalDividends);
 
-      if (totalMB > mbMonthlyLimit) continue;
-
-      const taxes = calculateTotalTaxes(totalIV, totalMB);
-
-      if (taxes < minTaxes) {
-        minTaxes = taxes;
-        bestIV = totalIV;
-        bestMB = totalMB;
+        if (taxes < minTaxes) {
+          minTaxes = taxes;
+          bestIV = totalIV;
+          bestMB = totalMB;
+          bestDividends = totalDividends;
+        }
       }
     }
 
-    // Final check for the exact extraIncome value
-    const lastTaxes = calculateTotalTaxes(extraIncome, 0);
-    if (lastTaxes < minTaxes) {
-      bestIV = extraIncome;
-      bestMB = 0;
+    // Final checks for edge cases to ensure we don't miss obvious 100% allocations due to steps
+    const combinations: [number, number, number][] = [
+      [totalToOptimize, 0, 0],
+      [0, maxMbAmount, totalToOptimize - maxMbAmount],
+      [0, 0, totalToOptimize],
+    ];
+
+    for (const [iv, mb, div] of combinations) {
+      const taxes = calculateTotalTaxes(iv, mb, div);
+      if (taxes < minTaxes) {
+        minTaxes = taxes;
+        bestIV = iv;
+        bestMB = mb;
+        bestDividends = div;
+      }
     }
 
-    setIncome(prev => ({ ...prev, ivMonthly: bestIV, mbMonthly: bestMB }));
+    setIncome(prev => ({ ...prev, ivMonthly: bestIV, mbMonthly: bestMB, mbDividendsMonthly: bestDividends }));
     setIsOptimizeOpen(false);
   };
 
@@ -108,7 +129,7 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
       onOpenChange={open => {
         setIsOptimizeOpen(open);
         if (open) {
-          setExtraIncome((income.ivMonthly ?? 0) + (income.mbMonthly ?? 0));
+          setExtraIncome((income.ivMonthly ?? 0) + (income.mbMonthly ?? 0) + (income.mbDividendsMonthly ?? 0));
         }
       }}
       trigger={
@@ -117,7 +138,7 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
         </Button>
       }
       title="Optimizuoti papildomas pajamas"
-      description="Įveskite papildomų pajamų sumą, kurią norite paskirstyti tarp IV ir MB taip, kad mokėtumėte mažiausiai mokesčių."
+      description="Įveskite papildomų pajamų sumą, kurią norite paskirstyti tarp IV, MB ir MB dividendų taip, kad mokėtumėte mažiausiai mokesčių."
       footer={
         <div className="grid grid-cols-2 gap-2">
           <Button variant="outline" onClick={() => setIsOptimizeOpen(false)}>
