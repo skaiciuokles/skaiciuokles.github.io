@@ -29,6 +29,10 @@ export function TaxCalculatorPage() {
 
     return { year: 2026, pensionAccumulation: true, mbLessThan12Months: false, mbLessThan300kPerYear: true, ...parsed };
   });
+  const incomeRef = React.useRef<Income>(income);
+  React.useEffect(() => {
+    incomeRef.current = income;
+  }, [income]);
 
   React.useEffect(() => {
     localStorage.setItem(INCOME_STORAGE_KEY, JSON.stringify(income));
@@ -84,6 +88,7 @@ export function TaxCalculatorPage() {
             taxRates={taxRates}
             pensionAccumulation={income.pensionAccumulation}
             InfoDrawer={EmploymentTariffDrawer}
+            incomeRef={incomeRef}
             year={income.year}
             withSodra
           />
@@ -96,6 +101,7 @@ export function TaxCalculatorPage() {
             additionalForGPM={!income.monthly ? (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 : 0}
             gpmOverride={ivGpmOverride}
             InfoDrawer={IVTariffDrawer}
+            incomeRef={incomeRef}
             year={income.year}
             withSodra
           />
@@ -106,6 +112,7 @@ export function TaxCalculatorPage() {
             className="p-3"
             taxRates={mbTaxRates}
             InfoDrawer={MBTariffDrawer}
+            incomeRef={incomeRef}
             year={income.year}
           />
 
@@ -114,26 +121,30 @@ export function TaxCalculatorPage() {
             monthlySalary={income.mbDividendsMonthly ?? 0}
             className="p-3 border-t"
             taxRates={mbTaxRates}
-            InfoDrawer={props => <MBDividendsTariffDrawer initialIncome={income} {...props} />}
+            InfoDrawer={MBDividendsTariffDrawer}
             gpmOverride={mbDividendsGpmOverride}
-            gpmTooltip={
-              <div className="max-w-sm">
-                Efektyvus GPM tarifas: {formatPercent(mbDividendsGpmOverride?.percentage ?? 15)}
-                <div className="text-gray-300 text-xs mt-1">
-                  Pajamos iš dividendų apmokestinamos 15 % GPM tarifu. Prieš tai MB sumoka pelno mokestį (
-                  {formatPercent(mbProfitTaxRate * 100)}), kuris yra įtrauktas į šį skaičiavimą. Skaičiavimai paremti{' '}
-                  <a
-                    className="text-blue-500 underline hover:text-blue-600"
-                    href="https://www.vmi.lt/evmi/pelno-mokestis2"
-                    rel="noopener noreferrer"
-                    target="_blank"
-                  >
-                    VMI pateikta informacija.
-                  </a>
-                </div>
-              </div>
-            }
+            incomeRef={incomeRef}
             year={income.year}
+            gpmTooltip={React.useMemo(
+              () => (
+                <div className="max-w-sm">
+                  Efektyvus GPM tarifas: {formatPercent(mbDividendsGpmOverride?.percentage ?? 15)}
+                  <div className="text-gray-300 text-xs mt-1">
+                    Pajamos iš dividendų apmokestinamos 15 % GPM tarifu. Prieš tai MB sumoka pelno mokestį (
+                    {formatPercent(mbProfitTaxRate * 100)}), kuris yra įtrauktas į šį skaičiavimą. Skaičiavimai paremti{' '}
+                    <a
+                      className="text-blue-500 underline hover:text-blue-600"
+                      href="https://www.vmi.lt/evmi/pelno-mokestis2"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      VMI pateikta informacija.
+                    </a>
+                  </div>
+                </div>
+              ),
+              [mbDividendsGpmOverride, mbProfitTaxRate],
+            )}
           />
 
           <div className="text-sm text-gray-600 px-3 py-1 min-h-12 leading-none flex items-center justify-center border-t">

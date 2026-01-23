@@ -26,6 +26,7 @@ export function TaxSummaryTableWrapper({
   children,
   className,
   InfoDrawer,
+  incomeRef,
   ...rest
 }: TaxSummaryTableWrapperProps) {
   return (
@@ -39,6 +40,7 @@ export function TaxSummaryTableWrapper({
               {InfoDrawer && (
                 <InfoDrawer
                   year={year}
+                  incomeRef={incomeRef}
                   trigger={
                     <span className="ml-auto" onClick={e => e.stopPropagation()} title="Mokesčių tarifai">
                       <InfoIcon className="size-5 text-muted-foreground" />
@@ -70,5 +72,6 @@ export interface TaxSummaryTableWrapperProps extends React.ComponentProps<'div'>
   label: React.ReactNode;
   children: React.ReactNode;
   tableHeader: React.ReactNode;
+  incomeRef: TariffInfoComponentProps['incomeRef'];
   InfoDrawer?: React.FC<TariffInfoComponentProps & { trigger?: React.ReactNode }>;
 }

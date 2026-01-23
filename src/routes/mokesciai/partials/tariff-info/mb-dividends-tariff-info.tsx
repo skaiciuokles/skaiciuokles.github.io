@@ -4,8 +4,13 @@ import { formatPercent, calculateMBProfitTaxRate, type Income } from '../utils';
 import { TariffDrawer, type TariffInfoComponentProps, type TariffBracket } from './tariff-drawer';
 import { Label } from '@/components/ui/label';
 
-export function MBDividendsTariffDrawer({ year, initialIncome, ...rest }: MBDividendsTariffDrawerProps) {
-  const [income, setIncome] = React.useState<Income>(initialIncome);
+export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfoComponentProps) {
+  const [income, setIncome] = React.useState<Income>({
+    year,
+    mbLessThan12Months: true,
+    mbLessThan300kPerYear: true,
+    pensionAccumulation: false,
+  });
   // We need to simulate an income object to get the profit tax rate
   const profitTaxRate = calculateMBProfitTaxRate(income);
   const effectiveGpmRate = (1 - profitTaxRate) * 0.15 + profitTaxRate;
@@ -21,8 +26,18 @@ export function MBDividendsTariffDrawer({ year, initialIncome, ...rest }: MBDivi
     },
   ];
 
+  const handleOpenChange = React.useCallback(
+    (open: boolean) => {
+      if (open) {
+        setIncome(oldIncome => ({ ...oldIncome, ...incomeRef.current }));
+      }
+    },
+    [incomeRef],
+  );
+
   return (
     <TariffDrawer
+      onOpenChange={handleOpenChange}
       brackets={brackets}
       title="MB dividendų mokesčiai"
       size="lg"
@@ -107,7 +122,3 @@ export function MBDividendsTariffDrawer({ year, initialIncome, ...rest }: MBDivi
     </TariffDrawer>
   );
 }
-
-type MBDividendsTariffDrawerProps = TariffInfoComponentProps & {
-  initialIncome: Income;
-};
