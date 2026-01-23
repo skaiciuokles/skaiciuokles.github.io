@@ -19,7 +19,7 @@ const headers = [
   'Viso mokesčių, EUR (%)',
 ];
 
-export function TotalTaxes({ year, className }: TotalTaxesProps) {
+export const TotalTaxes = React.memo(({ year, className }: TotalTaxesProps) => {
   const [taxData, setTaxData] = React.useState<Map<string, IncomeTotalTaxes>>(new Map());
 
   React.useEffect(() => {
@@ -130,7 +130,7 @@ export function TotalTaxes({ year, className }: TotalTaxesProps) {
       </TaxSummaryTableBodyRow>
     </TaxSummaryTableWrapper>
   );
-}
+});
 
 interface TotalTaxesProps {
   year: Year;
