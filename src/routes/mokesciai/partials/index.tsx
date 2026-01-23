@@ -124,11 +124,15 @@ export function TaxCalculatorPage() {
                 }
                 placeholder="Pajamos iš MB"
               />
-              {mbIncomeExceedsLimit && (
+              {mbIncomeExceedsLimit ? (
                 <p className="text-xs text-red-500 mt-1.5 italic text-left not-md:text-xs">
                   *Pajamos iš MB išmokėtos pagal civilinę vadovavimo sutartį negali viršyti{' '}
                   {formatCurrency(mbIncomeLimit)} per mėnesį (arba {formatCurrency(MB_INCOME_LIMIT_PER_YEAR)} per
                   metus).
+                </p>
+              ) : (
+                <p className="text-xs text-gray-500 mt-1.5 italic text-left not-md:text-xs">
+                  Pajamos iš MB pagal civilinę vadovavimo sutartį.
                 </p>
               )}
             </div>
