@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Drawer } from '@/components/layouts/drawer';
+import { LoadingOverlay } from '@/components/ui/loading';
 import {
   calculateIVGpm,
   calculateMBProfitTaxRate,
@@ -21,7 +22,7 @@ interface IncomeOptimizerProps {
 }
 
 export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
-  const [isOptimizeOpen, setIsOptimizeOpen] = React.useState(false);
+  const [{ isOpen, isLoading }, setOptimizerState] = React.useState({ isOpen: false, isLoading: false });
   const [extraIncome, setExtraIncome] = React.useState<number>();
 
   const taxRates = yearlyTaxRates[income.year];
@@ -76,58 +77,63 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
   const handleOptimize = () => {
     if (extraIncome === undefined) return;
 
-    const totalToOptimize = extraIncome;
-    let bestIV = 0;
-    let bestMB = 0;
-    let bestDividends = 0;
-    let minTaxes = Infinity;
+    setOptimizerState(prev => ({ ...prev, isLoading: true }));
 
-    const mbMonthlyLimit = MB_INCOME_LIMIT_PER_YEAR / 12;
-    const maxMbAmount = Math.min(totalToOptimize, mbMonthlyLimit);
-    // Using steps that scale with extra income to maintain performance
-    const mbStep = Math.max(10, Math.ceil(maxMbAmount / 400));
-    const ivStep = Math.max(10, Math.ceil(totalToOptimize / 400));
+    // Allow the loading overlay to become visible (perform calculations in next event loop tick)
+    setTimeout(() => {
+      const totalToOptimize = extraIncome;
+      let bestIV = 0;
+      let bestMB = 0;
+      let bestDividends = 0;
+      let minTaxes = Infinity;
 
-    for (let totalMB = 0; totalMB <= maxMbAmount; totalMB += mbStep) {
-      for (let totalIV = 0; totalIV <= totalToOptimize - totalMB; totalIV += ivStep) {
-        const totalDividends = totalToOptimize - totalMB - totalIV;
-        const taxes = calculateTotalTaxes(totalIV, totalMB, totalDividends);
+      const mbMonthlyLimit = MB_INCOME_LIMIT_PER_YEAR / 12;
+      const maxMbAmount = Math.min(totalToOptimize, mbMonthlyLimit);
+      // Using steps that scale with extra income to maintain performance
+      const mbStep = Math.max(10, Math.ceil(maxMbAmount / 400));
+      const ivStep = Math.max(10, Math.ceil(totalToOptimize / 400));
 
-        if (taxes < minTaxes) {
-          minTaxes = taxes;
-          bestIV = totalIV;
-          bestMB = totalMB;
-          bestDividends = totalDividends;
+      for (let totalMB = 0; totalMB <= maxMbAmount; totalMB += mbStep) {
+        for (let totalIV = 0; totalIV <= totalToOptimize - totalMB; totalIV += ivStep) {
+          const totalDividends = totalToOptimize - totalMB - totalIV;
+          const taxes = calculateTotalTaxes(totalIV, totalMB, totalDividends);
+
+          if (taxes < minTaxes) {
+            minTaxes = taxes;
+            bestIV = totalIV;
+            bestMB = totalMB;
+            bestDividends = totalDividends;
+          }
         }
       }
-    }
 
-    // Final checks for edge cases to ensure we don't miss obvious 100% allocations due to steps
-    const combinations: [number, number, number][] = [
-      [totalToOptimize, 0, 0],
-      [0, maxMbAmount, totalToOptimize - maxMbAmount],
-      [0, 0, totalToOptimize],
-    ];
+      // Final checks for edge cases to ensure we don't miss obvious 100% allocations due to steps
+      const combinations: [number, number, number][] = [
+        [totalToOptimize, 0, 0],
+        [0, maxMbAmount, totalToOptimize - maxMbAmount],
+        [0, 0, totalToOptimize],
+      ];
 
-    for (const [iv, mb, div] of combinations) {
-      const taxes = calculateTotalTaxes(iv, mb, div);
-      if (taxes < minTaxes) {
-        minTaxes = taxes;
-        bestIV = iv;
-        bestMB = mb;
-        bestDividends = div;
+      for (const [iv, mb, div] of combinations) {
+        const taxes = calculateTotalTaxes(iv, mb, div);
+        if (taxes < minTaxes) {
+          minTaxes = taxes;
+          bestIV = iv;
+          bestMB = mb;
+          bestDividends = div;
+        }
       }
-    }
 
-    setIncome(prev => ({ ...prev, ivMonthly: bestIV, mbMonthly: bestMB, mbDividendsMonthly: bestDividends }));
-    setIsOptimizeOpen(false);
+      setIncome(prev => ({ ...prev, ivMonthly: bestIV, mbMonthly: bestMB, mbDividendsMonthly: bestDividends }));
+      setOptimizerState({ isOpen: false, isLoading: false });
+    }, 0);
   };
 
   return (
     <Drawer
-      open={isOptimizeOpen}
+      open={isOpen}
       onOpenChange={open => {
-        setIsOptimizeOpen(open);
+        setOptimizerState(prev => ({ ...prev, isOpen: open }));
         if (open) {
           setExtraIncome((income.ivMonthly ?? 0) + (income.mbMonthly ?? 0) + (income.mbDividendsMonthly ?? 0));
         }
@@ -141,7 +147,7 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
       description="Įveskite papildomų pajamų sumą, kurią norite paskirstyti tarp IV, MB ir MB dividendų taip, kad mokėtumėte mažiausiai mokesčių."
       footer={
         <div className="grid grid-cols-2 gap-2">
-          <Button variant="outline" onClick={() => setIsOptimizeOpen(false)}>
+          <Button variant="outline" onClick={() => setOptimizerState(prev => ({ ...prev, isOpen: false }))}>
             Atšaukti
           </Button>
           <Button onClick={handleOptimize} disabled={!extraIncome}>
@@ -161,6 +167,7 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
           placeholder="Pvz. 1000"
         />
       </div>
+      {isLoading && <LoadingOverlay />}
     </Drawer>
   );
 }
