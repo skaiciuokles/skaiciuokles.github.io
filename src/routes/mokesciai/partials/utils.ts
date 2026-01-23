@@ -14,6 +14,9 @@ export const MB_INCOME_LIMIT_PER_YEAR = 100000;
 
 export type Year = keyof typeof MMA;
 
+const VSD_BASE_RATE = 0.1252;
+const PSD_BASE_RATE = 0.0698;
+
 function getGpmRates<InitialThreshold extends number>(year: Year, initialThreshold: InitialThreshold) {
   const gpmRates = {
     2025: [
@@ -39,11 +42,11 @@ export const yearlyTaxRates = {
     gpm: getGpmRates(2025, 0),
     // Valstybinio socialinio draudimo įmokos
     vsd: [
-      { threshold: 0, rate: 0.1252 },
+      { threshold: 0, rate: VSD_BASE_RATE },
       { threshold: VDU[2025] * 60, rate: 0 },
     ],
     // Privalomojo sveikatos draudimo įmokos
-    psd: [{ threshold: 0, rate: 0.0698 }],
+    psd: [{ threshold: 0, rate: PSD_BASE_RATE }],
     // Neapmokestinamas pajamų dydis
     npdBase: 747,
     getNpd(monthlyIncome: number) {
@@ -66,11 +69,11 @@ export const yearlyTaxRates = {
     gpm: getGpmRates(2026, 0),
     // Valstybinio socialinio draudimo įmokos
     vsd: [
-      { threshold: 0, rate: 0.1252 },
+      { threshold: 0, rate: VSD_BASE_RATE },
       { threshold: VDU[2026] * 60, rate: 0 },
     ],
     // Privalomojo sveikatos draudimo įmokos
-    psd: [{ threshold: 0, rate: 0.0698 }],
+    psd: [{ threshold: 0, rate: PSD_BASE_RATE }],
     // Neapmokestinamas pajamų dydis.
     npdBase: 747,
     getNpd(monthlyIncome: number) {
@@ -96,7 +99,7 @@ export const ivYearlyTaxRates = {
     sodraBase: 0.7 * 0.9,
     // Valstybinio socialinio draudimo įmokos for IV has a separate 43 VDU limit
     vsd: [
-      { threshold: 0, rate: 0.1252 },
+      { threshold: 0, rate: VSD_BASE_RATE },
       { threshold: VDU[2025] * 43, rate: 0 },
     ],
   },
@@ -110,7 +113,7 @@ export const ivYearlyTaxRates = {
     sodraBase: 0.7 * 0.9,
     // Valstybinio socialinio draudimo įmokos for IV has a separate 43 VDU limit
     vsd: [
-      { threshold: 0, rate: 0.1252 },
+      { threshold: 0, rate: VSD_BASE_RATE },
       { threshold: VDU[2026] * 43, rate: 0 },
     ],
   },
