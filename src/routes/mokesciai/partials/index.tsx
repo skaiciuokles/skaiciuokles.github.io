@@ -20,7 +20,7 @@ export function TaxCalculatorPage() {
       }
     }
 
-    return { year: 2026, pensionAccumulation: true, ...parsed };
+    return { year: 2026, pensionAccumulation: true, mbLessThan12Months: false, mbLessThan300kPerYear: true, ...parsed };
   });
 
   React.useEffect(() => {

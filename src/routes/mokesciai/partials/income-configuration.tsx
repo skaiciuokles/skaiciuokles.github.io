@@ -87,6 +87,47 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             </p>
           )}
         </div>
+        <div className={cn('p-3 border rounded-sm min-w-48', mbIncomeExceedsLimit ? 'text-red-500' : '')}>
+          <Label className="mb-2 block text-left font-bold">Mėnesio MB dividendų pajamos (prieš mokesčius):</Label>
+          <Input
+            type="number"
+            value={income.mbDividendsMonthly ?? ''}
+            onChange={e =>
+              setIncome(prev => ({
+                ...prev,
+                mbDividendsMonthly: e.target.value ? Number(e.target.value) : undefined,
+              }))
+            }
+            placeholder="Pajamos iš MB dividendų"
+          />
+          <p className="text-xs text-gray-500 mt-1.5 italic text-left not-md:text-xs">
+            Pajamos dividendais išmokamos MB sumokėjus pelno mokestį.
+          </p>
+          <div className="flex items-center mt-2">
+            <input
+              type="checkbox"
+              id="mbLessThan12Months"
+              checked={income.mbLessThan12Months}
+              onChange={e => setIncome(prev => ({ ...prev, mbLessThan12Months: e.target.checked }))}
+              className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+            />
+            <Label htmlFor="mbLessThan12Months" className="text-xs font-medium cursor-pointer pl-1">
+              MB iki 12 mėnesių (0% pelno mokestis)
+            </Label>
+          </div>
+          <div className="flex items-center mt-2">
+            <input
+              type="checkbox"
+              id="mbLessThan300kPerYear"
+              checked={income.mbLessThan300kPerYear}
+              onChange={e => setIncome(prev => ({ ...prev, mbLessThan300kPerYear: e.target.checked }))}
+              className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+            />
+            <Label htmlFor="mbLessThan300kPerYear" className="text-xs font-medium cursor-pointer pl-1">
+              Pajamos iki {formatCurrency(300000)} (6% pelno mokestis)
+            </Label>
+          </div>
+        </div>
         <IncomeOptimizer income={income} setIncome={setIncome} />
       </div>
       <div className="flex flex-col justify-center h-12 border-t px-2 mt-auto not-md:hidden">

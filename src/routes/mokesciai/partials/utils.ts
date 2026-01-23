@@ -182,6 +182,9 @@ export interface Income {
   mbMonthly?: number; // Pajamos iš Mažosios Bedrijos
   ivMonthly?: number; // Individuali veikla pagal pažymą
   pensionAccumulation: boolean; // Papildomas kaupimas pensijai 3%
+  mbDividendsMonthly?: number; // Pajamos iš Mažosios Bedrijos dividendų
+  mbLessThan12Months: boolean; // MB naujai susikurta (netaikomas pelno mokestis)
+  mbLessThan300kPerYear: boolean; // MB pajamos neviršija 300 000 eurų (taikomas mažesnis pelno mokestis)
 }
 
 /**
@@ -345,7 +348,7 @@ interface CalculateSourceTaxesOptions {
 }
 
 export function formatCurrency(amount: number) {
-  return amount.toLocaleString('lt-LT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 });
+  return amount.toLocaleString('lt-LT', { style: 'currency', currency: 'EUR' });
 }
 
 export function formatPercent(amount: number) {
