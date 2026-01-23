@@ -6,7 +6,7 @@ export const Route = createFileRoute('/mokesciai/')({
   head: () => ({
     meta: [
       {
-        title: 'Mokesčių skaičiuoklė 2026 | GPM, Sodra, PSD, VSD | Lietuvos mokesčiai',
+        title: 'Mokesčių skaičiuoklė ir optimizavimas 2026 | DU, IV, MB mokesčių skaičiavimas',
       },
     ],
   }),
