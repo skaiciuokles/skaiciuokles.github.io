@@ -1,6 +1,6 @@
 import React from 'react';
 import { TaxSummaryTable } from './tax-summary-table';
-import { EmploymentTariffDrawer, IVTariffDrawer, MBTariffDrawer } from './tariff-info';
+import { EmploymentTariffDrawer, IVTariffDrawer, MBDividendsTariffDrawer, MBTariffDrawer } from './tariff-info';
 import {
   calculateIVGpm,
   calculateMBProfitTaxRate,
@@ -114,6 +114,7 @@ export function TaxCalculatorPage() {
             monthlySalary={income.mbDividendsMonthly ?? 0}
             className="p-3 border-t"
             taxRates={mbTaxRates}
+            InfoDrawer={props => <MBDividendsTariffDrawer initialIncome={income} {...props} />}
             gpmOverride={mbDividendsGpmOverride}
             gpmTooltip={
               <div className="max-w-sm">

@@ -177,7 +177,7 @@ export interface IncomeAverages {
 }
 
 export interface Income {
-  year: 2026;
+  year: Year;
   monthly?: number; // Pajamos iš darbo santykių
   mbMonthly?: number; // Pajamos iš Mažosios Bedrijos
   ivMonthly?: number; // Individuali veikla pagal pažymą
