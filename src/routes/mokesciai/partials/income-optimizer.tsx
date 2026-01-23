@@ -112,7 +112,7 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
         }
       }}
       trigger={
-        <Button variant="outline" className="md:w-full">
+        <Button size="lg" className="md:w-full">
           Optimizuoti papildomas pajamas
         </Button>
       }
