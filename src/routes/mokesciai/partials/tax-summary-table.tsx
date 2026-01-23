@@ -15,6 +15,7 @@ export function TaxSummaryTable({
   monthlySalary,
   additionalForGPM,
   gpmOverride,
+  gpmTooltip,
   withSodra,
   taxRates,
   pensionAccumulation,
@@ -69,7 +70,7 @@ export function TaxSummaryTable({
                   label={
                     <div className="max-w-sm">
                       Pritaikytas NPD: <strong>{formatCurrency(calc.npd)}</strong>
-                      <div className="text-muted-foreground text-xs">
+                      <div className="text-gray-300 text-xs">
                         Neapmokestinamas pajamų dydis mažina mokestinių pajamų bazę. Skaičiavimai paremti{' '}
                         <a
                           href="https://www.vmi.lt/evmi/documents/20142/391008/NPD+dyd%C5%BEiai.pdf/8ddb3f8e-4628-1e17-9711-40d377742105?t=1734335445883"
@@ -107,24 +108,27 @@ export function TaxSummaryTable({
             )}
           </TaxSummaryTableBodyColumn>
           <TaxSummaryTableBodyColumn>
-            {taxRates.gpmBase < 1 ? (
-              <Tooltip
-                label={
-                  <div className="max-w-sm">
-                    Efektyvus GPM tarifas: {formatPercent(calc.taxes.gpm.percentage * taxRates.gpmBase)}
-                    <br />
-                    GPM tarifas nuo apmokestinamų pajamų: {formatPercent(calc.taxes.gpm.percentage)}
-                  </div>
-                }
-              >
-                <div className="flex items-center justify-center gap-1">
-                  {formatPercent(calc.taxes.gpm.percentage * taxRates.gpmBase)}
-                  <small> ({formatPercent(calc.taxes.gpm.percentage)})</small>
-                </div>
-              </Tooltip>
-            ) : (
-              formatPercent(calc.taxes.gpm.percentage)
-            )}
+            <div className="flex items-center justify-center gap-1">
+              {taxRates.gpmBase < 1 ? (
+                <Tooltip
+                  label={
+                    <div className="max-w-sm">
+                      Efektyvus GPM tarifas: {formatPercent(calc.taxes.gpm.percentage * taxRates.gpmBase)}
+                      <br />
+                      GPM tarifas nuo apmokestinamų pajamų: {formatPercent(calc.taxes.gpm.percentage)}
+                    </div>
+                  }
+                >
+                  <span>
+                    {formatPercent(calc.taxes.gpm.percentage * taxRates.gpmBase)}
+                    <small> ({formatPercent(calc.taxes.gpm.percentage)})</small>
+                  </span>
+                </Tooltip>
+              ) : (
+                formatPercent(calc.taxes.gpm.percentage)
+              )}
+              {gpmTooltip && <Tooltip label={gpmTooltip} iconClassName="ml-1 size-3 text-muted-foreground" />}
+            </div>
           </TaxSummaryTableBodyColumn>
           <TaxSummaryTableBodyColumn>{formatCurrency(calc.taxes.gpm.amount)}</TaxSummaryTableBodyColumn>
           {withSodra && (
@@ -205,24 +209,27 @@ export function TaxSummaryTable({
           )}
         </TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>
-          {taxRates.gpmBase < 1 ? (
-            <Tooltip
-              label={
-                <div className="max-w-sm">
-                  Efektyvus GPM tarifas: {formatPercent(totals.gpm.percentage * taxRates.gpmBase)}
-                  <br />
-                  GPM tarifas nuo apmokestinamų pajamų: {formatPercent(totals.gpm.percentage)}
-                </div>
-              }
-            >
-              <div className="flex items-center justify-center gap-1">
-                {formatPercent(totals.gpm.percentage * taxRates.gpmBase)}
-                <small> ({formatPercent(totals.gpm.percentage)})</small>
-              </div>
-            </Tooltip>
-          ) : (
-            formatPercent(totals.gpm.percentage)
-          )}
+          <div className="flex items-center justify-center gap-1">
+            {taxRates.gpmBase < 1 ? (
+              <Tooltip
+                label={
+                  <div className="max-w-sm">
+                    Efektyvus GPM tarifas: {formatPercent(totals.gpm.percentage * taxRates.gpmBase)}
+                    <br />
+                    GPM tarifas nuo apmokestinamų pajamų: {formatPercent(totals.gpm.percentage)}
+                  </div>
+                }
+              >
+                <span>
+                  {formatPercent(totals.gpm.percentage * taxRates.gpmBase)}
+                  <small> ({formatPercent(totals.gpm.percentage)})</small>
+                </span>
+              </Tooltip>
+            ) : (
+              formatPercent(totals.gpm.percentage)
+            )}
+            {gpmTooltip && <Tooltip label={gpmTooltip} iconClassName="ml-1 size-3 text-muted-foreground" />}
+          </div>
         </TaxSummaryTableBodyColumn>
         <TaxSummaryTableBodyColumn>{formatCurrency(totals.gpm.amount)}</TaxSummaryTableBodyColumn>
         {withSodra && (
@@ -284,6 +291,7 @@ interface TaxSummaryTableProps extends Omit<TaxSummaryTableWrapperProps, 'tableH
   taxRates: TaxRates;
   additionalForGPM?: number;
   gpmOverride?: { amount: number; percentage: number };
+  gpmTooltip?: React.ReactNode;
   withSodra?: boolean;
   pensionAccumulation?: boolean;
 }

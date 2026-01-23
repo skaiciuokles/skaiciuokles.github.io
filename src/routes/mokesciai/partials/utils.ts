@@ -221,6 +221,13 @@ export function calculateIVGpm(annualIncome: number): { amount: number; percenta
   return { amount: tax, percentage };
 }
 
+export function calculateMBProfitTaxRate(income: Income): number {
+  if (!income.mbLessThan300kPerYear) {
+    return 0.16;
+  }
+  return income.mbLessThan12Months ? 0 : 0.06;
+}
+
 export const months = [
   'Sausis',
   'Vasaris',
