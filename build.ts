@@ -3,7 +3,7 @@ import { type FileRouteTypes } from '@/routeTree.gen';
 import plugin from 'bun-plugin-tailwind';
 import { prettify } from 'htmlfy';
 import { existsSync } from 'fs';
-import { rm } from 'fs/promises';
+import { rm, cp } from 'fs/promises';
 import path from 'path';
 
 if (process.argv.includes('--help') || process.argv.includes('-h')) {
@@ -138,6 +138,11 @@ const result = await Bun.build({
   ...cliConfig,
 });
 
+if (existsSync('src/public')) {
+  console.log('📂 Copying public assets...');
+  await cp('src/public', outdir, { recursive: true });
+}
+
 interface PageInfo {
   title?: string;
   description?: string;
@@ -150,6 +155,7 @@ interface PageInfo {
     locale?: string;
     siteName?: string;
     url?: string;
+    image?: string;
   };
   sitemap?: {
     priority: string;
@@ -169,16 +175,17 @@ const routes: Record<FileRouteTypes['fullPaths'] | '/404', PageInfo> = {
     description: 'Puslapis kurio ieškote nerastas.',
   },
   '/mokesciai': {
-    title: 'Mokesčių skaičiuoklė 2026 | GPM, Sodra, PSD, VSD | Lietuvos mokesčiai',
+    title: 'Mokesčių skaičiuoklė ir optimizavimas 2026 | DU, IV, MB mokesčių skaičiavimas',
     description:
-      'Nemokama Lietuvos mokesčių skaičiuoklė 2026 metams. Apskaičiuokite GPM, Sodros įmokas (PSD, VSD), darbo užmokestį „ant popieriaus&quot; ir „į rankas&quot;, individualios veiklos bei mažosios bendrijos mokesčius.',
+      'Nemokama mokesčių skaičiuoklė ir optimizavimo įrankis 2026 metams. Palyginkite mokesčius pagal veiklos formas (IV, MB, Darbo sutartis) ir optimizuokite savo pajamas.',
     keywords:
-      'mokesčių skaičiuoklė, GPM skaičiuoklė, Sodra skaičiuoklė, PSD, VSD, darbo užmokestis, atlyginimo skaičiuoklė, neto bruto, individualios veiklos mokesčiai, MB mokesčiai, Lietuvos mokesčiai, VMI, 2026, algos skaičiuoklė, mokesčiai Lietuvoje',
+      'mokesčių optimizavimas, mokesčių skaičiuoklė, pajamų optimizavimas, GPM skaičiuoklė, Sodra skaičiuoklė, PSD, VSD, darbo užmokestis, atlyginimo skaičiuoklė, neto bruto, individualios veiklos mokesčiai, MB mokesčiai, Lietuvos mokesčiai, VMI, 2026, algos skaičiuoklė',
     canonical: `${SITE_URL}/mokesciai`,
     og: {
-      title: 'Mokesčių skaičiuoklė 2026 | Lietuvos mokesčių apskaičiavimas',
+      title: 'Mokesčių skaičiuoklė ir optimizavimas 2026',
       description:
-        'Apskaičiuokite savo mokesčius Lietuvoje: GPM, Sodros įmokas, atlyginimą neto ir bruto. Tinka darbuotojams, individualios veiklos vykdytojams ir MB.',
+        'Palyginkite mokesčius pagal veiklos formas (IV, MB, Darbo sutartis) ir optimizuokite savo pajamas. Tinka darbuotojams, IV vykdytojams ir MB nariams.',
+      image: `${SITE_URL}/mokesciu-optimizatorius.png`,
       type: 'website',
       locale: 'lt_LT',
       siteName: 'Skaičiuoklės',
@@ -215,6 +222,7 @@ await Promise.all(
         if (value.og.locale) metaTags.push(`<meta property="og:locale" content="${value.og.locale}">`);
         if (value.og.siteName) metaTags.push(`<meta property="og:site_name" content="${value.og.siteName}">`);
         if (value.og.url) metaTags.push(`<meta property="og:url" content="${value.og.url}">`);
+        if (value.og.image) metaTags.push(`<meta property="og:image" content="${value.og.image}">`);
       }
 
       metaTags.push('</head>');
