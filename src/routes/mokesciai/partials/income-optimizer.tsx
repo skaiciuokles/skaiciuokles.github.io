@@ -92,6 +92,7 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
       // Using steps that scale with extra income to maintain performance
       const mbStep = Math.max(10, Math.ceil(maxMbAmount / 400));
       const ivStep = Math.max(10, Math.ceil(totalToOptimize / 400));
+      console.log({ mbStep, ivStep });
 
       for (let totalMB = 0; totalMB <= maxMbAmount; totalMB += mbStep) {
         for (let totalIV = 0; totalIV <= totalToOptimize - totalMB; totalIV += ivStep) {
@@ -124,6 +125,12 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
         }
       }
 
+      // If the best MB is a tiny fraction of the best dividends, it's best to allocate everything
+      // to dividends and set MB to 0 to simplify tax reporting at the end of the year.
+      if (bestMB * 100 < bestDividends) {
+        bestDividends = bestDividends + bestMB;
+        bestMB = 0;
+      }
       setIncome(prev => ({ ...prev, ivMonthly: bestIV, mbMonthly: bestMB, mbDividendsMonthly: bestDividends }));
       setOptimizerState({ isOpen: false, isLoading: false });
     }, 0);
