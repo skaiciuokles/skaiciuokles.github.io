@@ -1,5 +1,5 @@
 import { cn } from '@/lib/utils';
-import { mbYearlyTaxRates, VDU, formatCurrency, MMA } from '../utils';
+import { mbYearlyTaxRates, VDU, formatCurrency, MMA, formatPercent } from '../utils';
 import { TariffDrawer, type TariffInfoComponentProps, type TariffBracket } from './tariff-drawer';
 import { getBaseBrackets } from './constants';
 
@@ -10,17 +10,17 @@ export function MBTariffDrawer({ year, ...rest }: TariffInfoComponentProps) {
   const baseBrackets = getBaseBrackets(year, {
     initialLabel: '12 - 36 VDU',
     initialIncome: `${formatCurrency(vdu * 12)} - ${formatCurrency(vdu * 36)}`,
-    vsd: '0%',
-    psd: '0%',
+    vsd: formatPercent(0),
+    psd: formatPercent(0),
   });
   const brackets: TariffBracket[] = [
     {
       label: 'iki 12 VDU',
       sublabel: 'Lengvatinis tarifas',
       income: `0 - ${formatCurrency(vdu * 12)}`,
-      gpm: '15%',
-      vsd: '0%',
-      psd: '0%',
+      gpm: formatPercent(15),
+      vsd: formatPercent(0),
+      psd: formatPercent(0),
       className: cn('border-emerald-200 bg-emerald-50'),
     },
     ...baseBrackets,

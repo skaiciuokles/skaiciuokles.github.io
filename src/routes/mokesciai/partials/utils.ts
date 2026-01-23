@@ -14,8 +14,8 @@ export const MB_INCOME_LIMIT_PER_YEAR = 100000;
 
 export type Year = keyof typeof MMA;
 
-const VSD_BASE_RATE = 0.1252;
-const PSD_BASE_RATE = 0.0698;
+export const VSD_BASE_RATE = 0.1252;
+export const PSD_BASE_RATE = 0.0698;
 
 function getGpmRates<InitialThreshold extends number>(year: Year, initialThreshold: InitialThreshold) {
   const gpmRates = {
@@ -345,11 +345,11 @@ interface CalculateSourceTaxesOptions {
 }
 
 export function formatCurrency(amount: number) {
-  return amount.toLocaleString('lt-LT', { style: 'currency', currency: 'EUR' });
+  return amount.toLocaleString('lt-LT', { style: 'currency', currency: 'EUR', maximumFractionDigits: 2 });
 }
 
 export function formatPercent(amount: number) {
-  return (amount / 100).toLocaleString('lt-LT', { style: 'percent', minimumFractionDigits: 2 });
+  return (amount / 100).toLocaleString('lt-LT', { style: 'percent', maximumFractionDigits: 2 });
 }
 
 // Custom event for tax calculations completed
