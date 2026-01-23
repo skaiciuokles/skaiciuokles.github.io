@@ -14,7 +14,6 @@ export function TaxSummaryTable({
   label,
   monthlySalary,
   additionalForGPM,
-  additionalForSodra,
   gpmOverride,
   withSodra,
   taxRates,
@@ -27,13 +26,12 @@ export function TaxSummaryTable({
       calculateSourceTaxes({
         monthlySalary,
         additionalForGPM,
-        additionalForSodra,
         gpmOverride,
         withSodra,
         taxRates,
         pensionAccumulation,
       }),
-    [monthlySalary, additionalForGPM, additionalForSodra, withSodra, taxRates, gpmOverride, pensionAccumulation],
+    [monthlySalary, additionalForGPM, withSodra, taxRates, gpmOverride, pensionAccumulation],
   );
 
   // Emit custom event when calculations complete
@@ -285,7 +283,6 @@ interface TaxSummaryTableProps extends Omit<TaxSummaryTableWrapperProps, 'tableH
   monthlySalary: number;
   taxRates: TaxRates;
   additionalForGPM?: number;
-  additionalForSodra?: number;
   gpmOverride?: { amount: number; percentage: number };
   withSodra?: boolean;
   pensionAccumulation?: boolean;

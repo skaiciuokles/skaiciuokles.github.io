@@ -30,7 +30,6 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
   const calculateTotalTaxes = (ivMonthly: number, mbMonthly: number) => {
     const mbTaxableMonthly = mbMonthly * mbTaxRates.gpmBase;
     const ivTaxableMonthly = ivMonthly * ivTaxRates.gpmBase;
-    const ivSodraTaxableMonthly = ivMonthly * ivTaxRates.sodraBase;
 
     const { totals: mbTotals } = calculateSourceTaxes({
       monthlySalary: mbMonthly,
@@ -53,7 +52,6 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
       monthlySalary: income.monthly ?? 0,
       taxRates: taxRates,
       additionalForGPM: (mbTaxableMonthly + ivTaxableMonthly) * 12,
-      additionalForSodra: ivSodraTaxableMonthly * 12,
       withSodra: true,
       pensionAccumulation: income.pensionAccumulation,
     });

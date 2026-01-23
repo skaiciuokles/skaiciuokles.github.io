@@ -94,6 +94,11 @@ export const ivYearlyTaxRates = {
     // Source: https://sodra.lt/imoku-tarifai/imoku-tarifai-taikomi-savarankiskai-dirbantiems-asmenims
     gpmBase: 0.7,
     sodraBase: 0.7 * 0.9,
+    // Valstybinio socialinio draudimo įmokos for IV has a separate 43 VDU limit
+    vsd: [
+      { threshold: 0, rate: 0.1252 },
+      { threshold: VDU[2025] * 43, rate: 0 },
+    ],
   },
   2026: {
     ...yearlyTaxRates[2026],
@@ -103,6 +108,11 @@ export const ivYearlyTaxRates = {
     // Source: https://sodra.lt/imoku-tarifai/imoku-tarifai-taikomi-savarankiskai-dirbantiems-asmenims
     gpmBase: 0.7,
     sodraBase: 0.7 * 0.9,
+    // Valstybinio socialinio draudimo įmokos for IV has a separate 43 VDU limit
+    vsd: [
+      { threshold: 0, rate: 0.1252 },
+      { threshold: VDU[2026] * 43, rate: 0 },
+    ],
   },
 } as const satisfies Record<Year, TaxRateShape>;
 
@@ -271,7 +281,7 @@ export function calculateSourceTaxes({ monthlySalary, taxRates, withSodra, ...op
     const sodraTaxableIncome = monthlySalary * taxRates.sodraBase;
     totalSodraTaxable = totalSodraTaxable + sodraTaxableIncome;
 
-    const totalAnnualForSodra = totalSodraTaxable + (opts.additionalForSodra ?? 0);
+    const totalAnnualForSodra = totalSodraTaxable;
     const vsdTax = withSodra
       ? calculateProgressiveTax(totalAnnualForSodra, sodraTaxableIncome, taxRates.vsd)
       : { amount: 0, percentage: 0 };
@@ -326,7 +336,6 @@ interface CalculateSourceTaxesOptions {
   monthlySalary: number;
   taxRates: TaxRates;
   additionalForGPM?: number;
-  additionalForSodra?: number;
   gpmOverride?: { amount: number; percentage: number };
   withSodra?: boolean;
   pensionAccumulation?: boolean;
