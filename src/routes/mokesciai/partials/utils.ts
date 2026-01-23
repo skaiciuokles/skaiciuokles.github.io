@@ -282,16 +282,18 @@ export function calculateSourceTaxes({ monthlySalary, taxRates, withSodra, ...op
   let totalAnnualTaxable = 0;
   let totalSodraTaxable = 0;
 
+  const npd = taxRates.getNpd(monthlySalary);
+  const monthlyTaxableIncome = Math.max(0, monthlySalary * taxRates.gpmBase - npd);
+  const sodraTaxableIncome = monthlySalary * taxRates.sodraBase;
+  const extraPensionAmount = sodraTaxableIncome * 0.03;
+
   for (let month = 1; month <= 12; month++) {
-    const npd = taxRates.getNpd(monthlySalary);
-    const monthlyTaxableIncome = Math.max(0, monthlySalary * taxRates.gpmBase - npd);
     totalAnnual = totalAnnual + monthlySalary;
     totalAnnualTaxable = totalAnnualTaxable + monthlyTaxableIncome;
 
     const totalAnnualForGPM = totalAnnualTaxable + (opts.additionalForGPM ?? 0);
     const gpmTax = opts.gpmOverride ?? calculateProgressiveTax(totalAnnualForGPM, monthlyTaxableIncome, taxRates.gpm);
 
-    const sodraTaxableIncome = monthlySalary * taxRates.sodraBase;
     totalSodraTaxable = totalSodraTaxable + sodraTaxableIncome;
 
     const totalAnnualForSodra = totalSodraTaxable;
@@ -300,7 +302,6 @@ export function calculateSourceTaxes({ monthlySalary, taxRates, withSodra, ...op
       : { amount: 0, percentage: 0 };
 
     if (withSodra && opts.pensionAccumulation) {
-      const extraPensionAmount = sodraTaxableIncome * 0.03;
       vsdTax.amount += extraPensionAmount;
       if (sodraTaxableIncome > 0) {
         vsdTax.percentage = (vsdTax.amount / sodraTaxableIncome) * 100;
