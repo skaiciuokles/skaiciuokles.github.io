@@ -87,7 +87,7 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             </p>
           )}
         </div>
-        <div className={cn('p-3 border rounded-sm min-w-48', mbIncomeExceedsLimit ? 'text-red-500' : '')}>
+        <div className="p-3 border rounded-sm min-w-48">
           <Label className="mb-2 block text-left font-bold">Mėnesio MB dividendų pajamos (prieš mokesčius):</Label>
           <Input
             type="number"
