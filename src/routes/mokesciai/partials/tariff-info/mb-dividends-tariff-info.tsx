@@ -115,11 +115,15 @@ export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfo
 export function MBDividendsSources({ className, linkColor, ...rest }: MBDividendsSourcesProps) {
   return (
     <div className={cn('text-xs', className)} {...rest}>
-      Daugiau informacijos galite rasti{' '}
+      Daugiau informacijos galite rasti VMI pateiktoje{' '}
       <ExternalLink href="https://www.vmi.lt/evmi/pelno-mokestis2" color={linkColor}>
-        VMI pateiktoje informacijoje
+        pelno mokesčio
       </ExternalLink>{' '}
-      .
+      ir{' '}
+      <ExternalLink href="https://www.vmi.lt/evmi/5725" color={linkColor}>
+        dividendų apmokestinimo
+      </ExternalLink>{' '}
+      informacijoje.
     </div>
   );
 }
