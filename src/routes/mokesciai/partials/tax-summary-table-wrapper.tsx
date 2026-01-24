@@ -15,8 +15,8 @@ export function TaxSummaryTableHeaderColumn({ className, ...rest }: React.Compon
 export function TaxSummaryTableBodyRow({ className, ...rest }: React.ComponentProps<'tr'>) {
   return <tr className={cn('bg-stone-50', className)} {...rest} />;
 }
-export function TaxSummaryTableBodyColumn({ className, ...rest }: React.ComponentProps<'th'>) {
-  return <td className={cn('border border-stone-300 px-2 py-1 text-center text-nowrap', className)} {...rest} />;
+export function TaxSummaryTableBodyColumn({ className, ...rest }: React.ComponentProps<'td'>) {
+  return <td className={cn('border border-stone-300 px-2 py-0.5 text-center text-nowrap', className)} {...rest} />;
 }
 
 export function TaxSummaryTableWrapper({
@@ -26,8 +26,25 @@ export function TaxSummaryTableWrapper({
   children,
   className,
   InfoDrawer,
+  incomeRef,
   ...rest
 }: TaxSummaryTableWrapperProps) {
+  const infoDrawer = React.useMemo(
+    () =>
+      InfoDrawer && (
+        <InfoDrawer
+          year={year}
+          incomeRef={incomeRef}
+          trigger={
+            <span className="ml-auto" onClick={e => e.stopPropagation()} title="Mokesčių tarifai">
+              <InfoIcon className="size-5 text-muted-foreground" />
+            </span>
+          }
+        />
+      ),
+    [year, incomeRef, InfoDrawer],
+  );
+
   return (
     <div className={cn('overflow-x-auto', className)} {...rest}>
       <Collapsible
@@ -36,16 +53,7 @@ export function TaxSummaryTableWrapper({
             <h2 className="text-lg font-bold text-left flex items-center gap-2 cursor-pointer">
               {label}
               {isOpen ? <ChevronUp className="size-4 shrink-0" /> : <ChevronDown className="size-4 shrink-0" />}
-              {InfoDrawer && (
-                <InfoDrawer
-                  year={year}
-                  trigger={
-                    <span className="ml-auto" onClick={e => e.stopPropagation()} title="Mokesčių tarifai">
-                      <InfoIcon className="size-5 text-muted-foreground" />
-                    </span>
-                  }
-                />
-              )}
+              {infoDrawer}
             </h2>
           </CollapsibleTrigger>
         )}
@@ -65,10 +73,21 @@ export function TaxSummaryTableWrapper({
   );
 }
 
-export interface TaxSummaryTableWrapperProps extends React.ComponentProps<'div'> {
+export type TaxSummaryTableWrapperBaseProps = React.ComponentProps<'div'> & {
   year: Year;
   label: React.ReactNode;
-  children: React.ReactNode;
+} & (
+    | {
+        incomeRef: TariffInfoComponentProps['incomeRef'];
+        InfoDrawer: React.FC<TariffInfoComponentProps & { trigger?: React.ReactNode }>;
+      }
+    | {
+        InfoDrawer?: never;
+        incomeRef?: never;
+      }
+  );
+
+export type TaxSummaryTableWrapperProps = TaxSummaryTableWrapperBaseProps & {
   tableHeader: React.ReactNode;
-  InfoDrawer?: React.FC<TariffInfoComponentProps & { trigger?: React.ReactNode }>;
-}
+  children: React.ReactNode;
+};

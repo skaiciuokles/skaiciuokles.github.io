@@ -1,22 +1,18 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select } from '@/components/forms/select';
 import { TaxSummaryTable } from './tax-summary-table';
-import { EmploymentTariffDrawer, IVTariffDrawer, MBTariffDrawer } from './tariff-info';
-import { TotalTaxes } from './total-taxes';
-import { IncomeOptimizer } from './income-optimizer';
+import { ExternalLink } from '@/components/ui/external-link';
+import { EmploymentTariffDrawer, IVTariffDrawer, MBDividendsTariffDrawer, MBTariffDrawer } from './tariff-info';
 import {
   calculateIVGpm,
-  formatCurrency,
+  calculateMBProfitTaxRate,
+  formatPercent,
   ivYearlyTaxRates,
-  MB_INCOME_LIMIT_PER_YEAR,
   mbYearlyTaxRates,
-  MMA,
   yearlyTaxRates,
-  VDU,
 } from './utils';
+import { IncomeConfigurationPanel } from './income-configuration';
+import { MBDividendsSources } from './tariff-info/mb-dividends-tariff-info';
+import { TotalTaxes } from './total-taxes';
 import type { Income } from './utils';
 
 const INCOME_STORAGE_KEY = 'tax-calculator-income';
@@ -33,8 +29,12 @@ export function TaxCalculatorPage() {
       }
     }
 
-    return { year: 2026, pensionAccumulation: true, ...parsed };
+    return { year: 2026, pensionAccumulation: true, mbLessThan12Months: false, mbLessThan300kPerYear: true, ...parsed };
   });
+  const incomeRef = React.useRef<Income>(income);
+  React.useEffect(() => {
+    incomeRef.current = income;
+  }, [income]);
 
   React.useEffect(() => {
     localStorage.setItem(INCOME_STORAGE_KEY, JSON.stringify(income));
@@ -56,97 +56,43 @@ export function TaxCalculatorPage() {
     }
   }, [income.ivMonthly, ivTaxRates]);
 
-  const mbIncomeLimit = MB_INCOME_LIMIT_PER_YEAR / 12;
-  const mbIncomeExceedsLimit = (income.mbMonthly ?? 0) > mbIncomeLimit;
+  const mbProfitTaxRate = React.useMemo(() => calculateMBProfitTaxRate(income), [income]);
+  const { mbDividendsGpmOverride, gpmTooltip } = React.useMemo(() => {
+    if (!income.mbDividendsMonthly)
+      return {
+        mbDividendsGpmOverride: undefined,
+        gpmTooltip: null,
+      };
+
+    const monthlyBeforeTax = income.mbDividendsMonthly;
+    const profitTax = monthlyBeforeTax * mbProfitTaxRate;
+    const afterProfitTax = monthlyBeforeTax - profitTax;
+    const gpm = afterProfitTax * 0.15;
+    const totalTax = profitTax + gpm;
+    const percentage = (totalTax / monthlyBeforeTax) * 100;
+
+    return {
+      mbDividendsGpmOverride: {
+        amount: totalTax,
+        percentage,
+      },
+      gpmTooltip: (
+        <div className="max-w-sm">
+          Efektyvus GPM tarifas: {formatPercent(percentage)}
+          <div className="text-gray-300 text-xs mt-1">
+            Pajamos iš dividendų apmokestinamos 15 % GPM tarifu. Prieš tai MB sumoka pelno mokestį (
+            {formatPercent(mbProfitTaxRate * 100)}), kuris yra įtrauktas į šį skaičiavimą.
+            <MBDividendsSources linkColor="lightBlue" />
+          </div>
+        </div>
+      ),
+    };
+  }, [income.mbDividendsMonthly, mbProfitTaxRate]);
 
   return (
     <div className="flex flex-col h-full">
-      <div className="md:grid md:grid-cols-[325px_auto] md:overflow-hidden md:h-full not-md:overflow-y-auto">
-        <div className="flex md:flex-col md:border-r not-md:border-b">
-          <div className="p-2 flex overflow-x-auto md:flex-col gap-2 md:overflow-y-auto md:max-h-[calc(100vh-93px)]">
-            <div className="p-3 border rounded-sm min-w-42">
-              <Label className="mb-2 block text-left font-bold">Mokestiniai metai:</Label>
-              <Select
-                value={income.year.toString()}
-                onValueChange={value => setIncome(prev => ({ ...prev, year: Number(value) as 2026 }))}
-                options={[{ label: '2026', value: '2026' }]}
-                className="w-full"
-              />
-            </div>
-            <div className="p-3 border rounded-sm min-w-60">
-              <Label className="mb-2 block text-left font-bold">
-                Mėnesio darbo santykių pajamos (prieš mokesčius):
-              </Label>
-              <Input
-                type="number"
-                value={income.monthly ?? ''}
-                onChange={e =>
-                  setIncome(prev => ({ ...prev, monthly: e.target.value ? Number(e.target.value) : undefined }))
-                }
-                placeholder="Pajamos iš darbo santykių"
-              />
-              <div className="flex items-center mt-2">
-                <input
-                  type="checkbox"
-                  id="pensionAccumulation"
-                  checked={income.pensionAccumulation}
-                  onChange={e => setIncome(prev => ({ ...prev, pensionAccumulation: e.target.checked }))}
-                  className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-                />
-                <Label htmlFor="pensionAccumulation" className="text-xs font-medium cursor-pointer pl-1">
-                  Papildomai kaupiu 3% pensijai
-                </Label>
-              </div>
-            </div>
-            <div className="p-3 border rounded-sm min-w-72">
-              <Label className="mb-2 block text-left font-bold">
-                Mėnesio IV pagal pažymą pajamos (prieš mokesčius):
-              </Label>
-              <Input
-                type="number"
-                value={income.ivMonthly ?? ''}
-                onChange={e =>
-                  setIncome(prev => ({ ...prev, ivMonthly: e.target.value ? Number(e.target.value) : undefined }))
-                }
-                placeholder="Pajamos iš individualios veiklos"
-              />
-              <p className="text-xs text-gray-500 mt-1.5 italic text-left not-md:text-xs">
-                30% išlaidų atskaitymas įtrauktas automatiškai
-              </p>
-            </div>
-            <div className={cn('p-3 border rounded-sm min-w-48', mbIncomeExceedsLimit ? 'text-red-500' : '')}>
-              <Label className="mb-2 block text-left font-bold">Mėnesio MB pajamos (prieš mokesčius):</Label>
-              <Input
-                type="number"
-                value={income.mbMonthly ?? ''}
-                onChange={e =>
-                  setIncome(prev => ({ ...prev, mbMonthly: e.target.value ? Number(e.target.value) : undefined }))
-                }
-                placeholder="Pajamos iš MB"
-              />
-              {mbIncomeExceedsLimit ? (
-                <p className="text-xs text-red-500 mt-1.5 italic text-left not-md:text-xs">
-                  *Pajamos iš MB išmokėtos pagal civilinę vadovavimo sutartį negali viršyti{' '}
-                  {formatCurrency(mbIncomeLimit)} per mėnesį (arba {formatCurrency(MB_INCOME_LIMIT_PER_YEAR)} per
-                  metus).
-                </p>
-              ) : (
-                <p className="text-xs text-gray-500 mt-1.5 italic text-left not-md:text-xs">
-                  Pajamos iš MB pagal civilinę vadovavimo sutartį.
-                </p>
-              )}
-            </div>
-            <IncomeOptimizer income={income} setIncome={setIncome} />
-          </div>
-          <div className="flex flex-col justify-center h-12 border-t px-2 mt-auto not-md:hidden">
-            <div className="text-xs text-gray-500">
-              *VDU {income.year} m. = {formatCurrency(VDU[income.year])} €
-            </div>
-            <div className="text-xs text-gray-500">
-              *MMA {income.year} m. = {formatCurrency(MMA[income.year])} €
-            </div>
-          </div>
-        </div>
+      <div className="md:grid md:grid-cols-[335px_auto] md:overflow-hidden md:h-full not-md:overflow-y-auto">
+        <IncomeConfigurationPanel income={income} setIncome={setIncome} />
 
         <div className="md:overflow-y-auto">
           <TotalTaxes className="p-3 border-b" year={income.year} />
@@ -161,6 +107,7 @@ export function TaxCalculatorPage() {
             taxRates={taxRates}
             pensionAccumulation={income.pensionAccumulation}
             InfoDrawer={EmploymentTariffDrawer}
+            incomeRef={incomeRef}
             year={income.year}
             withSodra
           />
@@ -173,6 +120,7 @@ export function TaxCalculatorPage() {
             additionalForGPM={!income.monthly ? (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 : 0}
             gpmOverride={ivGpmOverride}
             InfoDrawer={IVTariffDrawer}
+            incomeRef={incomeRef}
             year={income.year}
             withSodra
           />
@@ -183,21 +131,27 @@ export function TaxCalculatorPage() {
             className="p-3"
             taxRates={mbTaxRates}
             InfoDrawer={MBTariffDrawer}
+            incomeRef={incomeRef}
+            year={income.year}
+          />
+
+          <TaxSummaryTable
+            label="Metinė MB dividendų mokesčių suvestinė"
+            monthlySalary={income.mbDividendsMonthly ?? 0}
+            className="p-3 border-t"
+            taxRates={mbTaxRates}
+            InfoDrawer={MBDividendsTariffDrawer}
+            gpmOverride={mbDividendsGpmOverride}
+            gpmTooltip={gpmTooltip}
+            incomeRef={incomeRef}
             year={income.year}
           />
 
           <div className="text-sm text-gray-600 px-3 py-1 min-h-12 leading-none flex items-center justify-center border-t">
             <span>
               Skaičiuoklė paremta{' '}
-              <a
-                href="https://www.vmi.lt/evmi/5725"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-700 underline hover:text-blue-900"
-              >
-                VMI pateikta informacija.
-              </a>{' '}
-              Rezultatai yra apytiksliai ir gali skirtis nuo galutinių VMI apskaičiavimų.
+              <ExternalLink href="https://www.vmi.lt/evmi/5725">VMI pateikta informacija.</ExternalLink> Rezultatai yra
+              apytiksliai ir gali skirtis nuo galutinių VMI apskaičiavimų.
             </span>
           </div>
         </div>

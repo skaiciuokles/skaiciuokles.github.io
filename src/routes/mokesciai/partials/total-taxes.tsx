@@ -1,6 +1,7 @@
 import React from 'react';
 import { InfoIcon } from 'lucide-react';
 import { Tooltip } from '@/components/layouts/tooltip';
+import { ExternalLink } from '@/components/ui/external-link';
 import { formatCurrency, formatPercent, MMA, TAX_CALCULATION_EVENT, yearlyTaxRates } from './utils';
 import type { IncomeTotalTaxes, TaxCalculationEventDetail, Year } from './utils';
 import {
@@ -19,7 +20,7 @@ const headers = [
   'Viso mokesčių, EUR (%)',
 ];
 
-export function TotalTaxes({ year, className }: TotalTaxesProps) {
+export const TotalTaxes = React.memo(({ year, className }: TotalTaxesProps) => {
   const [taxData, setTaxData] = React.useState<Map<string, IncomeTotalTaxes>>(new Map());
 
   React.useEffect(() => {
@@ -104,15 +105,14 @@ export function TotalTaxes({ year, className }: TotalTaxesProps) {
             {psdRemainder > 0 && (
               <Tooltip
                 label={
-                  <div className="max-w-xs text-center">
+                  <div className="max-w-xs">
                     Pridėta papildomai {formatCurrency(psdRemainder)} iki minimalių PSD įmokų. Skaičiavimai paremti{' '}
-                    <a
+                    <ExternalLink
                       href="https://sodra.lt/imoku-tarifai/imoku-tarifai-savarankiskai-privalomuoju-sveikatos-draudimu-besidraudziantiems-asmenims"
-                      className="text-blue-500 underline hover:text-blue-600"
-                      target="_blank"
+                      color="lightBlue"
                     >
                       Sodros pateikta informacija
-                    </a>
+                    </ExternalLink>
                     .
                   </div>
                 }
@@ -130,7 +130,7 @@ export function TotalTaxes({ year, className }: TotalTaxesProps) {
       </TaxSummaryTableBodyRow>
     </TaxSummaryTableWrapper>
   );
-}
+});
 
 interface TotalTaxesProps {
   year: Year;
