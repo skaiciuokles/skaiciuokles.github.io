@@ -2,6 +2,7 @@ import React from 'react';
 import { formatPercent, calculateMBProfitTaxRate, type Income } from '../utils';
 import { TariffDrawer, type TariffInfoComponentProps, type TariffBracket } from './tariff-drawer';
 import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
 
 export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfoComponentProps) {
   const [income, setIncome] = React.useState<Income>({
@@ -104,19 +105,27 @@ export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfo
           </div>
         </div>
 
-        <div className="text-muted-foreground text-xs mt-1">
-          Daugiau informacijos galite rasti{' '}
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 underline hover:text-blue-700"
-            href="https://www.vmi.lt/evmi/pelno-mokestis2"
-          >
-            VMI pateiktoje informacijoje
-          </a>
-          .
-        </div>
+        <MBDividendsSources className="text-muted-foreground" />
       </div>
     </TariffDrawer>
   );
 }
+
+export function MBDividendsSources({ className, ...rest }: MBDividendsSourcesProps) {
+  return (
+    <div className={cn('text-xs', className)} {...rest}>
+      Daugiau informacijos galite rasti{' '}
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 underline hover:text-blue-700"
+        href="https://www.vmi.lt/evmi/pelno-mokestis2"
+      >
+        VMI pateiktoje informacijoje
+      </a>
+      .
+    </div>
+  );
+}
+
+type MBDividendsSourcesProps = React.ComponentProps<'div'>;

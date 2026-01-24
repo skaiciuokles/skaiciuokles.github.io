@@ -10,6 +10,7 @@ import {
   yearlyTaxRates,
 } from './utils';
 import { IncomeConfigurationPanel } from './income-configuration';
+import { MBDividendsSources } from './tariff-info/mb-dividends-tariff-info';
 import { TotalTaxes } from './total-taxes';
 import type { Income } from './utils';
 
@@ -131,15 +132,8 @@ export function TaxCalculatorPage() {
                   Efektyvus GPM tarifas: {formatPercent(mbDividendsGpmOverride?.percentage ?? 15)}
                   <div className="text-gray-300 text-xs mt-1">
                     Pajamos iš dividendų apmokestinamos 15 % GPM tarifu. Prieš tai MB sumoka pelno mokestį (
-                    {formatPercent(mbProfitTaxRate * 100)}), kuris yra įtrauktas į šį skaičiavimą. Skaičiavimai paremti{' '}
-                    <a
-                      className="text-blue-500 underline hover:text-blue-600"
-                      href="https://www.vmi.lt/evmi/pelno-mokestis2"
-                      rel="noopener noreferrer"
-                      target="_blank"
-                    >
-                      VMI pateikta informacija.
-                    </a>
+                    {formatPercent(mbProfitTaxRate * 100)}), kuris yra įtrauktas į šį skaičiavimą.
+                    <MBDividendsSources />
                   </div>
                 </div>
               ),
