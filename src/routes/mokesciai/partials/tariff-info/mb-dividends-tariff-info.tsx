@@ -1,6 +1,7 @@
 import React from 'react';
 import { formatPercent, calculateMBProfitTaxRate, type Income } from '../utils';
 import { TariffDrawer, type TariffInfoComponentProps, type TariffBracket } from './tariff-drawer';
+import { ExternalLink, type ExternalLinkProps } from '@/components/ui/external-link';
 import { Label } from '@/components/ui/label';
 import { cn } from '@/lib/utils';
 
@@ -111,21 +112,18 @@ export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfo
   );
 }
 
-export function MBDividendsSources({ className, ...rest }: MBDividendsSourcesProps) {
+export function MBDividendsSources({ className, linkColor, ...rest }: MBDividendsSourcesProps) {
   return (
     <div className={cn('text-xs', className)} {...rest}>
       Daugiau informacijos galite rasti{' '}
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-blue-600 underline hover:text-blue-700"
-        href="https://www.vmi.lt/evmi/pelno-mokestis2"
-      >
+      <ExternalLink href="https://www.vmi.lt/evmi/pelno-mokestis2" color={linkColor}>
         VMI pateiktoje informacijoje
-      </a>
+      </ExternalLink>{' '}
       .
     </div>
   );
 }
 
-type MBDividendsSourcesProps = React.ComponentProps<'div'>;
+interface MBDividendsSourcesProps extends React.ComponentProps<'div'> {
+  linkColor?: ExternalLinkProps['color'];
+}

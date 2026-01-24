@@ -1,5 +1,6 @@
 import React from 'react';
 import { Tooltip } from '@/components/layouts/tooltip';
+import { ExternalLink } from '@/components/ui/external-link';
 import { calculateSourceTaxes, formatCurrency, formatPercent, months, TAX_CALCULATION_EVENT } from './utils';
 import type { TaxCalculationEventDetail, TaxRates } from './utils';
 import {
@@ -73,13 +74,12 @@ export const TaxSummaryTable = React.memo(
                         Pritaikytas NPD: <strong>{formatCurrency(calc.npd)}</strong>
                         <div className="text-gray-300 text-xs">
                           Neapmokestinamas pajamų dydis mažina mokestinių pajamų bazę. Skaičiavimai paremti{' '}
-                          <a
+                          <ExternalLink
                             href="https://www.vmi.lt/evmi/documents/20142/391008/NPD+dyd%C5%BEiai.pdf/8ddb3f8e-4628-1e17-9711-40d377742105?t=1734335445883"
-                            className="text-blue-500 underline hover:text-blue-600"
-                            target="_blank"
+                            color="lightBlue"
                           >
                             VMI pateikta informacija.
-                          </a>
+                          </ExternalLink>
                         </div>
                       </div>
                     }

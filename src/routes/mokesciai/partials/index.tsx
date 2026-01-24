@@ -1,5 +1,6 @@
 import React from 'react';
 import { TaxSummaryTable } from './tax-summary-table';
+import { ExternalLink } from '@/components/ui/external-link';
 import { EmploymentTariffDrawer, IVTariffDrawer, MBDividendsTariffDrawer, MBTariffDrawer } from './tariff-info';
 import {
   calculateIVGpm,
@@ -133,7 +134,7 @@ export function TaxCalculatorPage() {
                   <div className="text-gray-300 text-xs mt-1">
                     Pajamos iš dividendų apmokestinamos 15 % GPM tarifu. Prieš tai MB sumoka pelno mokestį (
                     {formatPercent(mbProfitTaxRate * 100)}), kuris yra įtrauktas į šį skaičiavimą.
-                    <MBDividendsSources />
+                    <MBDividendsSources linkColor="lightBlue" />
                   </div>
                 </div>
               ),
@@ -144,15 +145,8 @@ export function TaxCalculatorPage() {
           <div className="text-sm text-gray-600 px-3 py-1 min-h-12 leading-none flex items-center justify-center border-t">
             <span>
               Skaičiuoklė paremta{' '}
-              <a
-                href="https://www.vmi.lt/evmi/5725"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-blue-700 underline hover:text-blue-900"
-              >
-                VMI pateikta informacija.
-              </a>{' '}
-              Rezultatai yra apytiksliai ir gali skirtis nuo galutinių VMI apskaičiavimų.
+              <ExternalLink href="https://www.vmi.lt/evmi/5725">VMI pateikta informacija.</ExternalLink> Rezultatai yra
+              apytiksliai ir gali skirtis nuo galutinių VMI apskaičiavimų.
             </span>
           </div>
         </div>
