@@ -1,5 +1,4 @@
 import React from 'react';
-import { cn } from '@/lib/utils';
 import { formatPercent, calculateMBProfitTaxRate, type Income } from '../utils';
 import { TariffDrawer, type TariffInfoComponentProps, type TariffBracket } from './tariff-drawer';
 import { Label } from '@/components/ui/label';
@@ -22,7 +21,6 @@ export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfo
       gpm: formatPercent(effectiveGpmRate * 100),
       vsd: formatPercent(0),
       psd: formatPercent(0),
-      className: cn('border-emerald-200 bg-emerald-50'),
     },
   ];
 
@@ -73,8 +71,8 @@ export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfo
       {...rest}
     >
       <div className="space-y-4">
-        <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-100">
-          <div className="text-xs text-emerald-800 space-y-2">
+        <div className="p-3 rounded-lg bg-violet-50 border border-violet-100">
+          <div className="text-xs text-violet-800 space-y-2">
             <p>
               <strong>Kaip skaičiuojama:</strong> Pirmiausia MB sumoka pelno mokestį nuo uždirbto pelno. Likusi dalis
               paskirstoma nariams kaip dividendai, nuo kurių mokamas 15% GPM.
