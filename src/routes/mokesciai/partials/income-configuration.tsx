@@ -7,13 +7,7 @@ import { IncomeOptimizer } from './income-optimizer';
 import { formatCurrency, MB_INCOME_LIMIT_PER_YEAR, MMA, VDU } from './utils';
 import type { Income } from './utils';
 
-const INCOME_STORAGE_KEY = 'tax-calculator-income';
-
 export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurationPanelProps) {
-  React.useEffect(() => {
-    localStorage.setItem(INCOME_STORAGE_KEY, JSON.stringify(income));
-  }, [income]);
-
   const mbIncomeLimit = MB_INCOME_LIMIT_PER_YEAR / 12;
   const mbIncomeExceedsLimit = (income.mbMonthly ?? 0) > mbIncomeLimit;
 
