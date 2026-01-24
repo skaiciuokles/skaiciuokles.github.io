@@ -15,7 +15,7 @@ export function TaxSummaryTableHeaderColumn({ className, ...rest }: React.Compon
 export function TaxSummaryTableBodyRow({ className, ...rest }: React.ComponentProps<'tr'>) {
   return <tr className={cn('bg-stone-50', className)} {...rest} />;
 }
-export function TaxSummaryTableBodyColumn({ className, ...rest }: React.ComponentProps<'th'>) {
+export function TaxSummaryTableBodyColumn({ className, ...rest }: React.ComponentProps<'td'>) {
   return <td className={cn('border border-stone-300 px-2 py-0.5 text-center text-nowrap', className)} {...rest} />;
 }
 
@@ -73,11 +73,21 @@ export function TaxSummaryTableWrapper({
   );
 }
 
-export interface TaxSummaryTableWrapperProps extends React.ComponentProps<'div'> {
+export type TaxSummaryTableWrapperBaseProps = React.ComponentProps<'div'> & {
   year: Year;
   label: React.ReactNode;
-  children: React.ReactNode;
+} & (
+    | {
+        incomeRef: TariffInfoComponentProps['incomeRef'];
+        InfoDrawer: React.FC<TariffInfoComponentProps & { trigger?: React.ReactNode }>;
+      }
+    | {
+        InfoDrawer?: never;
+        incomeRef?: never;
+      }
+  );
+
+export type TaxSummaryTableWrapperProps = TaxSummaryTableWrapperBaseProps & {
   tableHeader: React.ReactNode;
-  incomeRef: TariffInfoComponentProps['incomeRef'];
-  InfoDrawer?: React.FC<TariffInfoComponentProps & { trigger?: React.ReactNode }>;
-}
+  children: React.ReactNode;
+};

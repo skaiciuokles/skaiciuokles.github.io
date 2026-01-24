@@ -8,7 +8,7 @@ import {
   TaxSummaryTableBodyRow,
   TaxSummaryTableHeaderColumn,
   TaxSummaryTableWrapper,
-  type TaxSummaryTableWrapperProps,
+  type TaxSummaryTableWrapperBaseProps,
 } from './tax-summary-table-wrapper';
 
 export const TaxSummaryTable = React.memo(
@@ -288,7 +288,7 @@ export const TaxSummaryTable = React.memo(
   },
 );
 
-interface TaxSummaryTableProps extends Omit<TaxSummaryTableWrapperProps, 'tableHeader' | 'children'> {
+type TaxSummaryTableProps = TaxSummaryTableWrapperBaseProps & {
   monthlySalary: number;
   taxRates: TaxRates;
   additionalForGPM?: number;
@@ -296,4 +296,4 @@ interface TaxSummaryTableProps extends Omit<TaxSummaryTableWrapperProps, 'tableH
   gpmTooltip?: React.ReactNode;
   withSodra?: boolean;
   pensionAccumulation?: boolean;
-}
+};
