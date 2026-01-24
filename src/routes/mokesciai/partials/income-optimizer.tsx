@@ -89,7 +89,8 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
 
       const mbMonthlyLimit = MB_INCOME_LIMIT_PER_YEAR / 12;
       const maxMbAmount = Math.min(totalToOptimize, mbMonthlyLimit);
-      // Using steps that scale with extra income to maintain performance
+      // Using steps that scale with extra income to maintain performance. This will go up to ~80k iterations
+      // as it reaches 4000 € extra income and stay at ~80k iterations even as income increases.
       const mbStep = Math.max(10, Math.ceil(maxMbAmount / 400));
       const ivStep = Math.max(10, Math.ceil(totalToOptimize / 400));
 
