@@ -13,6 +13,9 @@ export default defineConfig([
     plugins: { js, react },
     extends: ['js/recommended'],
     languageOptions: { globals: globals.browser },
+    rules: {
+      '@typescript-eslint/no-unused-vars': ['warn', { ignoreRestSiblings: true }],
+    },
   },
   reactRefresh.configs.recommended,
   tseslint.configs.recommended,

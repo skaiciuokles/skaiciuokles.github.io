@@ -2,7 +2,7 @@ import { Drawer, type DrawerProps } from '@/components/layouts/drawer';
 import { type Income, type Year } from '../utils';
 import { cn } from '@/lib/utils';
 
-export function TariffDrawer({ brackets, children, extra, ...rest }: TariffInfoProps) {
+export function TariffDrawer({ brackets, children, extra, incomeRef, ...rest }: TariffInfoProps) {
   return (
     <Drawer {...rest}>
       <div className="space-y-3">
@@ -46,6 +46,7 @@ export type TariffInfoComponentProps = DrawerProps & {
 export type TariffInfoProps = Omit<TariffInfoComponentProps, 'incomeRef' | 'year' | 'fadeFromIndex'> & {
   brackets: TariffBracket[];
   extra?: React.ReactNode;
+  incomeRef?: TariffInfoComponentProps['incomeRef'];
 };
 
 export interface TariffBracket {
