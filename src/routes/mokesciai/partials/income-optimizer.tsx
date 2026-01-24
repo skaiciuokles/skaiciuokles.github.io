@@ -29,7 +29,7 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
   const mbTaxRates = mbYearlyTaxRates[income.year];
   const ivTaxRates = ivYearlyTaxRates[income.year];
 
-  const mbProfitTaxRate = calculateMBProfitTaxRate(income);
+  const mbProfitTaxRate = React.useMemo(() => calculateMBProfitTaxRate(income), [income]);
   const calculateTotalTaxes = (ivMonthly: number, mbMonthly: number, mbDividendsMonthly: number) => {
     const mbTaxableMonthly = mbMonthly * mbTaxRates.gpmBase;
     const ivTaxableMonthly = ivMonthly * ivTaxRates.gpmBase;
@@ -92,7 +92,6 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
       // Using steps that scale with extra income to maintain performance
       const mbStep = Math.max(10, Math.ceil(maxMbAmount / 400));
       const ivStep = Math.max(10, Math.ceil(totalToOptimize / 400));
-      console.log({ mbStep, ivStep });
 
       for (let totalMB = 0; totalMB <= maxMbAmount; totalMB += mbStep) {
         for (let totalIV = 0; totalIV <= totalToOptimize - totalMB; totalIV += ivStep) {
