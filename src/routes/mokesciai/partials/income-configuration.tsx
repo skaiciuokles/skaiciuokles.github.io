@@ -14,7 +14,7 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
   return (
     <div className="flex md:flex-col md:border-r not-md:border-b">
       <div className="p-2 flex overflow-x-auto md:flex-col gap-2 md:overflow-y-auto md:max-h-[calc(100vh-93px)]">
-        <div className="p-3 border rounded-sm min-w-42">
+        <div className="p-3 border rounded-sm not-md:min-w-42">
           <Label className="mb-2 block text-left font-bold">Mokestiniai metai:</Label>
           <Select
             value={income.year.toString()}
@@ -23,7 +23,7 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             className="w-full"
           />
         </div>
-        <div className="p-3 border rounded-sm min-w-60">
+        <div className="p-3 border rounded-sm not-md:min-w-60">
           <Label className="mb-2 block text-left font-bold">Mėnesio darbo santykių pajamos (prieš mokesčius):</Label>
           <Input
             type="number"
@@ -46,7 +46,7 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             </Label>
           </div>
         </div>
-        <div className="p-3 border rounded-sm min-w-72">
+        <div className="p-3 border rounded-sm not-md:min-w-72">
           <Label className="mb-2 block text-left font-bold">Mėnesio IV pagal pažymą pajamos (prieš mokesčius):</Label>
           <Input
             type="number"
@@ -60,7 +60,7 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             30% išlaidų atskaitymas įtrauktas automatiškai
           </p>
         </div>
-        <div className={cn('p-3 border rounded-sm min-w-48', mbIncomeExceedsLimit ? 'text-red-500' : '')}>
+        <div className={cn('p-3 border rounded-sm not-md:min-w-48', mbIncomeExceedsLimit ? 'text-red-500' : '')}>
           <Label className="mb-2 block text-left font-bold">Mėnesio MB pajamos (prieš mokesčius):</Label>
           <Input
             type="number"
@@ -81,9 +81,9 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             </p>
           )}
         </div>
-        <div className="p-3 border rounded-sm min-w-80">
+        <div className="p-3 border rounded-sm not-md:min-w-80">
           <Label className="mb-2 block text-left font-bold">
-            Mėnesio MB pelno suma dividendams prieš pelno mokestį:
+            Mėnesio MB pelno suma dividendams (prieš pelno mokestį):
           </Label>
           <Input
             type="number"
