@@ -20,6 +20,14 @@ function IncomeBlock({ className, children, hasError, ...rest }: React.Component
   );
 }
 
+function IncomeInfo({ className, children, ...rest }: React.ComponentProps<'p'>) {
+  return (
+    <p className={cn('text-xs text-gray-500 italic', className)} {...rest}>
+      {children}
+    </p>
+  );
+}
+
 export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurationPanelProps) {
   const mbIncomeLimit = MB_INCOME_LIMIT_PER_YEAR / 12;
   const mbIncomeExceedsLimit = (income.mbMonthly ?? 0) > mbIncomeLimit;
@@ -74,9 +82,7 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             placeholder="Pajamos iš individualios veiklos"
             name="ivMonthly"
           />
-          <p className="text-xs text-gray-500 italic text-left not-md:text-xs">
-            30% išlaidų atskaitymas įtrauktas automatiškai
-          </p>
+          <IncomeInfo>30% išlaidų atskaitymas įtrauktas automatiškai</IncomeInfo>
         </IncomeBlock>
         <IncomeBlock className="not-md:min-w-48" hasError={mbIncomeExceedsLimit}>
           <Input
@@ -88,14 +94,12 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             name="mbMonthly"
           />
           {mbIncomeExceedsLimit ? (
-            <p className="text-xs italic text-left not-md:text-xs">
+            <IncomeInfo>
               *Pajamos iš MB išmokėtos pagal civilinę vadovavimo sutartį negali viršyti {formatCurrency(mbIncomeLimit)}{' '}
               per mėnesį (arba {formatCurrency(MB_INCOME_LIMIT_PER_YEAR)} per metus).
-            </p>
+            </IncomeInfo>
           ) : (
-            <p className="text-xs text-gray-500 italic text-left not-md:text-xs">
-              Pajamos iš MB pagal civilinę vadovavimo sutartį.
-            </p>
+            <IncomeInfo>Pajamos iš MB pagal civilinę vadovavimo sutartį.</IncomeInfo>
           )}
         </IncomeBlock>
         <IncomeBlock className="not-md:min-w-80">
@@ -107,9 +111,7 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             placeholder="Pajamos iš MB dividendų"
             name="mbDividendsMonthly"
           />
-          <p className="text-xs text-gray-500 italic text-left not-md:text-xs">
-            Pajamos dividendais išmokamos MB sumokėjus pelno mokestį.
-          </p>
+          <IncomeInfo>Pajamos dividendais išmokamos MB sumokėjus pelno mokestį.</IncomeInfo>
           <Checkbox
             label={`MB iki ${profitTaxRates.gracePeriod} mėnesių (0% pelno mokestis)`}
             name="mbNoProfitTax"
@@ -127,13 +129,10 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
         </IncomeBlock>
         <IncomeOptimizer income={income} setIncome={setIncome} />
       </div>
-      <div className="flex flex-col justify-center h-12 border-t px-2 mt-auto not-md:hidden">
-        <div className="text-xs text-gray-500">
-          *VDU {income.year} m. = {formatCurrency(VDU[income.year])} €
-        </div>
-        <div className="text-xs text-gray-500">
-          *MMA {income.year} m. = {formatCurrency(MMA[income.year])} €
-        </div>
+      <div className="flex flex-col justify-center text-center h-12 border-t px-2 mt-auto not-md:hidden text-xs text-muted-foreground">
+        *VDU {income.year} m. = {formatCurrency(VDU[income.year])} €
+        <br />
+        *MMA {income.year} m. = {formatCurrency(MMA[income.year])} €
       </div>
     </div>
   );
