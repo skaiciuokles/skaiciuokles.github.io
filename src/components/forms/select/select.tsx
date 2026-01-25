@@ -1,14 +1,40 @@
+import React from 'react';
+import { Label } from '@/components/ui/label';
 import { SelectBase, SelectTrigger, SelectValue, SelectContent, SelectItem } from '../../ui/select';
 
-export function Select({ placeholder, options, className, ...rest }: SelectProps) {
+export function Select<Value extends ValueType>({
+  value,
+  placeholder,
+  options,
+  className,
+  label,
+  onChange,
+  ...rest
+}: SelectProps<Value>) {
+  const id = React.useId();
+  const optionMap = React.useMemo(() => new Map(options.map(option => [option.value.toString(), option])), [options]);
+  const handleChange = React.useCallback(
+    (value: string) => {
+      const option = optionMap.get(value);
+      if (option) {
+        onChange?.(option.value, option);
+      }
+    },
+    [onChange, optionMap],
+  );
   return (
-    <SelectBase {...rest}>
-      <SelectTrigger className={className}>
+    <SelectBase value={value?.toString()} onValueChange={onChange ? handleChange : undefined} {...rest}>
+      {label && (
+        <Label htmlFor={id} className="mb-2 block text-left font-bold">
+          {label}
+        </Label>
+      )}
+      <SelectTrigger className={className} id={id}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
         {options.map(option => (
-          <SelectItem key={option.value} value={option.value}>
+          <SelectItem key={option.value.toString()} value={option.value.toString()}>
             {option.label}
           </SelectItem>
         ))}
@@ -17,13 +43,21 @@ export function Select({ placeholder, options, className, ...rest }: SelectProps
   );
 }
 
-interface SelectOption {
+export interface SelectOption<Value extends ValueType> {
   label: string;
-  value: string;
+  value: Value;
 }
 
-interface SelectProps extends React.ComponentProps<typeof SelectBase> {
+type ValueType = string | number | boolean;
+
+interface SelectProps<Value extends ValueType> extends Omit<
+  React.ComponentProps<typeof SelectBase>,
+  'value' | 'onValueChange'
+> {
   className?: string;
   placeholder?: string;
-  options: SelectOption[];
+  options: SelectOption<Value>[];
+  label?: React.ReactNode;
+  onChange?: (value: Value, option: SelectOption<Value>) => void;
+  value?: Value;
 }

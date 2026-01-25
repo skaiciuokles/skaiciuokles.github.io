@@ -21,5 +21,8 @@ clean-files: ## Remove all generated files
 lint: ## Run linters
 	bun run lint
 
+lint-fix: ## Run linters and fix issues
+	bun run lint-fix
+
 routes: ## Generate routes
 	bun run routes:generate

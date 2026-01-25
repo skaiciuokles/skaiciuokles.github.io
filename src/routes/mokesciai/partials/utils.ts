@@ -10,6 +10,32 @@ export const MMA = {
   2026: 1153,
 };
 
+// Pelno mokestis
+export const PROFIT_TAX_RATES = {
+  2025: {
+    gracePeriod: 12,
+    reducedRate: 0.06,
+    mainRate: 0.16,
+    limitPerYear: 300000,
+    infoUrl: 'https://www.vmi.lt/evmi/pelno-mokestis2',
+  },
+  2026: {
+    gracePeriod: 24,
+    reducedRate: 0.07,
+    mainRate: 0.17,
+    limitPerYear: 300000,
+    infoUrl: 'https://www.vmi.lt/evmi/5724',
+  },
+} as const satisfies Record<Year, ProfitTaxRateShape>;
+
+interface ProfitTaxRateShape {
+  gracePeriod: number;
+  reducedRate: number;
+  mainRate: number;
+  limitPerYear: number;
+  infoUrl: string;
+}
+
 export const MB_INCOME_LIMIT_PER_YEAR = 100000;
 
 export type Year = keyof typeof MMA;
@@ -156,6 +182,7 @@ interface Tax {
 export interface MonthlyIncomeCalculations {
   totalAnnualBeforeTaxes: number;
   totalMonthlyAfterTaxes: number;
+  totalAnnualForGPM: number;
   taxes: { gpm: Tax; vsd: Tax; psd: Tax; total: Tax };
   npd: number;
 }
@@ -183,8 +210,8 @@ export interface Income {
   ivMonthly?: number; // Individuali veikla pagal pažymą
   pensionAccumulation: boolean; // Papildomas kaupimas pensijai 3%
   mbDividendsMonthly?: number; // Pajamos iš Mažosios Bedrijos dividendų
-  mbLessThan12Months: boolean; // MB naujai susikurta (netaikomas pelno mokestis)
-  mbLessThan300kPerYear: boolean; // MB pajamos neviršija 300 000 eurų (taikomas mažesnis pelno mokestis)
+  mbNoProfitTax: boolean; // MB naujai susikurta (netaikomas pelno mokestis)
+  mbUseReducedProfitTaxRate: boolean; // MB pajamos neviršija 300 000 eurų (taikomas mažesnis pelno mokestis)
 }
 
 /**
@@ -222,10 +249,11 @@ export function calculateIVGpm(annualIncome: number): { amount: number; percenta
 }
 
 export function calculateMBProfitTaxRate(income: Income): number {
-  if (!income.mbLessThan300kPerYear) {
-    return 0.16;
+  const rates = PROFIT_TAX_RATES[income.year];
+  if (!income.mbUseReducedProfitTaxRate) {
+    return rates.mainRate;
   }
-  return income.mbLessThan12Months ? 0 : 0.06;
+  return income.mbNoProfitTax ? 0 : rates.reducedRate;
 }
 
 export const months = [
@@ -324,6 +352,7 @@ export function calculateSourceTaxes({ monthlySalary, taxRates, withSodra, ...op
     results.push({
       totalAnnualBeforeTaxes: totalAnnual,
       totalMonthlyAfterTaxes: afterTaxes,
+      totalAnnualForGPM,
       npd,
       taxes: {
         gpm: gpmTax,

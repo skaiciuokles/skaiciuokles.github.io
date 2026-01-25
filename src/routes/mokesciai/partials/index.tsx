@@ -29,7 +29,16 @@ export function TaxCalculatorPage() {
       }
     }
 
-    return { year: 2026, pensionAccumulation: true, mbLessThan12Months: false, mbLessThan300kPerYear: true, ...parsed };
+    return {
+      year: parsed.year ?? 2026,
+      pensionAccumulation: parsed.pensionAccumulation ?? true,
+      mbNoProfitTax: parsed.mbNoProfitTax ?? false,
+      mbUseReducedProfitTaxRate: parsed.mbUseReducedProfitTaxRate ?? true,
+      ivMonthly: parsed.ivMonthly ?? 0,
+      mbMonthly: parsed.mbMonthly ?? 0,
+      mbDividendsMonthly: parsed.mbDividendsMonthly ?? 0,
+      monthly: parsed.monthly ?? 0,
+    };
   });
   const incomeRef = React.useRef<Income>(income);
   React.useEffect(() => {
@@ -82,12 +91,12 @@ export function TaxCalculatorPage() {
           <div className="text-gray-300 text-xs mt-1">
             Pajamos iš dividendų apmokestinamos 15 % GPM tarifu. Prieš tai MB sumoka pelno mokestį (
             {formatPercent(mbProfitTaxRate * 100)}), kuris yra įtrauktas į šį skaičiavimą.
-            <MBDividendsSources linkColor="lightBlue" />
+            <MBDividendsSources linkColor="lightBlue" year={income.year} />
           </div>
         </div>
       ),
     };
-  }, [income.mbDividendsMonthly, mbProfitTaxRate]);
+  }, [income.mbDividendsMonthly, mbProfitTaxRate, income.year]);
 
   return (
     <div className="flex flex-col h-full">

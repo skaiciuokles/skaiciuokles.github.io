@@ -1,10 +1,9 @@
 import { cn } from '@/lib/utils';
-import { mbYearlyTaxRates, VDU, formatCurrency, MMA, formatPercent } from '../utils';
+import { VDU, formatCurrency, MMA, formatPercent, MB_INCOME_LIMIT_PER_YEAR, PSD_BASE_RATE } from '../utils';
 import { TariffDrawer, type TariffInfoComponentProps, type TariffBracket } from './tariff-drawer';
 import { getBaseBrackets } from './constants';
 
 export function MBTariffDrawer({ year, ...rest }: TariffInfoComponentProps) {
-  const taxRates = mbYearlyTaxRates[year];
   const vdu = VDU[year];
 
   const baseBrackets = getBaseBrackets(year, {
@@ -30,14 +29,14 @@ export function MBTariffDrawer({ year, ...rest }: TariffInfoComponentProps) {
     <TariffDrawer
       brackets={brackets}
       title="MB mokesčiai"
-      description={`Metinės pajamos ${year} m. išmokėtos pagal civilinę vadovavimo sutartį (iki ${formatCurrency(100000)})`}
+      description={`Metinės pajamos ${year} m. išmokėtos pagal civilinę vadovavimo sutartį (iki ${formatCurrency(MB_INCOME_LIMIT_PER_YEAR)})`}
       {...rest}
     >
       <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-100">
         <div className="text-xs text-emerald-800">
           <strong>VSD ir PSD:</strong> Mažosios bendrijos vadovas nemoka. Atkreipkite dėmesį, kad visiems gyventojams
-          yra minimalus privalomas PSD mokestis (2026 m. - {formatCurrency(MMA[year] * taxRates.psd[0].rate)} / mėn.),
-          kuris turi būti sumokėtas asmeniškai arba mokant su IV ar darbo santykiais susijusius mokesčius.
+          yra minimalus privalomas PSD mokestis ({year} m. - {formatCurrency(MMA[year] * PSD_BASE_RATE)} / mėn.), kuris
+          turi būti sumokėtas asmeniškai arba mokant su IV ar darbo santykiais susijusius mokesčius.
         </div>
       </div>
       <div className="p-3 rounded-lg bg-amber-50 border border-amber-100">

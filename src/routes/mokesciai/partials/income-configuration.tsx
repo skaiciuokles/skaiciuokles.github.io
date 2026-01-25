@@ -1,25 +1,32 @@
-import React from 'react';
+import { useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select } from '@/components/forms/select';
+import { Select, type SelectOption } from '@/components/forms/select';
 import { IncomeOptimizer } from './income-optimizer';
-import { formatCurrency, MB_INCOME_LIMIT_PER_YEAR, MMA, VDU } from './utils';
-import type { Income } from './utils';
+import { formatCurrency, formatPercent, MB_INCOME_LIMIT_PER_YEAR, MMA, PROFIT_TAX_RATES, VDU } from './utils';
+import type { Income, Year } from './utils';
+
+const yearOptions: SelectOption<Year>[] = [
+  // { label: '2025', value: 2025 },
+  { label: '2026', value: 2026 },
+];
 
 export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurationPanelProps) {
   const mbIncomeLimit = MB_INCOME_LIMIT_PER_YEAR / 12;
   const mbIncomeExceedsLimit = (income.mbMonthly ?? 0) > mbIncomeLimit;
+  const profitTaxRates = PROFIT_TAX_RATES[income.year];
+  const handleYearChange = useCallback((year: Year) => setIncome(prev => ({ ...prev, year })), [setIncome]);
 
   return (
     <div className="flex md:flex-col md:border-r not-md:border-b">
       <div className="p-2 flex overflow-x-auto md:flex-col gap-2 md:overflow-y-auto md:max-h-[calc(100vh-93px)]">
         <div className="p-3 border rounded-sm not-md:min-w-42">
-          <Label className="mb-2 block text-left font-bold">Mokestiniai metai:</Label>
           <Select
-            value={income.year.toString()}
-            onValueChange={value => setIncome(prev => ({ ...prev, year: Number(value) as 2026 }))}
-            options={[{ label: '2026', value: '2026' }]}
+            value={income.year}
+            label="Mokestiniai metai:"
+            onChange={handleYearChange}
+            options={yearOptions}
             className="w-full"
           />
         </div>
@@ -102,25 +109,26 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
           <div className="flex items-center mt-2">
             <input
               type="checkbox"
-              id="mbLessThan12Months"
-              checked={income.mbLessThan12Months}
-              onChange={e => setIncome(prev => ({ ...prev, mbLessThan12Months: e.target.checked }))}
+              id="mbNoProfitTax"
+              checked={income.mbNoProfitTax}
+              onChange={e => setIncome(prev => ({ ...prev, mbNoProfitTax: e.target.checked }))}
               className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
             />
-            <Label htmlFor="mbLessThan12Months" className="text-xs font-medium cursor-pointer pl-1">
-              MB iki 12 mėnesių (0% pelno mokestis)
+            <Label htmlFor="mbNoProfitTax" className="text-xs font-medium cursor-pointer pl-1">
+              MB iki {profitTaxRates.gracePeriod} mėnesių (0% pelno mokestis)
             </Label>
           </div>
           <div className="flex items-center mt-2">
             <input
               type="checkbox"
-              id="mbLessThan300kPerYear"
-              checked={income.mbLessThan300kPerYear}
-              onChange={e => setIncome(prev => ({ ...prev, mbLessThan300kPerYear: e.target.checked }))}
+              id="mbUseReducedProfitTaxRate"
+              checked={income.mbUseReducedProfitTaxRate}
+              onChange={e => setIncome(prev => ({ ...prev, mbUseReducedProfitTaxRate: e.target.checked }))}
               className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
             />
-            <Label htmlFor="mbLessThan300kPerYear" className="text-xs font-medium cursor-pointer pl-1">
-              Pajamos iki {formatCurrency(300000)} (6% pelno mokestis)
+            <Label htmlFor="mbUseReducedProfitTaxRate" className="text-xs font-medium cursor-pointer pl-1">
+              Pajamos iki {formatCurrency(profitTaxRates.limitPerYear)} (
+              {formatPercent(profitTaxRates.reducedRate * 100)} pelno mokestis)
             </Label>
           </div>
         </div>

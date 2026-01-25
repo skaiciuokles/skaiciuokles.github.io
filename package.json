@@ -8,6 +8,7 @@
     "start": "http-server --port 5000 dist",
     "build": "bun routes:generate && bun run build.ts",
     "lint": "concurrently 'eslint .' 'tsc --noEmit'",
+    "lint-fix": "concurrently 'eslint . --fix' 'tsc --noEmit'",
     "routes:generate": "bunx tsr generate",
     "routes:watch": "bunx tsr watch"
   },
