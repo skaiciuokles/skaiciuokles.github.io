@@ -9,7 +9,7 @@ import {
 } from '../utils';
 import { TariffDrawer, type TariffInfoComponentProps, type TariffBracket } from './tariff-drawer';
 import { ExternalLink, type ExternalLinkProps } from '@/components/ui/external-link';
-import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/forms/checkbox';
 import { cn } from '@/lib/utils';
 
 export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfoComponentProps) {
@@ -34,6 +34,12 @@ export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfo
     },
   ];
 
+  const handleCheckboxChange = React.useCallback(
+    (checked: boolean, e: React.ChangeEvent<HTMLInputElement>) =>
+      setIncome(prev => ({ ...prev, [e.target.name]: checked })),
+    [setIncome],
+  );
+
   const handleOpenChange = React.useCallback(
     (open: boolean) => {
       if (open) {
@@ -52,31 +58,18 @@ export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfo
       description={`Pelno paskirstymas (dividendai) ${year} m,`}
       extra={
         <div className="mt-2 border-y py-2 text-sm space-y-2">
-          <div className="flex items-center gap-2">
-            <input
-              id="mbNoProfitTax_legend"
-              type="checkbox"
-              checked={income.mbNoProfitTax}
-              onChange={e => setIncome({ ...income, mbNoProfitTax: e.target.checked })}
-              className="cursor-pointer"
-            />
-            <Label htmlFor="mbNoProfitTax_legend" className="cursor-pointer">
-              MB iki {profitTaxRates.gracePeriod} mėnesių (0% pelno mokestis)
-            </Label>
-          </div>
-          <div className="flex items-center gap-2">
-            <input
-              id="mbUseReducedProfitTaxRate_legend"
-              type="checkbox"
-              checked={income.mbUseReducedProfitTaxRate}
-              onChange={e => setIncome({ ...income, mbUseReducedProfitTaxRate: e.target.checked })}
-              className="cursor-pointer"
-            />
-            <Label htmlFor="mbUseReducedProfitTaxRate_legend" className="cursor-pointer">
-              Pajamos iki {formatCurrency(profitTaxRates.limitPerYear)} (
-              {formatPercent(profitTaxRates.reducedRate * 100)} pelno mokestis)
-            </Label>
-          </div>
+          <Checkbox
+            name="mbNoProfitTax"
+            label={`MB iki ${profitTaxRates.gracePeriod} mėnesių (0% pelno mokestis)`}
+            checked={income.mbNoProfitTax}
+            onChange={handleCheckboxChange}
+          />
+          <Checkbox
+            name="mbUseReducedProfitTaxRate"
+            label={`Pajamos iki ${formatCurrency(profitTaxRates.limitPerYear)} (${formatPercent(profitTaxRates.reducedRate * 100)} pelno mokestis)`}
+            checked={income.mbUseReducedProfitTaxRate}
+            onChange={handleCheckboxChange}
+          />
         </div>
       }
       {...rest}

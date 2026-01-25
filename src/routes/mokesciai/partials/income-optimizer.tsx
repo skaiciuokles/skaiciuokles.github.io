@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Input } from '@/components/forms/input';
 import { Label } from '@/components/ui/label';
 import { Drawer } from '@/components/layouts/drawer';
 import { LoadingOverlay } from '@/components/ui/loading';
@@ -168,8 +168,8 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
         <Input
           id="extra-income"
           type="number"
-          value={extraIncome ?? ''}
-          onChange={e => setExtraIncome(e.target.value ? Number(e.target.value) : undefined)}
+          value={extraIncome}
+          onChange={setExtraIncome}
           onEnterPress={handleOptimize}
           placeholder="Pvz. 1000"
         />

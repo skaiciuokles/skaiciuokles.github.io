@@ -9,9 +9,11 @@ export function Select<Value extends ValueType>({
   className,
   label,
   onChange,
+  id: providedId,
   ...rest
 }: SelectProps<Value>) {
-  const id = React.useId();
+  const generatedId = React.useId();
+  const id = providedId ?? generatedId;
   const optionMap = React.useMemo(() => new Map(options.map(option => [option.value.toString(), option])), [options]);
   const handleChange = React.useCallback(
     (value: string) => {
@@ -24,21 +26,19 @@ export function Select<Value extends ValueType>({
   );
   return (
     <SelectBase value={value?.toString()} onValueChange={onChange ? handleChange : undefined} {...rest}>
-      {label && (
-        <Label htmlFor={id} className="mb-2 block text-left font-bold">
-          {label}
-        </Label>
-      )}
-      <SelectTrigger className={className} id={id}>
-        <SelectValue placeholder={placeholder} />
-      </SelectTrigger>
-      <SelectContent>
-        {options.map(option => (
-          <SelectItem key={option.value.toString()} value={option.value.toString()}>
-            {option.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
+      <div className="text-sm space-y-2">
+        {label && <Label htmlFor={id}>{label}</Label>}
+        <SelectTrigger className={className} id={id}>
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map(option => (
+            <SelectItem key={option.value.toString()} value={option.value.toString()}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </div>
     </SelectBase>
   );
 }
@@ -54,6 +54,7 @@ interface SelectProps<Value extends ValueType> extends Omit<
   React.ComponentProps<typeof SelectBase>,
   'value' | 'onValueChange'
 > {
+  id?: string;
   className?: string;
   placeholder?: string;
   options: SelectOption<Value>[];

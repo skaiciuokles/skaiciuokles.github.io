@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
-export function Input({ className, type, onEnterPress, onKeyDown, ...props }: InputProps) {
+export function InputBase({ className, type, onEnterPress, onKeyDown, ...props }: InputBaseProps) {
   return (
     <input
       type={type}
@@ -24,6 +24,6 @@ export function Input({ className, type, onEnterPress, onKeyDown, ...props }: In
   );
 }
 
-interface InputProps extends React.ComponentProps<'input'> {
+export interface InputBaseProps extends React.ComponentProps<'input'> {
   onEnterPress?: () => void;
 }

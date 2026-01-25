@@ -43,7 +43,7 @@ function RootLayout() {
   return (
     <>
       <HeadContent />
-      <div className="max-w-480 mx-auto text-center relative z-10 h-screen flex flex-col">
+      <div className="max-w-480 mx-auto relative z-10 h-screen flex flex-col">
         <Header />
         <div className="flex-1 overflow-hidden">
           <Outlet />

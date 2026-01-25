@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { cn } from '@/lib/utils';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Input } from '@/components/forms/input';
+import { Checkbox } from '@/components/forms/checkbox';
 import { Select, type SelectOption } from '@/components/forms/select';
 import { IncomeOptimizer } from './income-optimizer';
 import { formatCurrency, formatPercent, MB_INCOME_LIMIT_PER_YEAR, MMA, PROFIT_TAX_RATES, VDU } from './utils';
@@ -12,16 +12,45 @@ const yearOptions: SelectOption<Year>[] = [
   { label: '2026', value: 2026 },
 ];
 
+function IncomeBlock({ className, children, hasError, ...rest }: React.ComponentProps<'div'> & { hasError?: boolean }) {
+  return (
+    <div
+      className={cn('p-3 border rounded-sm space-y-2', hasError && 'text-red-500 [&_p]:text-red-500', className)}
+      {...rest}
+    >
+      {children}
+    </div>
+  );
+}
+
+function IncomeInfo({ className, children, ...rest }: React.ComponentProps<'p'>) {
+  return (
+    <p className={cn('text-xs text-gray-500 italic', className)} {...rest}>
+      {children}
+    </p>
+  );
+}
+
 export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurationPanelProps) {
   const mbIncomeLimit = MB_INCOME_LIMIT_PER_YEAR / 12;
   const mbIncomeExceedsLimit = (income.mbMonthly ?? 0) > mbIncomeLimit;
   const profitTaxRates = PROFIT_TAX_RATES[income.year];
   const handleYearChange = useCallback((year: Year) => setIncome(prev => ({ ...prev, year })), [setIncome]);
+  const handleIncomeChange = useCallback(
+    (value: number | undefined, e: React.ChangeEvent<HTMLInputElement>) =>
+      setIncome(prev => ({ ...prev, [e.target.name]: value })),
+    [setIncome],
+  );
+  const handleCheckboxChange = useCallback(
+    (checked: boolean, e: React.ChangeEvent<HTMLInputElement>) =>
+      setIncome(prev => ({ ...prev, [e.target.name]: checked })),
+    [setIncome],
+  );
 
   return (
     <div className="flex md:flex-col md:border-r not-md:border-b">
       <div className="p-2 flex overflow-x-auto md:flex-col gap-2 md:overflow-y-auto md:max-h-[calc(100vh-93px)]">
-        <div className="p-3 border rounded-sm not-md:min-w-42">
+        <IncomeBlock className="not-md:min-w-42">
           <Select
             value={income.year}
             label="Mokestiniai metai:"
@@ -29,118 +58,84 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             options={yearOptions}
             className="w-full"
           />
-        </div>
-        <div className="p-3 border rounded-sm not-md:min-w-60">
-          <Label className="mb-2 block text-left font-bold">Mėnesio darbo santykių pajamos (prieš mokesčius):</Label>
+        </IncomeBlock>
+        <IncomeBlock className="not-md:min-w-60">
           <Input
+            label="Mėnesio darbo santykių pajamos (prieš mokesčius):"
             type="number"
-            value={income.monthly ?? ''}
-            onChange={e =>
-              setIncome(prev => ({ ...prev, monthly: e.target.value ? Number(e.target.value) : undefined }))
-            }
+            value={income.monthly}
+            onChange={handleIncomeChange}
             placeholder="Pajamos iš darbo santykių"
+            name="monthly"
           />
-          <div className="flex items-center mt-2">
-            <input
-              type="checkbox"
-              id="pensionAccumulation"
-              checked={income.pensionAccumulation}
-              onChange={e => setIncome(prev => ({ ...prev, pensionAccumulation: e.target.checked }))}
-              className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-            />
-            <Label htmlFor="pensionAccumulation" className="text-xs font-medium cursor-pointer pl-1">
-              Papildomai kaupiu 3% pensijai
-            </Label>
-          </div>
-        </div>
-        <div className="p-3 border rounded-sm not-md:min-w-72">
-          <Label className="mb-2 block text-left font-bold">Mėnesio IV pagal pažymą pajamos (prieš mokesčius):</Label>
+          <Checkbox
+            label="Papildomai kaupiu 3% pensijai"
+            name="pensionAccumulation"
+            checked={income.pensionAccumulation}
+            onChange={handleCheckboxChange}
+            className="text-xs"
+          />
+        </IncomeBlock>
+        <IncomeBlock className="not-md:min-w-72">
           <Input
+            label="Mėnesio IV pagal pažymą pajamos (prieš mokesčius):"
             type="number"
-            value={income.ivMonthly ?? ''}
-            onChange={e =>
-              setIncome(prev => ({ ...prev, ivMonthly: e.target.value ? Number(e.target.value) : undefined }))
-            }
+            value={income.ivMonthly}
+            onChange={handleIncomeChange}
             placeholder="Pajamos iš individualios veiklos"
+            name="ivMonthly"
           />
-          <p className="text-xs text-gray-500 mt-1.5 italic text-left not-md:text-xs">
-            30% išlaidų atskaitymas įtrauktas automatiškai
-          </p>
-        </div>
-        <div className={cn('p-3 border rounded-sm not-md:min-w-48', mbIncomeExceedsLimit ? 'text-red-500' : '')}>
-          <Label className="mb-2 block text-left font-bold">Mėnesio MB pajamos (prieš mokesčius):</Label>
+          <IncomeInfo>30% išlaidų atskaitymas įtrauktas automatiškai</IncomeInfo>
+        </IncomeBlock>
+        <IncomeBlock className="not-md:min-w-48" hasError={mbIncomeExceedsLimit}>
           <Input
+            label="Mėnesio MB pajamos (prieš mokesčius):"
             type="number"
-            value={income.mbMonthly ?? ''}
-            onChange={e =>
-              setIncome(prev => ({ ...prev, mbMonthly: e.target.value ? Number(e.target.value) : undefined }))
-            }
+            value={income.mbMonthly}
+            onChange={handleIncomeChange}
             placeholder="Pajamos iš MB"
+            name="mbMonthly"
           />
           {mbIncomeExceedsLimit ? (
-            <p className="text-xs text-red-500 mt-1.5 italic text-left not-md:text-xs">
+            <IncomeInfo>
               *Pajamos iš MB išmokėtos pagal civilinę vadovavimo sutartį negali viršyti {formatCurrency(mbIncomeLimit)}{' '}
               per mėnesį (arba {formatCurrency(MB_INCOME_LIMIT_PER_YEAR)} per metus).
-            </p>
+            </IncomeInfo>
           ) : (
-            <p className="text-xs text-gray-500 mt-1.5 italic text-left not-md:text-xs">
-              Pajamos iš MB pagal civilinę vadovavimo sutartį.
-            </p>
+            <IncomeInfo>Pajamos iš MB pagal civilinę vadovavimo sutartį.</IncomeInfo>
           )}
-        </div>
-        <div className="p-3 border rounded-sm not-md:min-w-80">
-          <Label className="mb-2 block text-left font-bold">
-            Mėnesio MB pelno suma dividendams (prieš pelno mokestį):
-          </Label>
+        </IncomeBlock>
+        <IncomeBlock className="not-md:min-w-80">
           <Input
+            label="Mėnesio MB pelno suma dividendams (prieš pelno mokestį):"
             type="number"
-            value={income.mbDividendsMonthly ?? ''}
-            onChange={e =>
-              setIncome(prev => ({
-                ...prev,
-                mbDividendsMonthly: e.target.value ? Number(e.target.value) : undefined,
-              }))
-            }
+            value={income.mbDividendsMonthly}
+            onChange={handleIncomeChange}
             placeholder="Pajamos iš MB dividendų"
+            name="mbDividendsMonthly"
           />
-          <p className="text-xs text-gray-500 mt-1.5 italic text-left not-md:text-xs">
-            Pajamos dividendais išmokamos MB sumokėjus pelno mokestį.
-          </p>
-          <div className="flex items-center mt-2">
-            <input
-              type="checkbox"
-              id="mbNoProfitTax"
-              checked={income.mbNoProfitTax}
-              onChange={e => setIncome(prev => ({ ...prev, mbNoProfitTax: e.target.checked }))}
-              className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-            />
-            <Label htmlFor="mbNoProfitTax" className="text-xs font-medium cursor-pointer pl-1">
-              MB iki {profitTaxRates.gracePeriod} mėnesių (0% pelno mokestis)
-            </Label>
-          </div>
-          <div className="flex items-center mt-2">
-            <input
-              type="checkbox"
-              id="mbUseReducedProfitTaxRate"
-              checked={income.mbUseReducedProfitTaxRate}
-              onChange={e => setIncome(prev => ({ ...prev, mbUseReducedProfitTaxRate: e.target.checked }))}
-              className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
-            />
-            <Label htmlFor="mbUseReducedProfitTaxRate" className="text-xs font-medium cursor-pointer pl-1">
-              Pajamos iki {formatCurrency(profitTaxRates.limitPerYear)} (
-              {formatPercent(profitTaxRates.reducedRate * 100)} pelno mokestis)
-            </Label>
-          </div>
-        </div>
+          <IncomeInfo>Pajamos dividendais išmokamos MB sumokėjus pelno mokestį.</IncomeInfo>
+          <Checkbox
+            label={`MB iki ${profitTaxRates.gracePeriod} mėnesių (0% pelno mokestis)`}
+            name="mbNoProfitTax"
+            checked={income.mbNoProfitTax}
+            onChange={handleCheckboxChange}
+            className="text-xs"
+          />
+          <Checkbox
+            label={`Pajamos iki ${formatCurrency(profitTaxRates.limitPerYear)} (${formatPercent(profitTaxRates.reducedRate * 100)} pelno mokestis)`}
+            name="mbUseReducedProfitTaxRate"
+            checked={income.mbUseReducedProfitTaxRate}
+            onChange={handleCheckboxChange}
+            className="text-xs"
+          />
+        </IncomeBlock>
         <IncomeOptimizer income={income} setIncome={setIncome} />
       </div>
-      <div className="flex flex-col justify-center h-12 border-t px-2 mt-auto not-md:hidden">
-        <div className="text-xs text-gray-500">
-          *VDU {income.year} m. = {formatCurrency(VDU[income.year])} €
-        </div>
-        <div className="text-xs text-gray-500">
-          *MMA {income.year} m. = {formatCurrency(MMA[income.year])} €
-        </div>
+      <div className="flex flex-col justify-center text-center h-12 border-t px-2 mt-auto not-md:hidden text-xs text-muted-foreground">
+        *VDU {income.year} m. = {formatCurrency(VDU[income.year])} €
+        <br />
+        *MMA {income.year} m. = {formatCurrency(MMA[income.year])} €
       </div>
     </div>
   );
