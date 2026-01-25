@@ -274,7 +274,7 @@ export const months = [
 // Helper function to calculate progressive tax for a monthly salary
 export function calculateProgressiveTax(totalAnnual: number, monthlySalary: number, brackets: TaxBracket) {
   // Sort brackets from highest to lowest threshold
-  const sortedBrackets = brackets.toSorted((a, b) => b.threshold - a.threshold);
+  const sortedBrackets = [...brackets].sort((a, b) => b.threshold - a.threshold);
   const bracketIndex = sortedBrackets.findIndex(b => totalAnnual >= b.threshold);
   const bracket = sortedBrackets[bracketIndex]! || sortedBrackets[0];
   const previousBracket = sortedBrackets[bracketIndex + 1];
