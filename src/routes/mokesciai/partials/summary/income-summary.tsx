@@ -13,7 +13,7 @@ export const IncomeSummary = React.memo(({ income, className }: IncomeSummaryPro
   const monthlyAverageAfter = totals.salaryAfterTaxes / 12;
 
   return (
-    <div className={cn('grid grid-cols-[1fr] md:grid-cols-[1fr_1fr_1.4fr] gap-3', className)}>
+    <div className={cn('grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[1fr_1fr_1.4fr] gap-3', className)}>
       <IncomeSummaryCard
         title="Mėnesio vidurkis"
         value={monthlyAverageAfter}
@@ -30,6 +30,7 @@ export const IncomeSummary = React.memo(({ income, className }: IncomeSummaryPro
         title="Mokesčiai"
         value={totals.total.amount}
         valueClassName="text-rose-600"
+        className="not-lg:col-span-full"
         valueInfo={`iš viso (${formatPercent(totals.total.percentage)})`}
         extras={[
           {
