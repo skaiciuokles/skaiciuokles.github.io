@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import React from 'react';
 
 const CollapsibleContext = createContext<ICollapsibleContext | undefined>(undefined);
+const getExpandedStateKey = (id: string) => `collapsible-${id}-open`;
 
 export function Collapsible({
   id,
@@ -21,11 +22,16 @@ export function Collapsible({
   renderAfter,
   initialOpen = false,
   collapseOnClickOutside = false,
-  open,
+  keepState = false,
+  anchor,
   ...rest
 }: CollapsibleProps) {
-  const [isOpen, setIsOpen] = useState(open ?? initialOpen);
-  const [isRendered, setIsRendered] = useState(open ?? initialOpen);
+  const isInitialOpen = useMemo(
+    () => (keepState && id ? localStorage.getItem(getExpandedStateKey(id)) === 'true' : initialOpen),
+    [keepState, id, initialOpen],
+  );
+  const [isOpen, setIsOpen] = useState(isInitialOpen);
+  const [isRendered, setIsRendered] = useState(isInitialOpen);
   const [element, size] = useElementResizeObserver(entry => {
     const [boxSize] = entry.borderBoxSize;
     const parent = entry.target.parentElement;
@@ -64,7 +70,7 @@ export function Collapsible({
           clearTimeout(closeTimeoutRef.current);
         }
         setIsRendered(true);
-        React.startTransition(() => setIsOpen(true));
+        requestAnimationFrame(() => setIsOpen(true));
       },
       close,
       toggle: () => {
@@ -72,7 +78,7 @@ export function Collapsible({
           clearTimeout(closeTimeoutRef.current);
         }
         setIsRendered(prev => {
-          React.startTransition(() => (!prev ? setIsOpen(true) : close()));
+          requestAnimationFrame(() => (!prev ? setIsOpen(true) : close()));
           // This always returns true, because we either immediately render and then open in the next frame or we
           // close in the next frame and then remove the element from DOM after the default transition duration
           return true;
@@ -83,12 +89,10 @@ export function Collapsible({
   );
 
   React.useEffect(() => {
-    if (open === true) {
-      actions.open();
-    } else if (open === false) {
-      actions.close();
+    if (keepState && id) {
+      localStorage.setItem(getExpandedStateKey(id), String(isOpen));
     }
-  }, [open, actions]);
+  }, [isOpen, id, keepState]);
 
   const internalId = React.useId();
   const collapsibleId = `collapsible-trigger-${id || internalId}`;
@@ -116,10 +120,9 @@ export function Collapsible({
   return (
     <CollapsibleContext.Provider value={context}>
       {trigger && <CollapsibleTrigger>{trigger}</CollapsibleTrigger>}
-      {/* Not sure how to avoid this warning */}
       {/* eslint-disable-next-line react-hooks/refs */}
       {renderBefore?.(context)}
-      {isRendered && (asChild ? content : createPortal(content, document.body))}
+      {isRendered && (asChild ? content : createPortal(content, anchor?.current ?? document.body))}
       {/* eslint-disable-next-line react-hooks/refs */}
       {renderAfter?.(context)}
     </CollapsibleContext.Provider>
@@ -141,7 +144,8 @@ export interface CollapsibleProps extends React.ComponentProps<'div'> {
   collapseOnClickOutside?: boolean;
   renderBefore?: (context: ICollapsibleContext) => React.ReactNode;
   renderAfter?: (context: ICollapsibleContext) => React.ReactNode;
-  open?: boolean;
+  anchor?: React.RefObject<HTMLElement | null>;
+  keepState?: boolean;
 }
 
 export function CollapsibleTrigger({ children }: { children: TriggerElement }) {

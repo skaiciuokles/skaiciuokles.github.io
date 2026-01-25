@@ -2,32 +2,18 @@ import React from 'react';
 import { ChevronDown, ChevronUp, InfoIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { useIsOpen } from '@/hooks/general';
 import { Collapsible } from '@/components/layouts/collapsible';
 import type { TariffInfoComponentProps } from '../tariff-info/tariff-drawer';
 import { IndividualSummaryItems } from './individual-summary-items';
 import { TaxSummaryTable } from './tax-summary-table';
 import type { Year } from '../utils';
 
-function getExpandedStateKey(id: string) {
-  return `tax-summary-expanded-${id}`;
-}
-
 export const IndividualIncomeSummary = React.memo(
   ({ label, totals, className, InfoDrawer, incomeRef, year, id, ...taxTableProps }: IndividualIncomeSummaryProps) => {
-    const [isExpanded, actions] = useIsOpen(undefined, () => {
-      const saved = localStorage.getItem(getExpandedStateKey(id));
-      return saved === 'true';
-    });
-
-    React.useEffect(() => {
-      localStorage.setItem(getExpandedStateKey(id), String(isExpanded));
-    }, [isExpanded, id]);
-
     const monthlyBefore = totals.salaryBeforeTaxes / 12;
     const monthlyAfter = totals.salaryAfterTaxes / 12;
     const monthlyTaxes = totals.total.amount / 12;
-
+    const moreInfoAnchorRef = React.useRef<HTMLDivElement>(null);
     const infoDrawer = React.useMemo(
       () =>
         InfoDrawer &&
@@ -57,10 +43,20 @@ export const IndividualIncomeSummary = React.memo(
               {label}
               {infoDrawer}
             </h3>
-            <Button variant="outline" size="sm" onClick={actions.toggle} className="h-7 lg:w-48">
-              {isExpanded ? 'Slėpti detales' : 'Detalūs skaičiavimai'}
-              {isExpanded ? <ChevronUp className="size-3.5 ml-1" /> : <ChevronDown className="size-3.5 ml-1" />}
-            </Button>
+            <Collapsible
+              id={id}
+              anchor={moreInfoAnchorRef}
+              className="rounded shadow-sm"
+              renderBefore={context => (
+                <Button variant="outline" size="sm" onClick={context.actions.toggle} className="h-7 lg:w-48">
+                  {context.isOpen ? 'Slėpti detales' : 'Detalūs skaičiavimai'}
+                  {context.isOpen ? <ChevronUp className="size-3.5 ml-1" /> : <ChevronDown className="size-3.5 ml-1" />}
+                </Button>
+              )}
+              keepState
+            >
+              <TaxSummaryTable {...taxTableProps} />
+            </Collapsible>
           </div>
 
           <div className="grid lg:grid-cols-2">
@@ -81,9 +77,7 @@ export const IndividualIncomeSummary = React.memo(
             />
           </div>
         </Card>
-        <Collapsible open={isExpanded} className="rounded shadow-sm" asChild>
-          <TaxSummaryTable {...taxTableProps} />
-        </Collapsible>
+        <div ref={moreInfoAnchorRef} />
       </div>
     );
   },
