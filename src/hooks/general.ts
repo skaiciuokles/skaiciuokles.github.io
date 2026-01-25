@@ -43,7 +43,7 @@ export function usePreviousRef<T>(value: T) {
   return ref;
 }
 
-export function useIsOpen(initialOpeningDelay?: number, initiallyOpen = false) {
+export function useIsOpen(initialOpeningDelay?: number, initiallyOpen: boolean | (() => boolean) = false) {
   const [isOpen, setIsOpen] = useState(initiallyOpen);
   const isMounted = useIsMountedRef();
 
@@ -72,12 +72,17 @@ export function useIsOpen(initialOpeningDelay?: number, initiallyOpen = false) {
             setIsOpen(false);
           }
         },
-        toggle: (callback?: (old: boolean) => boolean) => {
+        setState: (callback?: (old: boolean) => boolean) => {
           if (isMounted.current) {
             setIsOpen(old => {
               if (callback) return callback(old);
               return !old;
             });
+          }
+        },
+        toggle: () => {
+          if (isMounted.current) {
+            setIsOpen(old => !old);
           }
         },
         onOpenChange: (isOpen: boolean) => {
