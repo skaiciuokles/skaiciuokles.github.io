@@ -12,6 +12,14 @@ const yearOptions: SelectOption<Year>[] = [
   { label: '2026', value: 2026 },
 ];
 
+function IncomeBlock({ className, children, hasError, ...rest }: React.ComponentProps<'div'> & { hasError?: boolean }) {
+  return (
+    <div className={cn('p-3 border rounded-sm space-y-2', hasError ? 'text-red-500' : '', className)} {...rest}>
+      {children}
+    </div>
+  );
+}
+
 export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurationPanelProps) {
   const mbIncomeLimit = MB_INCOME_LIMIT_PER_YEAR / 12;
   const mbIncomeExceedsLimit = (income.mbMonthly ?? 0) > mbIncomeLimit;
@@ -31,7 +39,7 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
   return (
     <div className="flex md:flex-col md:border-r not-md:border-b">
       <div className="p-2 flex overflow-x-auto md:flex-col gap-2 md:overflow-y-auto md:max-h-[calc(100vh-93px)]">
-        <div className="p-3 border rounded-sm not-md:min-w-42">
+        <IncomeBlock className="not-md:min-w-42">
           <Select
             value={income.year}
             label="Mokestiniai metai:"
@@ -39,8 +47,8 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             options={yearOptions}
             className="w-full"
           />
-        </div>
-        <div className="p-3 border rounded-sm not-md:min-w-60 space-y-2">
+        </IncomeBlock>
+        <IncomeBlock className="not-md:min-w-60">
           <Input
             label="Mėnesio darbo santykių pajamos (prieš mokesčius):"
             type="number"
@@ -56,8 +64,8 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             onChange={handleCheckboxChange}
             className="text-xs"
           />
-        </div>
-        <div className="p-3 border rounded-sm not-md:min-w-72">
+        </IncomeBlock>
+        <IncomeBlock className="not-md:min-w-72">
           <Input
             label="Mėnesio IV pagal pažymą pajamos (prieš mokesčius):"
             type="number"
@@ -66,11 +74,11 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             placeholder="Pajamos iš individualios veiklos"
             name="ivMonthly"
           />
-          <p className="text-xs text-gray-500 mt-1.5 italic text-left not-md:text-xs">
+          <p className="text-xs text-gray-500 italic text-left not-md:text-xs">
             30% išlaidų atskaitymas įtrauktas automatiškai
           </p>
-        </div>
-        <div className={cn('p-3 border rounded-sm not-md:min-w-48', mbIncomeExceedsLimit ? 'text-red-500' : '')}>
+        </IncomeBlock>
+        <IncomeBlock className="not-md:min-w-48" hasError={mbIncomeExceedsLimit}>
           <Input
             label="Mėnesio MB pajamos (prieš mokesčius):"
             type="number"
@@ -80,17 +88,17 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             name="mbMonthly"
           />
           {mbIncomeExceedsLimit ? (
-            <p className="text-xs text-red-500 mt-1.5 italic text-left not-md:text-xs">
+            <p className="text-xs italic text-left not-md:text-xs">
               *Pajamos iš MB išmokėtos pagal civilinę vadovavimo sutartį negali viršyti {formatCurrency(mbIncomeLimit)}{' '}
               per mėnesį (arba {formatCurrency(MB_INCOME_LIMIT_PER_YEAR)} per metus).
             </p>
           ) : (
-            <p className="text-xs text-gray-500 mt-1.5 italic text-left not-md:text-xs">
+            <p className="text-xs text-gray-500 italic text-left not-md:text-xs">
               Pajamos iš MB pagal civilinę vadovavimo sutartį.
             </p>
           )}
-        </div>
-        <div className="p-3 border rounded-sm not-md:min-w-80 space-y-2">
+        </IncomeBlock>
+        <IncomeBlock className="not-md:min-w-80">
           <Input
             label="Mėnesio MB pelno suma dividendams (prieš pelno mokestį):"
             type="number"
@@ -116,7 +124,7 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             onChange={handleCheckboxChange}
             className="text-xs"
           />
-        </div>
+        </IncomeBlock>
         <IncomeOptimizer income={income} setIncome={setIncome} />
       </div>
       <div className="flex flex-col justify-center h-12 border-t px-2 mt-auto not-md:hidden">
