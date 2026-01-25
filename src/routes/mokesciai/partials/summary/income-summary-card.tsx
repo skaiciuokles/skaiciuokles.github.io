@@ -16,7 +16,7 @@ export function IncomeSummaryCard({ title, value, valueInfo, extras, valueClassN
           <div className="mt-0.5 pt-1 border-t border-stone-100 text-xs text-muted-foreground flex justify-between">
             {extras.map((extra, index) => (
               <div key={index}>
-                <div className="flex items-center gap-1 text-nowrap">{extra.label}:</div>
+                <div className="flex items-center gap-1 text-nowrap">{extra.label}</div>
                 <div className="font-semibold text-stone-700">{formatCurrency(extra.value)}</div>
               </div>
             ))}

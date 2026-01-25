@@ -43,7 +43,7 @@ export const IncomeSummary = React.memo(({ income, className }: IncomeSummaryPro
           {
             label: (
               <div className="flex items-center gap-1">
-                PSD ({formatPercent(totals.psd.percentage)}):
+                PSD ({formatPercent(totals.psd.percentage)})
                 {psdRemainder > 0 && (
                   <Tooltip
                     label={
