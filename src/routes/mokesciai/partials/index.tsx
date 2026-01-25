@@ -107,11 +107,11 @@ export function TaxCalculatorPage() {
         <IncomeConfigurationPanel income={income} setIncome={setIncome} />
 
         <div className="md:overflow-y-auto flex flex-col min-h-full">
-          <div className="p-3 border-b bg-stone-50/50">
+          <div className="p-2 border-b bg-stone-50/50">
             <IncomeSummary income={income} />
           </div>
 
-          <div className="p-3 space-y-3">
+          <div className="p-2 space-y-3">
             <IndividualIncomeSummary
               id="employment"
               label="Darbo santykiai"
