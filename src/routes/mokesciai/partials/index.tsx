@@ -12,12 +12,14 @@ import {
 } from './utils';
 import { IncomeConfigurationPanel } from './income-configuration';
 import { MBDividendsSources } from './tariff-info/mb-dividends-tariff-info';
-import { TotalTaxes } from './total-taxes';
+import { IncomeSummary, IndividualIncomeSummary } from './income-summary';
+import { calculateAllTaxes } from './utils';
 import type { Income } from './utils';
 
 const INCOME_STORAGE_KEY = 'tax-calculator-income';
 
 export function TaxCalculatorPage() {
+  const [showDetails, setShowDetails] = React.useState<Record<string, boolean>>({});
   const [income, setIncome] = React.useState<Income>(() => {
     const savedIncome = localStorage.getItem(INCOME_STORAGE_KEY);
     let parsed: Partial<Income> = {};
@@ -98,63 +100,126 @@ export function TaxCalculatorPage() {
     };
   }, [income.mbDividendsMonthly, mbProfitTaxRate, income.year]);
 
+  const allTaxes = React.useMemo(() => calculateAllTaxes(income), [income]);
+
+  const toggleDetails = (id: string) => {
+    setShowDetails(prev => ({ ...prev, [id]: !prev[id] }));
+  };
+
   return (
     <div className="flex flex-col h-full">
       <div className="md:grid md:grid-cols-[340px_auto] md:overflow-hidden md:h-full not-md:overflow-y-auto">
         <IncomeConfigurationPanel income={income} setIncome={setIncome} />
 
         <div className="md:overflow-y-auto">
-          <TotalTaxes className="p-3 border-b" year={income.year} />
+          <div className="p-3 border-b bg-stone-50/50">
+            <IncomeSummary income={income} />
+          </div>
 
-          <TaxSummaryTable
-            label="Metinė darbo santykių mokesčių suvestinė"
-            monthlySalary={income.monthly ?? 0}
-            additionalForGPM={
-              (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 + (income.ivMonthly ?? 0) * ivTaxRates.gpmBase * 12
-            }
-            className="border-b p-3"
-            taxRates={taxRates}
-            pensionAccumulation={income.pensionAccumulation}
-            InfoDrawer={EmploymentTariffDrawer}
-            incomeRef={incomeRef}
-            year={income.year}
-            withSodra
-          />
+          <div className="p-4 space-y-4">
+            <div className="space-y-2">
+              <IndividualIncomeSummary
+                label="Darbo santykiai"
+                totals={allTaxes.employmentTotals}
+                isDetailsOpen={!!showDetails.employment}
+                onToggleDetails={() => toggleDetails('employment')}
+                InfoDrawer={EmploymentTariffDrawer}
+                incomeRef={incomeRef}
+                year={income.year}
+              />
+              {showDetails.employment && (
+                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                  <TaxSummaryTable
+                    label="Metinė darbo santykių mokesčių suvestinė"
+                    monthlySalary={income.monthly ?? 0}
+                    additionalForGPM={
+                      (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 +
+                      (income.ivMonthly ?? 0) * ivTaxRates.gpmBase * 12
+                    }
+                    className="border rounded-lg overflow-hidden"
+                    taxRates={taxRates}
+                    pensionAccumulation={income.pensionAccumulation}
+                    year={income.year}
+                    withSodra
+                  />
+                </div>
+              )}
+            </div>
 
-          <TaxSummaryTable
-            label="Metinė IV pagal pažymą mokesčių suvestinė"
-            monthlySalary={income.ivMonthly ?? 0}
-            className="p-3 border-b"
-            taxRates={ivTaxRates}
-            additionalForGPM={!income.monthly ? (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 : 0}
-            gpmOverride={ivGpmOverride}
-            InfoDrawer={IVTariffDrawer}
-            incomeRef={incomeRef}
-            year={income.year}
-            withSodra
-          />
+            <div className="space-y-2">
+              <IndividualIncomeSummary
+                label="Individuali veikla"
+                totals={allTaxes.ivTotals}
+                isDetailsOpen={!!showDetails.iv}
+                onToggleDetails={() => toggleDetails('iv')}
+                InfoDrawer={IVTariffDrawer}
+                incomeRef={incomeRef}
+                year={income.year}
+              />
+              {showDetails.iv && (
+                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                  <TaxSummaryTable
+                    label="Metinė IV pagal pažymą mokesčių suvestinė"
+                    monthlySalary={income.ivMonthly ?? 0}
+                    className="border rounded-lg overflow-hidden"
+                    taxRates={ivTaxRates}
+                    additionalForGPM={!income.monthly ? (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 : 0}
+                    gpmOverride={ivGpmOverride}
+                    year={income.year}
+                    withSodra
+                  />
+                </div>
+              )}
+            </div>
 
-          <TaxSummaryTable
-            label="Metinė MB mokesčių suvestinė"
-            monthlySalary={income.mbMonthly ?? 0}
-            className="p-3"
-            taxRates={mbTaxRates}
-            InfoDrawer={MBTariffDrawer}
-            incomeRef={incomeRef}
-            year={income.year}
-          />
+            <div className="space-y-2">
+              <IndividualIncomeSummary
+                label="MB pajamos (civilinė sutartis)"
+                totals={allTaxes.mbTotals}
+                isDetailsOpen={!!showDetails.mb}
+                onToggleDetails={() => toggleDetails('mb')}
+                InfoDrawer={MBTariffDrawer}
+                incomeRef={incomeRef}
+                year={income.year}
+              />
+              {showDetails.mb && (
+                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                  <TaxSummaryTable
+                    label="Metinė MB mokesčių suvestinė"
+                    monthlySalary={income.mbMonthly ?? 0}
+                    className="border rounded-lg overflow-hidden"
+                    taxRates={mbTaxRates}
+                    year={income.year}
+                  />
+                </div>
+              )}
+            </div>
 
-          <TaxSummaryTable
-            label="Metinė MB dividendų mokesčių suvestinė"
-            monthlySalary={income.mbDividendsMonthly ?? 0}
-            className="p-3 border-t"
-            taxRates={mbTaxRates}
-            InfoDrawer={MBDividendsTariffDrawer}
-            gpmOverride={mbDividendsGpmOverride}
-            gpmTooltip={gpmTooltip}
-            incomeRef={incomeRef}
-            year={income.year}
-          />
+            <div className="space-y-2">
+              <IndividualIncomeSummary
+                label="MB dividendai"
+                totals={allTaxes.mbDividendsTotals}
+                isDetailsOpen={!!showDetails.mbDividends}
+                onToggleDetails={() => toggleDetails('mbDividends')}
+                InfoDrawer={MBDividendsTariffDrawer}
+                incomeRef={incomeRef}
+                year={income.year}
+              />
+              {showDetails.mbDividends && (
+                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
+                  <TaxSummaryTable
+                    label="Metinė MB dividendų mokesčių suvestinė"
+                    monthlySalary={income.mbDividendsMonthly ?? 0}
+                    className="border rounded-lg overflow-hidden"
+                    taxRates={mbTaxRates}
+                    gpmOverride={mbDividendsGpmOverride}
+                    gpmTooltip={gpmTooltip}
+                    year={income.year}
+                  />
+                </div>
+              )}
+            </div>
+          </div>
 
           <div className="text-sm text-gray-600 px-3 py-1 min-h-12 leading-none flex items-center justify-center border-t">
             <span>

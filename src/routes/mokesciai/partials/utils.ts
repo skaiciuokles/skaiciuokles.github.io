@@ -375,6 +375,120 @@ export function calculateSourceTaxes({ monthlySalary, taxRates, withSodra, ...op
   return { results, totals };
 }
 
+export function calculateAllTaxes(income: Income) {
+  const taxRates = yearlyTaxRates[income.year];
+  const mbTaxRates = mbYearlyTaxRates[income.year];
+  const ivTaxRates = ivYearlyTaxRates[income.year];
+
+  // IV GPM Override logic
+  let ivGpmOverride: { amount: number; percentage: number } | undefined;
+  if (income.ivMonthly) {
+    const annualTaxableIncome = income.ivMonthly * 12 * ivTaxRates.gpmBase;
+    if (annualTaxableIncome <= 42500) {
+      const result = calculateIVGpm(annualTaxableIncome);
+      ivGpmOverride = { amount: result.amount / 12, percentage: result.percentage };
+    }
+  }
+
+  // MB Profit Tax and Dividends GPM Override logic
+  const mbProfitTaxRate = calculateMBProfitTaxRate(income);
+  let mbDividendsGpmOverride: { amount: number; percentage: number } | undefined;
+  if (income.mbDividendsMonthly) {
+    const monthlyBeforeTax = income.mbDividendsMonthly;
+    const profitTax = monthlyBeforeTax * mbProfitTaxRate;
+    const afterProfitTax = monthlyBeforeTax - profitTax;
+    const gpm = afterProfitTax * 0.15;
+    const totalTax = profitTax + gpm;
+    const percentage = (totalTax / monthlyBeforeTax) * 100;
+    mbDividendsGpmOverride = { amount: totalTax, percentage };
+  }
+
+  const employment = calculateSourceTaxes({
+    monthlySalary: income.monthly ?? 0,
+    additionalForGPM:
+      (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 + (income.ivMonthly ?? 0) * ivTaxRates.gpmBase * 12,
+    taxRates,
+    pensionAccumulation: income.pensionAccumulation,
+    withSodra: true,
+  });
+
+  const iv = calculateSourceTaxes({
+    monthlySalary: income.ivMonthly ?? 0,
+    taxRates: ivTaxRates,
+    additionalForGPM: !income.monthly ? (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 : 0,
+    gpmOverride: ivGpmOverride,
+    withSodra: true,
+  });
+
+  const mb = calculateSourceTaxes({
+    monthlySalary: income.mbMonthly ?? 0,
+    taxRates: mbTaxRates,
+  });
+
+  const mbDividends = calculateSourceTaxes({
+    monthlySalary: income.mbDividendsMonthly ?? 0,
+    taxRates: mbTaxRates,
+    gpmOverride: mbDividendsGpmOverride,
+  });
+
+  const allTotals: IncomeTotalTaxes = {
+    gpm: { amount: 0, percentage: 0 },
+    vsd: { amount: 0, percentage: 0 },
+    psd: { amount: 0, percentage: 0 },
+    total: { amount: 0, percentage: 0 },
+    salaryBeforeTaxes: 0,
+    salaryAfterTaxes: 0,
+  };
+
+  [employment, iv, mb, mbDividends].forEach(source => {
+    allTotals.gpm.amount += source.totals.gpm.amount;
+    allTotals.vsd.amount += source.totals.vsd.amount;
+    allTotals.psd.amount += source.totals.psd.amount;
+    allTotals.total.amount += source.totals.total.amount;
+    allTotals.salaryBeforeTaxes += source.totals.salaryBeforeTaxes;
+    allTotals.salaryAfterTaxes += source.totals.salaryAfterTaxes;
+  });
+
+  // Minimum annual PSD contribution logic
+  const minimumAnnualPsd = Number((MMA[income.year] * 12 * taxRates.psd[0].rate).toFixed(2));
+  let psdRemainder = 0;
+
+  allTotals.gpm.amount = Number(allTotals.gpm.amount.toFixed(2));
+  allTotals.psd.amount = Number(allTotals.psd.amount.toFixed(2));
+  allTotals.vsd.amount = Number(allTotals.vsd.amount.toFixed(2));
+
+  if (allTotals.psd.amount < minimumAnnualPsd && allTotals.salaryBeforeTaxes > 0) {
+    psdRemainder = minimumAnnualPsd - allTotals.psd.amount;
+    allTotals.psd.amount = minimumAnnualPsd;
+    allTotals.total.amount += psdRemainder;
+    allTotals.salaryAfterTaxes -= psdRemainder;
+  }
+
+  const totalAnnual = allTotals.salaryBeforeTaxes;
+  allTotals.total.percentage = totalAnnual > 0 ? (allTotals.total.amount * 100) / totalAnnual : 0;
+  allTotals.gpm.percentage = totalAnnual > 0 ? (allTotals.gpm.amount * 100) / totalAnnual : 0;
+  allTotals.vsd.percentage = totalAnnual > 0 ? (allTotals.vsd.amount * 100) / totalAnnual : 0;
+  allTotals.psd.percentage = totalAnnual > 0 ? (allTotals.psd.amount * 100) / totalAnnual : 0;
+
+  return {
+    totals: allTotals,
+    psdRemainder,
+    employmentTotals: employment.totals,
+    ivTotals: iv.totals,
+    mbTotals: mb.totals,
+    mbDividendsTotals: mbDividends.totals,
+  };
+}
+
+export interface AllTaxesResult {
+  totals: IncomeTotalTaxes;
+  psdRemainder: number;
+  employmentTotals: IncomeTotalTaxes;
+  ivTotals: IncomeTotalTaxes;
+  mbTotals: IncomeTotalTaxes;
+  mbDividendsTotals: IncomeTotalTaxes;
+}
+
 interface CalculateSourceTaxesOptions {
   monthlySalary: number;
   taxRates: TaxRates;

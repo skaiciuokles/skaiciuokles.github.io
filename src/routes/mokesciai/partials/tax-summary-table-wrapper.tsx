@@ -1,9 +1,8 @@
 import React from 'react';
-import { ChevronDown, ChevronUp, InfoIcon } from 'lucide-react';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 import { Collapsible, CollapsibleTrigger } from '@/components/layouts/collapsible';
 import { cn } from '@/lib/utils';
 import type { Year } from './utils';
-import type { TariffInfoComponentProps } from './tariff-info/tariff-drawer';
 
 export function TaxSummaryTableHeaderRow({ className, ...rest }: React.ComponentProps<'tr'>) {
   return <tr className={cn('bg-stone-200', className)} {...rest} />;
@@ -25,26 +24,8 @@ export function TaxSummaryTableWrapper({
   tableHeader,
   children,
   className,
-  InfoDrawer,
-  incomeRef,
   ...rest
 }: TaxSummaryTableWrapperProps) {
-  const infoDrawer = React.useMemo(
-    () =>
-      InfoDrawer && (
-        <InfoDrawer
-          year={year}
-          incomeRef={incomeRef}
-          trigger={
-            <span className="ml-auto" onClick={e => e.stopPropagation()} title="Mokesčių tarifai">
-              <InfoIcon className="size-5 text-muted-foreground" />
-            </span>
-          }
-        />
-      ),
-    [year, incomeRef, InfoDrawer],
-  );
-
   return (
     <div className={cn('overflow-x-auto', className)} {...rest}>
       <Collapsible
@@ -53,7 +34,6 @@ export function TaxSummaryTableWrapper({
             <h2 className="text-lg font-bold text-left flex items-center gap-2 cursor-pointer">
               {label}
               {isOpen ? <ChevronUp className="size-4 shrink-0" /> : <ChevronDown className="size-4 shrink-0" />}
-              {infoDrawer}
             </h2>
           </CollapsibleTrigger>
         )}
@@ -73,21 +53,9 @@ export function TaxSummaryTableWrapper({
   );
 }
 
-export type TaxSummaryTableWrapperBaseProps = React.ComponentProps<'div'> & {
+export type TaxSummaryTableWrapperProps = React.ComponentProps<'div'> & {
   year: Year;
   label: React.ReactNode;
-} & (
-    | {
-        incomeRef: TariffInfoComponentProps['incomeRef'];
-        InfoDrawer: React.FC<TariffInfoComponentProps & { trigger?: React.ReactNode }>;
-      }
-    | {
-        InfoDrawer?: never;
-        incomeRef?: never;
-      }
-  );
-
-export type TaxSummaryTableWrapperProps = TaxSummaryTableWrapperBaseProps & {
   tableHeader: React.ReactNode;
   children: React.ReactNode;
 };

@@ -8,8 +8,8 @@ import {
   TaxSummaryTableBodyRow,
   TaxSummaryTableHeaderColumn,
   TaxSummaryTableWrapper,
-  type TaxSummaryTableWrapperBaseProps,
 } from './tax-summary-table-wrapper';
+import type { Year } from './utils';
 
 export const TaxSummaryTable = React.memo(
   ({
@@ -21,6 +21,7 @@ export const TaxSummaryTable = React.memo(
     withSodra,
     taxRates,
     pensionAccumulation,
+    year,
     ...rest
   }: TaxSummaryTableProps) => {
     const id = React.useId();
@@ -98,6 +99,7 @@ export const TaxSummaryTable = React.memo(
     return (
       <TaxSummaryTableWrapper
         label={label}
+        year={year}
         tableHeader={headers.map((header, index) => (
           <TaxSummaryTableHeaderColumn key={index}>{header}</TaxSummaryTableHeaderColumn>
         ))}
@@ -311,7 +313,9 @@ export const TaxSummaryTable = React.memo(
   },
 );
 
-type TaxSummaryTableProps = TaxSummaryTableWrapperBaseProps & {
+type TaxSummaryTableProps = React.ComponentProps<'div'> & {
+  year: Year;
+  label: React.ReactNode;
   monthlySalary: number;
   taxRates: TaxRates;
   additionalForGPM?: number;
