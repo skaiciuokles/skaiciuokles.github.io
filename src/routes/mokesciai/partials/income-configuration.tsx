@@ -14,7 +14,10 @@ const yearOptions: SelectOption<Year>[] = [
 
 function IncomeBlock({ className, children, hasError, ...rest }: React.ComponentProps<'div'> & { hasError?: boolean }) {
   return (
-    <div className={cn('p-3 border rounded-sm space-y-2', hasError ? 'text-red-500' : '', className)} {...rest}>
+    <div
+      className={cn('p-3 border rounded-sm space-y-2', hasError && 'text-red-500 [&_p]:text-red-500', className)}
+      {...rest}
+    >
       {children}
     </div>
   );

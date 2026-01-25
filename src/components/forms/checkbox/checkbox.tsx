@@ -16,7 +16,7 @@ export function Checkbox({ label, className, onChange, id: providedId, ...rest }
     <div className={cn('flex items-center', className)}>
       <input id={id} type="checkbox" onChange={handleChange} className="size-4 cursor-pointer" {...rest} />
       {label && (
-        <Label htmlFor={id} className="cursor-pointer font-medium select-none pl-1">
+        <Label htmlFor={id} className="cursor-pointer font-medium pl-1">
           {label}
         </Label>
       )}

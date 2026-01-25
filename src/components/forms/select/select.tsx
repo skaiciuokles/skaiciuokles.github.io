@@ -27,11 +27,7 @@ export function Select<Value extends ValueType>({
   return (
     <SelectBase value={value?.toString()} onValueChange={onChange ? handleChange : undefined} {...rest}>
       <div className="text-sm space-y-2">
-        {label && (
-          <Label htmlFor={id} className="font-bold">
-            {label}
-          </Label>
-        )}
+        {label && <Label htmlFor={id}>{label}</Label>}
         <SelectTrigger className={className} id={id}>
           <SelectValue placeholder={placeholder} />
         </SelectTrigger>

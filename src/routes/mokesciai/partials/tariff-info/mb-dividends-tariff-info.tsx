@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import {
   formatPercent,
   formatCurrency,
@@ -34,7 +34,7 @@ export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfo
     },
   ];
 
-  const handleCheckboxChange = useCallback(
+  const handleCheckboxChange = React.useCallback(
     (checked: boolean, e: React.ChangeEvent<HTMLInputElement>) =>
       setIncome(prev => ({ ...prev, [e.target.name]: checked })),
     [setIncome],
