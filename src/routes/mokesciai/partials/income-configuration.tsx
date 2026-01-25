@@ -50,7 +50,7 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
   return (
     <div className="flex md:flex-col md:border-r not-md:border-b">
       <div className="p-2 flex overflow-x-auto md:flex-col gap-2 md:overflow-y-auto md:max-h-[calc(100vh-93px)]">
-        <IncomeBlock className="not-md:min-w-42">
+        <IncomeBlock className="not-md:min-w-72">
           <Select
             value={income.year}
             label="Mokestiniai metai:"
@@ -58,6 +58,7 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             options={yearOptions}
             className="w-full"
           />
+          <IncomeOptimizer income={income} setIncome={setIncome} />
         </IncomeBlock>
         <IncomeBlock className="not-md:min-w-60">
           <Input
@@ -130,7 +131,6 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             className="text-xs"
           />
         </IncomeBlock>
-        <IncomeOptimizer income={income} setIncome={setIncome} />
       </div>
       <div className="flex flex-col justify-center text-center h-12 border-t px-2 mt-auto not-md:hidden text-xs text-muted-foreground">
         *VDU {income.year} m. = {formatCurrency(VDU[income.year])} €
