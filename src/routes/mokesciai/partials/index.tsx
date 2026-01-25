@@ -100,7 +100,7 @@ export function TaxCalculatorPage() {
 
   return (
     <div className="flex flex-col h-full">
-      <div className="md:grid md:grid-cols-[335px_auto] md:overflow-hidden md:h-full not-md:overflow-y-auto">
+      <div className="md:grid md:grid-cols-[340px_auto] md:overflow-hidden md:h-full not-md:overflow-y-auto">
         <IncomeConfigurationPanel income={income} setIncome={setIncome} />
 
         <div className="md:overflow-y-auto">
