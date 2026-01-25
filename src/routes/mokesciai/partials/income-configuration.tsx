@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { cn } from '@/lib/utils';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/forms/input';
 import { Checkbox } from '@/components/forms/checkbox';
 import { Select, type SelectOption } from '@/components/forms/select';
@@ -14,12 +15,9 @@ const yearOptions: SelectOption<Year>[] = [
 
 function IncomeBlock({ className, children, hasError, ...rest }: React.ComponentProps<'div'> & { hasError?: boolean }) {
   return (
-    <div
-      className={cn('p-3 border rounded-sm space-y-2', hasError && 'text-red-500 [&_p]:text-red-500', className)}
-      {...rest}
-    >
+    <Card className={cn(hasError && 'text-red-500 [&_p]:text-red-500', className)} {...rest}>
       {children}
-    </div>
+    </Card>
   );
 }
 

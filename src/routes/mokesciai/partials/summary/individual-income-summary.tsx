@@ -1,6 +1,6 @@
 import React from 'react';
 import { ChevronDown, ChevronUp, InfoIcon } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useIsOpen } from '@/hooks/general';
 import { Collapsible } from '@/components/layouts/collapsible';
@@ -48,38 +48,36 @@ export const IndividualIncomeSummary = React.memo(
 
     return (
       <div className="space-y-2">
-        <div className={cn('bg-white p-3 border rounded-lg shadow-sm border-stone-200', className)}>
-          <div className="flex flex-col gap-3">
-            <div className="flex items-center justify-between border-b border-stone-100 pb-2">
-              <h3 className="text-sm font-bold text-stone-800 flex items-center">
-                {label}
-                {infoDrawer}
-              </h3>
-              <Button variant="outline" size="sm" onClick={actions.toggle} className="h-7 lg:w-48">
-                {isExpanded ? 'Slėpti detales' : 'Detalūs skaičiavimai'}
-                {isExpanded ? <ChevronUp className="size-3.5 ml-1" /> : <ChevronDown className="size-3.5 ml-1" />}
-              </Button>
-            </div>
-
-            <div className="grid lg:grid-cols-2">
-              <IndividualSummaryItems
-                title="Vidurkis per mėnesį"
-                salaryAfterTaxes={monthlyAfter}
-                salaryBeforeTaxes={monthlyBefore}
-                taxAmount={monthlyTaxes}
-                taxPercentage={totals.total.percentage}
-                className="not-lg:pb-2 not-lg:mb-2 not-lg:border-b lg:pr-4 lg:mr-4 lg:border-r border-stone-200"
-              />
-              <IndividualSummaryItems
-                title="Iš viso per metus"
-                salaryAfterTaxes={totals.salaryAfterTaxes}
-                salaryBeforeTaxes={totals.salaryBeforeTaxes}
-                taxAmount={totals.total.amount}
-                taxPercentage={totals.total.percentage}
-              />
-            </div>
+        <Card className={className}>
+          <div className="flex items-center justify-between border-b border-stone-100 pb-2">
+            <h3 className="text-sm font-bold text-stone-800 flex items-center">
+              {label}
+              {infoDrawer}
+            </h3>
+            <Button variant="outline" size="sm" onClick={actions.toggle} className="h-7 lg:w-48">
+              {isExpanded ? 'Slėpti detales' : 'Detalūs skaičiavimai'}
+              {isExpanded ? <ChevronUp className="size-3.5 ml-1" /> : <ChevronDown className="size-3.5 ml-1" />}
+            </Button>
           </div>
-        </div>
+
+          <div className="grid lg:grid-cols-2">
+            <IndividualSummaryItems
+              title="Vidurkis per mėnesį"
+              salaryAfterTaxes={monthlyAfter}
+              salaryBeforeTaxes={monthlyBefore}
+              taxAmount={monthlyTaxes}
+              taxPercentage={totals.total.percentage}
+              className="not-lg:pb-2 not-lg:mb-2 not-lg:border-b lg:pr-4 lg:mr-4 lg:border-r border-stone-200"
+            />
+            <IndividualSummaryItems
+              title="Iš viso per metus"
+              salaryAfterTaxes={totals.salaryAfterTaxes}
+              salaryBeforeTaxes={totals.salaryBeforeTaxes}
+              taxAmount={totals.total.amount}
+              taxPercentage={totals.total.percentage}
+            />
+          </div>
+        </Card>
         <Collapsible open={isExpanded} asChild>
           <TaxSummaryTable {...taxTableProps} />
         </Collapsible>
