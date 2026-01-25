@@ -54,20 +54,20 @@ export const IndividualIncomeSummary = React.memo(
                 {label}
                 {infoDrawer}
               </h3>
-              <Button variant="outline" size="sm" onClick={actions.toggle} className="h-7 w-48">
+              <Button variant="outline" size="sm" onClick={actions.toggle} className="h-7 lg:w-48">
                 {isExpanded ? 'Slėpti detales' : 'Detalūs skaičiavimai'}
                 {isExpanded ? <ChevronUp className="size-3.5 ml-1" /> : <ChevronDown className="size-3.5 ml-1" />}
               </Button>
             </div>
 
-            <div className="grid grid-cols-2">
+            <div className="grid lg:grid-cols-2">
               <IndividualSummaryItems
                 title="Vidurkis per mėnesį"
                 salaryAfterTaxes={monthlyAfter}
                 salaryBeforeTaxes={monthlyBefore}
                 taxAmount={monthlyTaxes}
                 taxPercentage={totals.total.percentage}
-                className="pr-4 mr-4 border-r border-stone-200"
+                className="not-lg:pb-2 not-lg:mb-2 not-lg:border-b lg:pr-4 lg:mr-4 lg:border-r border-stone-200"
               />
               <IndividualSummaryItems
                 title="Iš viso per metus"
