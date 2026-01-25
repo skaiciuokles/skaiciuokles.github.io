@@ -111,7 +111,7 @@ export function TaxCalculatorPage() {
             <IncomeSummary income={income} />
           </div>
 
-          <div className="p-3 space-y-4">
+          <div className="p-3 space-y-3">
             <IndividualIncomeSummary
               id="employment"
               label="Darbo santykiai"
