@@ -54,13 +54,14 @@ export const IndividualIncomeSummary = React.memo(
             </Button>
           </div>
 
-          <div className="grid grid-cols-2 gap-8">
+          <div className="grid grid-cols-2">
             <IndividualSummaryItems
               title="Vidurkis per mėnesį"
               salaryAfterTaxes={monthlyAfter}
               salaryBeforeTaxes={monthlyBefore}
               taxAmount={monthlyTaxes}
               taxPercentage={totals.total.percentage}
+              className="pr-4 mr-4 border-r border-stone-200"
             />
             <IndividualSummaryItems
               title="Iš viso per metus"
