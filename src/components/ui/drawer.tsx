@@ -56,7 +56,7 @@ const drawerContentVariants = cva(cn('group/drawer-content bg-background fixed z
 function DrawerContent({ className, size, direction, children, ...props }: DrawerContentProps) {
   return (
     <DrawerPortal data-slot="drawer-portal">
-      <DrawerOverlay onClick={e => e.stopPropagation()} />
+      <DrawerOverlay />
       <DrawerPrimitive.Content
         onClick={e => e.stopPropagation()}
         data-slot="drawer-content"
