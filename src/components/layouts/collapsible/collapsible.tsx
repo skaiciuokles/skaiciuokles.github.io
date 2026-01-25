@@ -49,12 +49,12 @@ export function Collapsible({
     () => ({
       open: () => {
         setIsRendered(true);
-        requestAnimationFrame(() => setIsOpen(true));
+        React.startTransition(() => setIsOpen(true));
       },
       close,
       toggle: () => {
         setIsRendered(prev => {
-          requestAnimationFrame(() => (!prev ? setIsOpen(true) : close()));
+          React.startTransition(() => (!prev ? setIsOpen(true) : close()));
           // This always returns true, because we either immediately render and then open in the next frame or we
           // close in the next frame and then remove the element from DOM after the default transition duration
           return true;
