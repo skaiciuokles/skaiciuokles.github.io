@@ -1,7 +1,7 @@
 'use client';
 
 import { createPortal } from 'react-dom';
-import { cloneElement, createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { cloneElement, createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { useElementResizeObserver, useOnClickOutside } from '@/hooks';
 import { cn } from '@/lib/utils';
 import React from 'react';
@@ -40,19 +40,29 @@ export function Collapsible({
     };
   }, []);
 
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const close = useCallback(() => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+    }
     setIsOpen(false);
-    setTimeout(() => setIsRendered(false), duration);
+    closeTimeoutRef.current = setTimeout(() => setIsRendered(false), duration);
   }, [duration]);
 
   const actions = useMemo(
     () => ({
       open: () => {
+        if (closeTimeoutRef.current) {
+          clearTimeout(closeTimeoutRef.current);
+        }
         setIsRendered(true);
         React.startTransition(() => setIsOpen(true));
       },
       close,
       toggle: () => {
+        if (closeTimeoutRef.current) {
+          clearTimeout(closeTimeoutRef.current);
+        }
         setIsRendered(prev => {
           React.startTransition(() => (!prev ? setIsOpen(true) : close()));
           // This always returns true, because we either immediately render and then open in the next frame or we
@@ -98,8 +108,11 @@ export function Collapsible({
   return (
     <CollapsibleContext.Provider value={context}>
       {trigger && <CollapsibleTrigger>{trigger}</CollapsibleTrigger>}
+      {/* Not sure how to avoid this warning */}
+      {/* eslint-disable-next-line react-hooks/refs */}
       {renderBefore?.(context)}
       {isRendered && (asChild ? content : createPortal(content, document.body))}
+      {/* eslint-disable-next-line react-hooks/refs */}
       {renderAfter?.(context)}
     </CollapsibleContext.Provider>
   );
