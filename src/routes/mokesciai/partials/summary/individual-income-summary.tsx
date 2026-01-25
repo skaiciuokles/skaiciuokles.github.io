@@ -81,7 +81,7 @@ export const IndividualIncomeSummary = React.memo(
             />
           </div>
         </Card>
-        <Collapsible open={isExpanded} asChild>
+        <Collapsible open={isExpanded} className="rounded shadow-sm" asChild>
           <TaxSummaryTable {...taxTableProps} />
         </Collapsible>
       </div>

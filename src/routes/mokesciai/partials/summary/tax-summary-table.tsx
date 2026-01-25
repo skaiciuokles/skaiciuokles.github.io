@@ -10,6 +10,7 @@ import {
   TaxSummaryTableHeaderColumn,
   TaxSummaryTableHeaderRow,
 } from './tax-summary-table-wrapper';
+import { Card } from '@/components/ui/card';
 
 export const TaxSummaryTable = React.memo(
   ({
@@ -20,6 +21,7 @@ export const TaxSummaryTable = React.memo(
     withSodra,
     taxRates,
     pensionAccumulation,
+    className,
     ...rest
   }: TaxSummaryTableProps) => {
     const { results: calculations, totals } = React.useMemo(
@@ -88,7 +90,7 @@ export const TaxSummaryTable = React.memo(
     };
 
     return (
-      <div className={cn('overflow-x-auto rounded-md border border-stone-300')} {...rest}>
+      <Card className={cn('overflow-x-auto p-0', className)} {...rest}>
         <table className="w-full border-collapse text-sm">
           <thead>
             <TaxSummaryTableHeaderRow>
@@ -206,7 +208,7 @@ export const TaxSummaryTable = React.memo(
               </TaxSummaryTableBodyRow>
             ))}
             {/* Totals row */}
-            <TaxSummaryTableBodyRow className="bg-stone-200 font-bold">
+            <TaxSummaryTableBodyRow className="bg-stone-100 font-bold">
               <TaxSummaryTableBodyColumn>Viso</TaxSummaryTableBodyColumn>
               <TaxSummaryTableBodyColumn>{formatCurrency(totals.salaryAfterTaxes)}</TaxSummaryTableBodyColumn>
               <TaxSummaryTableBodyColumn>
@@ -306,7 +308,7 @@ export const TaxSummaryTable = React.memo(
             </TaxSummaryTableBodyRow>
           </tbody>
         </table>
-      </div>
+      </Card>
     );
   },
 );
