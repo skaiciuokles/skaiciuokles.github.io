@@ -48,8 +48,8 @@ export const buttonVariants = cva(
         sm: 'min-h-8 rounded-md gap-1.5 px-3',
         lg: 'min-h-10 rounded-md px-6',
         xl: 'min-h-12 rounded-md px-8',
-        icon: 'size-9',
-        none: 'min-h-auto px-0 py-0',
+        icon: 'p-0 size-9',
+        none: 'p-0',
       },
     },
     defaultVariants: {
