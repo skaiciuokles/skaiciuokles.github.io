@@ -15,7 +15,6 @@ import type { Year } from '../utils';
 
 export const TaxSummaryTable = React.memo(
   ({
-    label,
     monthlySalary,
     additionalForGPM,
     gpmOverride,
@@ -327,7 +326,6 @@ export const TaxSummaryTable = React.memo(
 
 type TaxSummaryTableProps = React.ComponentProps<'div'> & {
   year: Year;
-  label: React.ReactNode;
   monthlySalary: number;
   taxRates: TaxRates;
   additionalForGPM?: number;

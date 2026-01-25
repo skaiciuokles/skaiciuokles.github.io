@@ -128,7 +128,6 @@ export function TaxCalculatorPage() {
                 year={income.year}
               />
               <TaxSummaryTable
-                label="Metinė darbo santykių mokesčių suvestinė"
                 monthlySalary={income.monthly ?? 0}
                 additionalForGPM={
                   (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 + (income.ivMonthly ?? 0) * ivTaxRates.gpmBase * 12
@@ -153,7 +152,6 @@ export function TaxCalculatorPage() {
                 year={income.year}
               />
               <TaxSummaryTable
-                label="Metinė IV pagal pažymą mokesčių suvestinė"
                 monthlySalary={income.ivMonthly ?? 0}
                 open={showDetails.iv}
                 taxRates={ivTaxRates}
@@ -176,7 +174,6 @@ export function TaxCalculatorPage() {
                 year={income.year}
               />
               <TaxSummaryTable
-                label="Metinė MB mokesčių suvestinė"
                 monthlySalary={income.mbMonthly ?? 0}
                 open={showDetails.mb}
                 taxRates={mbTaxRates}
@@ -196,7 +193,6 @@ export function TaxCalculatorPage() {
                 year={income.year}
               />
               <TaxSummaryTable
-                label="Metinė MB dividendų mokesčių suvestinė"
                 monthlySalary={income.mbDividendsMonthly ?? 0}
                 open={showDetails.mbDividends}
                 taxRates={mbTaxRates}
