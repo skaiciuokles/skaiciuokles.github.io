@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { cn } from '@/lib/utils';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Input } from '@/components/forms/input';
 import { Select, type SelectOption } from '@/components/forms/select';
 import { IncomeOptimizer } from './income-optimizer';
 import { formatCurrency, formatPercent, MB_INCOME_LIMIT_PER_YEAR, MMA, PROFIT_TAX_RATES, VDU } from './utils';
@@ -17,6 +17,11 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
   const mbIncomeExceedsLimit = (income.mbMonthly ?? 0) > mbIncomeLimit;
   const profitTaxRates = PROFIT_TAX_RATES[income.year];
   const handleYearChange = useCallback((year: Year) => setIncome(prev => ({ ...prev, year })), [setIncome]);
+  const handleIncomeChange = useCallback(
+    (value: number | undefined, e: React.ChangeEvent<HTMLInputElement>) =>
+      setIncome(prev => ({ ...prev, [e.target.name]: value })),
+    [setIncome],
+  );
 
   return (
     <div className="flex md:flex-col md:border-r not-md:border-b">
@@ -31,14 +36,13 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
           />
         </div>
         <div className="p-3 border rounded-sm not-md:min-w-60">
-          <Label className="mb-2 block text-left font-bold">Mėnesio darbo santykių pajamos (prieš mokesčius):</Label>
           <Input
+            label="Mėnesio darbo santykių pajamos (prieš mokesčius):"
             type="number"
-            value={income.monthly ?? ''}
-            onChange={e =>
-              setIncome(prev => ({ ...prev, monthly: e.target.value ? Number(e.target.value) : undefined }))
-            }
+            value={income.monthly}
+            onChange={handleIncomeChange}
             placeholder="Pajamos iš darbo santykių"
+            name="monthly"
           />
           <div className="flex items-center mt-2">
             <input
@@ -54,28 +58,26 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
           </div>
         </div>
         <div className="p-3 border rounded-sm not-md:min-w-72">
-          <Label className="mb-2 block text-left font-bold">Mėnesio IV pagal pažymą pajamos (prieš mokesčius):</Label>
           <Input
+            label="Mėnesio IV pagal pažymą pajamos (prieš mokesčius):"
             type="number"
-            value={income.ivMonthly ?? ''}
-            onChange={e =>
-              setIncome(prev => ({ ...prev, ivMonthly: e.target.value ? Number(e.target.value) : undefined }))
-            }
+            value={income.ivMonthly}
+            onChange={handleIncomeChange}
             placeholder="Pajamos iš individualios veiklos"
+            name="ivMonthly"
           />
           <p className="text-xs text-gray-500 mt-1.5 italic text-left not-md:text-xs">
             30% išlaidų atskaitymas įtrauktas automatiškai
           </p>
         </div>
         <div className={cn('p-3 border rounded-sm not-md:min-w-48', mbIncomeExceedsLimit ? 'text-red-500' : '')}>
-          <Label className="mb-2 block text-left font-bold">Mėnesio MB pajamos (prieš mokesčius):</Label>
           <Input
+            label="Mėnesio MB pajamos (prieš mokesčius):"
             type="number"
-            value={income.mbMonthly ?? ''}
-            onChange={e =>
-              setIncome(prev => ({ ...prev, mbMonthly: e.target.value ? Number(e.target.value) : undefined }))
-            }
+            value={income.mbMonthly}
+            onChange={handleIncomeChange}
             placeholder="Pajamos iš MB"
+            name="mbMonthly"
           />
           {mbIncomeExceedsLimit ? (
             <p className="text-xs text-red-500 mt-1.5 italic text-left not-md:text-xs">
@@ -89,19 +91,13 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
           )}
         </div>
         <div className="p-3 border rounded-sm not-md:min-w-80">
-          <Label className="mb-2 block text-left font-bold">
-            Mėnesio MB pelno suma dividendams (prieš pelno mokestį):
-          </Label>
           <Input
+            label="Mėnesio MB pelno suma dividendams (prieš pelno mokestį):"
             type="number"
-            value={income.mbDividendsMonthly ?? ''}
-            onChange={e =>
-              setIncome(prev => ({
-                ...prev,
-                mbDividendsMonthly: e.target.value ? Number(e.target.value) : undefined,
-              }))
-            }
+            value={income.mbDividendsMonthly}
+            onChange={handleIncomeChange}
             placeholder="Pajamos iš MB dividendų"
+            name="mbDividendsMonthly"
           />
           <p className="text-xs text-gray-500 mt-1.5 italic text-left not-md:text-xs">
             Pajamos dividendais išmokamos MB sumokėjus pelno mokestį.
