@@ -1,14 +1,12 @@
 import React from 'react';
 import { InfoIcon } from 'lucide-react';
 import { Tooltip } from '@/components/layouts/tooltip';
-import { formatCurrency, formatPercent, calculateAllTaxes } from '../utils';
+import { formatCurrency, formatPercent } from '../utils';
 import { IncomeSummaryCard } from './income-summary-card';
-import type { Income } from '../utils';
+import type { IncomeTotalTaxes } from '../utils';
 import { cn } from '@/lib/utils';
 
-export const IncomeSummary = React.memo(({ income, className }: IncomeSummaryProps) => {
-  const { totals, psdRemainder } = React.useMemo(() => calculateAllTaxes(income), [income]);
-
+export const IncomeSummary = React.memo(({ totals, psdRemainder, className }: IncomeSummaryProps) => {
   const monthlyAverageBefore = totals.salaryBeforeTaxes / 12;
   const monthlyAverageAfter = totals.salaryAfterTaxes / 12;
 
@@ -67,6 +65,7 @@ export const IncomeSummary = React.memo(({ income, className }: IncomeSummaryPro
 });
 
 interface IncomeSummaryProps {
-  income: Income;
+  totals: IncomeTotalTaxes;
+  psdRemainder: number;
   className?: string;
 }

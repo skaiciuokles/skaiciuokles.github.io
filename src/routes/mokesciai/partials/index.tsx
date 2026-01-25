@@ -108,7 +108,7 @@ export function TaxCalculatorPage() {
 
         <div className="md:overflow-y-auto flex flex-col min-h-full">
           <div className="p-2 border-b bg-stone-50/50">
-            <IncomeSummary income={income} />
+            <IncomeSummary totals={allTaxes.totals} psdRemainder={allTaxes.psdRemainder} />
           </div>
 
           <div className="p-2 space-y-3">

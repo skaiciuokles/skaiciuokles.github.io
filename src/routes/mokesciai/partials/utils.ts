@@ -480,6 +480,8 @@ export function calculateAllTaxes(income: Income) {
   };
 }
 
+export type AllTaxes = ReturnType<typeof calculateAllTaxes>;
+
 export interface AllTaxesResult {
   totals: IncomeTotalTaxes;
   psdRemainder: number;
