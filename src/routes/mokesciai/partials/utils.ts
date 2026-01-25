@@ -10,6 +10,24 @@ export const MMA = {
   2026: 1153,
 };
 
+// Pelno mokestis
+export const PROFIT_TAX_RATES = {
+  2025: {
+    gracePeriod: 12,
+    reducedRate: 0.06,
+    mainRate: 0.16,
+    limitPerYear: 300000,
+    info: 'https://www.vmi.lt/evmi/pelno-mokestis2',
+  },
+  2026: {
+    gracePeriod: 24,
+    reducedRate: 0.07,
+    mainRate: 0.17,
+    limitPerYear: 300000,
+    info: 'https://www.vmi.lt/evmi/5724',
+  },
+};
+
 export const MB_INCOME_LIMIT_PER_YEAR = 100000;
 
 export type Year = keyof typeof MMA;
