@@ -2,8 +2,8 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/layouts/tooltip';
 import { ExternalLink } from '@/components/ui/external-link';
-import { calculateSourceTaxes, formatCurrency, formatPercent, months, TAX_CALCULATION_EVENT } from '../utils';
-import type { MonthlyIncomeCalculations, TaxCalculationEventDetail, TaxRates } from '../utils';
+import { calculateSourceTaxes, formatCurrency, formatPercent, months } from '../utils';
+import type { MonthlyIncomeCalculations, TaxRates } from '../utils';
 import {
   TaxSummaryTableBodyColumn,
   TaxSummaryTableBodyRow,
@@ -22,7 +22,6 @@ export const TaxSummaryTable = React.memo(
     pensionAccumulation,
     ...rest
   }: TaxSummaryTableProps) => {
-    const id = React.useId();
     const { results: calculations, totals } = React.useMemo(
       () =>
         calculateSourceTaxes({
@@ -35,12 +34,6 @@ export const TaxSummaryTable = React.memo(
         }),
       [monthlySalary, additionalForGPM, withSodra, taxRates, gpmOverride, pensionAccumulation],
     );
-
-    // Emit custom event when calculations complete
-    React.useEffect(() => {
-      const event = new CustomEvent<TaxCalculationEventDetail>(TAX_CALCULATION_EVENT, { detail: { id, totals } });
-      document.dispatchEvent(event);
-    }, [id, totals]);
 
     const headers = [
       'Mėnuo',
