@@ -26,21 +26,23 @@ export function Select<Value extends ValueType>({
   );
   return (
     <SelectBase value={value?.toString()} onValueChange={onChange ? handleChange : undefined} {...rest}>
-      {label && (
-        <Label htmlFor={id} className="mb-2 block text-left font-bold">
-          {label}
-        </Label>
-      )}
-      <SelectTrigger className={className} id={id}>
-        <SelectValue placeholder={placeholder} />
-      </SelectTrigger>
-      <SelectContent>
-        {options.map(option => (
-          <SelectItem key={option.value.toString()} value={option.value.toString()}>
-            {option.label}
-          </SelectItem>
-        ))}
-      </SelectContent>
+      <div className="text-sm space-y-2">
+        {label && (
+          <Label htmlFor={id} className="font-bold">
+            {label}
+          </Label>
+        )}
+        <SelectTrigger className={className} id={id}>
+          <SelectValue placeholder={placeholder} />
+        </SelectTrigger>
+        <SelectContent>
+          {options.map(option => (
+            <SelectItem key={option.value.toString()} value={option.value.toString()}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </div>
     </SelectBase>
   );
 }

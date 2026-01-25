@@ -22,9 +22,9 @@ export function Input({ label, className, value, type, onChange, id: providedId,
   );
 
   return (
-    <div className="w-full">
+    <div className="text-sm space-y-2">
       {label && (
-        <Label htmlFor={id} className="mb-2 block text-left font-bold">
+        <Label htmlFor={id} className="font-bold">
           {label}
         </Label>
       )}
