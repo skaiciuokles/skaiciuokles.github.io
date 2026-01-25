@@ -21,10 +21,11 @@ export function Collapsible({
   renderAfter,
   initialOpen = false,
   collapseOnClickOutside = false,
+  open,
   ...rest
 }: CollapsibleProps) {
-  const [isOpen, setIsOpen] = useState(initialOpen);
-  const [isRendered, setIsRendered] = useState(initialOpen);
+  const [isOpen, setIsOpen] = useState(open ?? initialOpen);
+  const [isRendered, setIsRendered] = useState(open ?? initialOpen);
   const [element, size] = useElementResizeObserver(entry => {
     const [boxSize] = entry.borderBoxSize;
     const parent = entry.target.parentElement;
@@ -62,6 +63,14 @@ export function Collapsible({
     }),
     [close],
   );
+
+  React.useEffect(() => {
+    if (open === true) {
+      actions.open();
+    } else if (open === false) {
+      actions.close();
+    }
+  }, [open, actions]);
 
   const internalId = React.useId();
   const collapsibleId = `collapsible-trigger-${id || internalId}`;
@@ -111,6 +120,7 @@ export interface CollapsibleProps extends React.ComponentProps<'div'> {
   collapseOnClickOutside?: boolean;
   renderBefore?: (context: ICollapsibleContext) => React.ReactNode;
   renderAfter?: (context: ICollapsibleContext) => React.ReactNode;
+  open?: boolean;
 }
 
 export function CollapsibleTrigger({ children }: { children: TriggerElement }) {
