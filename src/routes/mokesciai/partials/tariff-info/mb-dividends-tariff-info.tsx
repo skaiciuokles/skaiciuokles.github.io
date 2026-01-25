@@ -15,8 +15,8 @@ import { cn } from '@/lib/utils';
 export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfoComponentProps) {
   const [income, setIncome] = React.useState<Income>({
     year,
-    mbLessThan12Months: true,
-    mbLessThan300kPerYear: true,
+    mbNoProfitTax: true,
+    mbUseReducedProfitTaxRate: true,
     pensionAccumulation: false,
   });
   // We need to simulate an income object to get the profit tax rate
@@ -54,25 +54,25 @@ export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfo
         <div className="mt-2 border-y py-2 text-sm space-y-2">
           <div className="flex items-center gap-2">
             <input
-              id="mbLessThan12Months_legend"
+              id="mbNoProfitTax_legend"
               type="checkbox"
-              checked={income.mbLessThan12Months}
-              onChange={e => setIncome({ ...income, mbLessThan12Months: e.target.checked })}
+              checked={income.mbNoProfitTax}
+              onChange={e => setIncome({ ...income, mbNoProfitTax: e.target.checked })}
               className="cursor-pointer"
             />
-            <Label htmlFor="mbLessThan12Months_legend" className="cursor-pointer">
+            <Label htmlFor="mbNoProfitTax_legend" className="cursor-pointer">
               MB iki {profitTaxRates.gracePeriod} mėnesių (0% pelno mokestis)
             </Label>
           </div>
           <div className="flex items-center gap-2">
             <input
-              id="mbLessThan300kPerYear_legend"
+              id="mbUseReducedProfitTaxRate_legend"
               type="checkbox"
-              checked={income.mbLessThan300kPerYear}
-              onChange={e => setIncome({ ...income, mbLessThan300kPerYear: e.target.checked })}
+              checked={income.mbUseReducedProfitTaxRate}
+              onChange={e => setIncome({ ...income, mbUseReducedProfitTaxRate: e.target.checked })}
               className="cursor-pointer"
             />
-            <Label htmlFor="mbLessThan300kPerYear_legend" className="cursor-pointer">
+            <Label htmlFor="mbUseReducedProfitTaxRate_legend" className="cursor-pointer">
               Pajamos iki {formatCurrency(profitTaxRates.limitPerYear)} (
               {formatPercent(profitTaxRates.reducedRate * 100)} pelno mokestis)
             </Label>

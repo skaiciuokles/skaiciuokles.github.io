@@ -103,24 +103,24 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
           <div className="flex items-center mt-2">
             <input
               type="checkbox"
-              id="mbLessThan12Months"
-              checked={income.mbLessThan12Months}
-              onChange={e => setIncome(prev => ({ ...prev, mbLessThan12Months: e.target.checked }))}
+              id="mbNoProfitTax"
+              checked={income.mbNoProfitTax}
+              onChange={e => setIncome(prev => ({ ...prev, mbNoProfitTax: e.target.checked }))}
               className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
             />
-            <Label htmlFor="mbLessThan12Months" className="text-xs font-medium cursor-pointer pl-1">
+            <Label htmlFor="mbNoProfitTax" className="text-xs font-medium cursor-pointer pl-1">
               MB iki {profitTaxRates.gracePeriod} mėnesių (0% pelno mokestis)
             </Label>
           </div>
           <div className="flex items-center mt-2">
             <input
               type="checkbox"
-              id="mbLessThan300kPerYear"
-              checked={income.mbLessThan300kPerYear}
-              onChange={e => setIncome(prev => ({ ...prev, mbLessThan300kPerYear: e.target.checked }))}
+              id="mbUseReducedProfitTaxRate"
+              checked={income.mbUseReducedProfitTaxRate}
+              onChange={e => setIncome(prev => ({ ...prev, mbUseReducedProfitTaxRate: e.target.checked }))}
               className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
             />
-            <Label htmlFor="mbLessThan300kPerYear" className="text-xs font-medium cursor-pointer pl-1">
+            <Label htmlFor="mbUseReducedProfitTaxRate" className="text-xs font-medium cursor-pointer pl-1">
               Pajamos iki {formatCurrency(profitTaxRates.limitPerYear)} (
               {formatPercent(profitTaxRates.reducedRate * 100)} pelno mokestis)
             </Label>

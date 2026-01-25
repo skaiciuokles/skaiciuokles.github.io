@@ -29,7 +29,7 @@ export function TaxCalculatorPage() {
       }
     }
 
-    return { year: 2026, pensionAccumulation: true, mbLessThan12Months: false, mbLessThan300kPerYear: true, ...parsed };
+    return { year: 2026, pensionAccumulation: true, mbNoProfitTax: false, mbUseReducedProfitTaxRate: true, ...parsed };
   });
   const incomeRef = React.useRef<Income>(income);
   React.useEffect(() => {

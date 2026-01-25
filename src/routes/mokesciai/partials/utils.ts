@@ -201,8 +201,8 @@ export interface Income {
   ivMonthly?: number; // Individuali veikla pagal pažymą
   pensionAccumulation: boolean; // Papildomas kaupimas pensijai 3%
   mbDividendsMonthly?: number; // Pajamos iš Mažosios Bedrijos dividendų
-  mbLessThan12Months: boolean; // MB naujai susikurta (netaikomas pelno mokestis)
-  mbLessThan300kPerYear: boolean; // MB pajamos neviršija 300 000 eurų (taikomas mažesnis pelno mokestis)
+  mbNoProfitTax: boolean; // MB naujai susikurta (netaikomas pelno mokestis)
+  mbUseReducedProfitTaxRate: boolean; // MB pajamos neviršija 300 000 eurų (taikomas mažesnis pelno mokestis)
 }
 
 /**
@@ -241,10 +241,10 @@ export function calculateIVGpm(annualIncome: number): { amount: number; percenta
 
 export function calculateMBProfitTaxRate(income: Income): number {
   const rates = PROFIT_TAX_RATES[income.year];
-  if (!income.mbLessThan300kPerYear) {
+  if (!income.mbUseReducedProfitTaxRate) {
     return rates.mainRate;
   }
-  return income.mbLessThan12Months ? 0 : rates.reducedRate;
+  return income.mbNoProfitTax ? 0 : rates.reducedRate;
 }
 
 export const months = [
