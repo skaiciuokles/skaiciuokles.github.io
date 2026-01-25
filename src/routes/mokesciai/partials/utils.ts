@@ -17,14 +17,14 @@ export const PROFIT_TAX_RATES = {
     reducedRate: 0.06,
     mainRate: 0.16,
     limitPerYear: 300000,
-    info: 'https://www.vmi.lt/evmi/pelno-mokestis2',
+    infoUrl: 'https://www.vmi.lt/evmi/pelno-mokestis2',
   },
   2026: {
     gracePeriod: 24,
     reducedRate: 0.07,
     mainRate: 0.17,
     limitPerYear: 300000,
-    info: 'https://www.vmi.lt/evmi/5724',
+    infoUrl: 'https://www.vmi.lt/evmi/5724',
   },
 };
 
@@ -240,10 +240,11 @@ export function calculateIVGpm(annualIncome: number): { amount: number; percenta
 }
 
 export function calculateMBProfitTaxRate(income: Income): number {
+  const rates = PROFIT_TAX_RATES[income.year];
   if (!income.mbLessThan300kPerYear) {
-    return 0.16;
+    return rates.mainRate;
   }
-  return income.mbLessThan12Months ? 0 : 0.06;
+  return income.mbLessThan12Months ? 0 : rates.reducedRate;
 }
 
 export const months = [

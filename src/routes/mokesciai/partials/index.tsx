@@ -82,12 +82,12 @@ export function TaxCalculatorPage() {
           <div className="text-gray-300 text-xs mt-1">
             Pajamos iš dividendų apmokestinamos 15 % GPM tarifu. Prieš tai MB sumoka pelno mokestį (
             {formatPercent(mbProfitTaxRate * 100)}), kuris yra įtrauktas į šį skaičiavimą.
-            <MBDividendsSources linkColor="lightBlue" />
+            <MBDividendsSources linkColor="lightBlue" year={income.year} />
           </div>
         </div>
       ),
     };
-  }, [income.mbDividendsMonthly, mbProfitTaxRate]);
+  }, [income.mbDividendsMonthly, mbProfitTaxRate, income.year]);
 
   return (
     <div className="flex flex-col h-full">

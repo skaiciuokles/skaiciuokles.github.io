@@ -4,12 +4,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select } from '@/components/forms/select';
 import { IncomeOptimizer } from './income-optimizer';
-import { formatCurrency, MB_INCOME_LIMIT_PER_YEAR, MMA, VDU } from './utils';
+import { formatCurrency, formatPercent, MB_INCOME_LIMIT_PER_YEAR, MMA, PROFIT_TAX_RATES, VDU } from './utils';
 import type { Income } from './utils';
 
 export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurationPanelProps) {
   const mbIncomeLimit = MB_INCOME_LIMIT_PER_YEAR / 12;
   const mbIncomeExceedsLimit = (income.mbMonthly ?? 0) > mbIncomeLimit;
+  const profitTaxRates = PROFIT_TAX_RATES[income.year];
 
   return (
     <div className="flex md:flex-col md:border-r not-md:border-b">
@@ -108,7 +109,7 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
               className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
             />
             <Label htmlFor="mbLessThan12Months" className="text-xs font-medium cursor-pointer pl-1">
-              MB iki 12 mėnesių (0% pelno mokestis)
+              MB iki {profitTaxRates.gracePeriod} mėnesių (0% pelno mokestis)
             </Label>
           </div>
           <div className="flex items-center mt-2">
@@ -120,7 +121,8 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
               className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
             />
             <Label htmlFor="mbLessThan300kPerYear" className="text-xs font-medium cursor-pointer pl-1">
-              Pajamos iki {formatCurrency(300000)} (6% pelno mokestis)
+              Pajamos iki {formatCurrency(profitTaxRates.limitPerYear)} (
+              {formatPercent(profitTaxRates.reducedRate * 100)} pelno mokestis)
             </Label>
           </div>
         </div>

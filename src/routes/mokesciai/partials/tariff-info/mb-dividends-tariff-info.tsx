@@ -1,5 +1,12 @@
 import React from 'react';
-import { formatPercent, calculateMBProfitTaxRate, type Income } from '../utils';
+import {
+  formatPercent,
+  formatCurrency,
+  calculateMBProfitTaxRate,
+  PROFIT_TAX_RATES,
+  type Income,
+  type Year,
+} from '../utils';
 import { TariffDrawer, type TariffInfoComponentProps, type TariffBracket } from './tariff-drawer';
 import { ExternalLink, type ExternalLinkProps } from '@/components/ui/external-link';
 import { Label } from '@/components/ui/label';
@@ -15,6 +22,7 @@ export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfo
   // We need to simulate an income object to get the profit tax rate
   const profitTaxRate = calculateMBProfitTaxRate(income);
   const effectiveGpmRate = (1 - profitTaxRate) * 0.15 + profitTaxRate;
+  const profitTaxRates = PROFIT_TAX_RATES[year];
   const brackets: TariffBracket[] = [
     {
       label: 'Dividendai',
@@ -53,7 +61,7 @@ export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfo
               className="cursor-pointer"
             />
             <Label htmlFor="mbLessThan12Months_legend" className="cursor-pointer">
-              MB naujai susikurta (netaikomas pelno mokestis)
+              MB iki {profitTaxRates.gracePeriod} mėnesių (0% pelno mokestis)
             </Label>
           </div>
           <div className="flex items-center gap-2">
@@ -65,7 +73,8 @@ export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfo
               className="cursor-pointer"
             />
             <Label htmlFor="mbLessThan300kPerYear_legend" className="cursor-pointer">
-              MB pajamos neviršija 300 000 eurų (taikomas mažesnis pelno mokestis)
+              Pajamos iki {formatCurrency(profitTaxRates.limitPerYear)} (
+              {formatPercent(profitTaxRates.reducedRate * 100)} pelno mokestis)
             </Label>
           </div>
         </div>
@@ -102,21 +111,24 @@ export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfo
         <div className="p-3 rounded-lg bg-amber-50 border border-amber-100">
           <div className="text-xs text-amber-800">
             <strong>Svarbu:</strong> Pelno mokestis gali skirtis priklausomai nuo MB apyvartos ir darbuotojų skaičiaus
-            (0%, 6% arba 16%). Skaičiuoklėje galite keisti šiuos nustatymus kairėje pusėje.
+            (0%, {formatPercent(profitTaxRates.reducedRate * 100)} arba {formatPercent(profitTaxRates.mainRate * 100)}).
+            Skaičiuoklėje galite keisti šiuos nustatymus kairėje pusėje.
           </div>
         </div>
 
-        <MBDividendsSources className="text-muted-foreground" />
+        <MBDividendsSources className="text-muted-foreground" year={year} />
       </div>
     </TariffDrawer>
   );
 }
 
-export function MBDividendsSources({ className, linkColor, ...rest }: MBDividendsSourcesProps) {
+export function MBDividendsSources({ className, linkColor, year, ...rest }: MBDividendsSourcesProps) {
+  const profitRates = PROFIT_TAX_RATES[year];
+
   return (
     <div className={cn('text-xs', className)} {...rest}>
       Daugiau informacijos galite rasti VMI pateiktoje{' '}
-      <ExternalLink href="https://www.vmi.lt/evmi/pelno-mokestis2" color={linkColor}>
+      <ExternalLink href={profitRates.infoUrl} color={linkColor}>
         pelno mokesčio
       </ExternalLink>{' '}
       ir{' '}
@@ -130,4 +142,5 @@ export function MBDividendsSources({ className, linkColor, ...rest }: MBDividend
 
 interface MBDividendsSourcesProps extends React.ComponentProps<'div'> {
   linkColor?: ExternalLinkProps['color'];
+  year: Year;
 }
