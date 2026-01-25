@@ -12,7 +12,8 @@ import {
 } from './utils';
 import { IncomeConfigurationPanel } from './income-configuration';
 import { MBDividendsSources } from './tariff-info/mb-dividends-tariff-info';
-import { IncomeSummary, IndividualIncomeSummary } from './income-summary';
+import { IndividualIncomeSummary } from './individual-income-summary';
+import { IncomeSummary } from './income-summary';
 import { calculateAllTaxes } from './utils';
 import type { Income } from './utils';
 
