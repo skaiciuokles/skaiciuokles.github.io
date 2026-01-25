@@ -75,6 +75,10 @@ export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfo
       {...rest}
     >
       <div className="space-y-4">
+        <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-100 text-xs text-emerald-800">
+          <strong>Svarbu:</strong> Dividendai nėra skaičiuojami sumuojant bendras pajamas GPM apmokestinimui.
+        </div>
+
         <div className="p-3 rounded-lg bg-violet-50 border border-violet-100 text-xs text-violet-800 space-y-2">
           <p>
             <strong>Kaip skaičiuojama:</strong> Pirmiausia MB sumoka pelno mokestį nuo uždirbto pelno. Likusi dalis
