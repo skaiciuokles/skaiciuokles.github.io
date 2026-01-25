@@ -2,6 +2,7 @@ import React from 'react';
 import { ChevronDown, ChevronUp, InfoIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { Collapsible } from '@/components/layouts/collapsible';
 import type { TariffInfoComponentProps } from '../tariff-info/tariff-drawer';
 import { IndividualSummaryItems } from './individual-summary-items';
 import { TaxSummaryTable } from './tax-summary-table';
@@ -77,13 +78,15 @@ export const IndividualIncomeSummary = React.memo(
             </div>
           </div>
         </div>
-        <TaxSummaryTable year={year} open={isExpanded} {...taxTableProps} />
+        <Collapsible open={isExpanded} asChild>
+          <TaxSummaryTable year={year} {...taxTableProps} />
+        </Collapsible>
       </div>
     );
   },
 );
 
-interface IndividualIncomeSummaryProps extends Omit<React.ComponentProps<typeof TaxSummaryTable>, 'open'> {
+interface IndividualIncomeSummaryProps extends React.ComponentProps<typeof TaxSummaryTable> {
   id: string;
   label: string;
   totals: {
