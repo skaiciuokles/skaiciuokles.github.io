@@ -9,9 +9,11 @@ export function Select<Value extends ValueType>({
   className,
   label,
   onChange,
+  id: providedId,
   ...rest
 }: SelectProps<Value>) {
-  const id = React.useId();
+  const generatedId = React.useId();
+  const id = providedId ?? generatedId;
   const optionMap = React.useMemo(() => new Map(options.map(option => [option.value.toString(), option])), [options]);
   const handleChange = React.useCallback(
     (value: string) => {
@@ -54,6 +56,7 @@ interface SelectProps<Value extends ValueType> extends Omit<
   React.ComponentProps<typeof SelectBase>,
   'value' | 'onValueChange'
 > {
+  id?: string;
   className?: string;
   placeholder?: string;
   options: SelectOption<Value>[];

@@ -4,8 +4,9 @@ import { InputBase, type InputBaseProps } from '@/components/ui/input';
 
 export function Input(props: NumberInputProps): React.JSX.Element;
 export function Input(props: TextInputProps): React.JSX.Element;
-export function Input({ label, className, value, type, onChange, ...rest }: NumberInputProps | TextInputProps) {
-  const id = React.useId();
+export function Input({ label, className, value, type, onChange, id: providedId, ...rest }: InputProps) {
+  const generatedId = React.useId();
+  const id = providedId ?? generatedId;
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       if (!onChange) return;
@@ -47,3 +48,5 @@ type TextInputProps = BaseProps & {
   value?: string;
   onChange?: (value: string, event: React.ChangeEvent<HTMLInputElement>) => void;
 };
+
+type InputProps = NumberInputProps | TextInputProps;
