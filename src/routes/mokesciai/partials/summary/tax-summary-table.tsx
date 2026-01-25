@@ -10,7 +10,6 @@ import {
   TaxSummaryTableHeaderColumn,
   TaxSummaryTableHeaderRow,
 } from './tax-summary-table-wrapper';
-import type { Year } from '../utils';
 
 export const TaxSummaryTable = React.memo(
   ({
@@ -21,7 +20,6 @@ export const TaxSummaryTable = React.memo(
     withSodra,
     taxRates,
     pensionAccumulation,
-    year,
     ...rest
   }: TaxSummaryTableProps) => {
     const id = React.useId();
@@ -321,7 +319,6 @@ export const TaxSummaryTable = React.memo(
 );
 
 type TaxSummaryTableProps = React.ComponentProps<'div'> & {
-  year: Year;
   monthlySalary: number;
   taxRates: TaxRates;
   additionalForGPM?: number;

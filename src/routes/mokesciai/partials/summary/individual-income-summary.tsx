@@ -7,6 +7,7 @@ import { Collapsible } from '@/components/layouts/collapsible';
 import type { TariffInfoComponentProps } from '../tariff-info/tariff-drawer';
 import { IndividualSummaryItems } from './individual-summary-items';
 import { TaxSummaryTable } from './tax-summary-table';
+import type { Year } from '../utils';
 
 function getExpandedStateKey(id: string) {
   return `tax-summary-expanded-${id}`;
@@ -80,7 +81,7 @@ export const IndividualIncomeSummary = React.memo(
           </div>
         </div>
         <Collapsible open={isExpanded} asChild>
-          <TaxSummaryTable year={year} {...taxTableProps} />
+          <TaxSummaryTable {...taxTableProps} />
         </Collapsible>
       </div>
     );
@@ -90,6 +91,7 @@ export const IndividualIncomeSummary = React.memo(
 interface IndividualIncomeSummaryProps extends React.ComponentProps<typeof TaxSummaryTable> {
   id: string;
   label: string;
+  year: Year;
   totals: {
     salaryBeforeTaxes: number;
     salaryAfterTaxes: number;
