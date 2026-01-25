@@ -174,6 +174,7 @@ interface Tax {
 export interface MonthlyIncomeCalculations {
   totalAnnualBeforeTaxes: number;
   totalMonthlyAfterTaxes: number;
+  totalAnnualForGPM: number;
   taxes: { gpm: Tax; vsd: Tax; psd: Tax; total: Tax };
   npd: number;
 }
@@ -343,6 +344,7 @@ export function calculateSourceTaxes({ monthlySalary, taxRates, withSodra, ...op
     results.push({
       totalAnnualBeforeTaxes: totalAnnual,
       totalMonthlyAfterTaxes: afterTaxes,
+      totalAnnualForGPM,
       npd,
       taxes: {
         gpm: gpmTax,

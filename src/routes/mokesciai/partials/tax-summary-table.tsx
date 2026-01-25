@@ -2,7 +2,7 @@ import React from 'react';
 import { Tooltip } from '@/components/layouts/tooltip';
 import { ExternalLink } from '@/components/ui/external-link';
 import { calculateSourceTaxes, formatCurrency, formatPercent, months, TAX_CALCULATION_EVENT } from './utils';
-import type { TaxCalculationEventDetail, TaxRates } from './utils';
+import type { MonthlyIncomeCalculations, TaxCalculationEventDetail, TaxRates } from './utils';
 import {
   TaxSummaryTableBodyColumn,
   TaxSummaryTableBodyRow,
@@ -53,6 +53,48 @@ export const TaxSummaryTable = React.memo(
       'Viso mokesčių, EUR (%)',
     ];
 
+    const renderTotalIncome = (calc: MonthlyIncomeCalculations) => {
+      if (taxRates.gpmBase < 1) {
+        return (
+          <Tooltip
+            label={
+              <div className="max-w-sm">
+                Metinės pajamos: <b>{formatCurrency(calc.totalAnnualBeforeTaxes)}</b>
+                <br />
+                Apmokestinamos pajamos (70%): <b>{formatCurrency(calc.totalAnnualBeforeTaxes * taxRates.gpmBase)}</b>
+              </div>
+            }
+          >
+            <div className="flex items-center justify-center gap-1">
+              {formatCurrency(calc.totalAnnualBeforeTaxes)}
+              <small> ({formatCurrency(calc.totalAnnualBeforeTaxes * taxRates.gpmBase)})</small>
+            </div>
+          </Tooltip>
+        );
+      }
+
+      if (calc.totalAnnualForGPM > calc.totalAnnualBeforeTaxes) {
+        return (
+          <Tooltip
+            label={
+              <div className="max-w-sm">
+                Metinės pajamos: <b>{formatCurrency(calc.totalAnnualBeforeTaxes)}</b>
+                <br />
+                Apmokestinamos pajamos (su kitais pajamų šaltiniais): <b>{formatCurrency(calc.totalAnnualForGPM)}</b>
+              </div>
+            }
+          >
+            <div className="flex items-center justify-center gap-1">
+              {formatCurrency(calc.totalAnnualBeforeTaxes)}
+              <small> ({formatCurrency(calc.totalAnnualForGPM)})</small>
+            </div>
+          </Tooltip>
+        );
+      }
+
+      return formatCurrency(calc.totalAnnualBeforeTaxes);
+    };
+
     return (
       <TaxSummaryTableWrapper
         label={label}
@@ -88,26 +130,7 @@ export const TaxSummaryTable = React.memo(
                 )}
               </div>
             </TaxSummaryTableBodyColumn>
-            <TaxSummaryTableBodyColumn>
-              {taxRates.gpmBase < 1 ? (
-                <Tooltip
-                  label={
-                    <div className="max-w-sm">
-                      Metinės pajamos: {formatCurrency(calc.totalAnnualBeforeTaxes)}
-                      <br />
-                      Apmokestinamos pajamos (70%): {formatCurrency(calc.totalAnnualBeforeTaxes * taxRates.gpmBase)}
-                    </div>
-                  }
-                >
-                  <div className="flex items-center justify-center gap-1">
-                    {formatCurrency(calc.totalAnnualBeforeTaxes)}
-                    <small> ({formatCurrency(calc.totalAnnualBeforeTaxes * taxRates.gpmBase)})</small>
-                  </div>
-                </Tooltip>
-              ) : (
-                formatCurrency(calc.totalAnnualBeforeTaxes)
-              )}
-            </TaxSummaryTableBodyColumn>
+            <TaxSummaryTableBodyColumn>{renderTotalIncome(calc)}</TaxSummaryTableBodyColumn>
             <TaxSummaryTableBodyColumn>
               <div className="flex items-center justify-center gap-1">
                 {taxRates.gpmBase < 1 ? (
