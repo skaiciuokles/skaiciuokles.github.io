@@ -26,7 +26,15 @@ export const PROFIT_TAX_RATES = {
     limitPerYear: 300000,
     infoUrl: 'https://www.vmi.lt/evmi/5724',
   },
-};
+} as const satisfies Record<Year, ProfitTaxRateShape>;
+
+interface ProfitTaxRateShape {
+  gracePeriod: number;
+  reducedRate: number;
+  mainRate: number;
+  limitPerYear: number;
+  infoUrl: string;
+}
 
 export const MB_INCOME_LIMIT_PER_YEAR = 100000;
 
