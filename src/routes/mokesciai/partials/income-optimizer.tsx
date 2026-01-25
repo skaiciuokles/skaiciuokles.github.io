@@ -157,7 +157,7 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
           <Button variant="outline" onClick={() => setOptimizerState(prev => ({ ...prev, isOpen: false }))}>
             Atšaukti
           </Button>
-          <Button onClick={handleOptimize} disabled={!extraIncome}>
+          <Button onClick={handleOptimize} disabled={extraIncome === undefined}>
             Optimizuoti
           </Button>
         </div>
