@@ -11,6 +11,7 @@ export function Select<Value extends ValueType>({
   onChange,
   ...rest
 }: SelectProps<Value>) {
+  const id = React.useId();
   const optionMap = React.useMemo(() => new Map(options.map(option => [option.value.toString(), option])), [options]);
   const handleChange = React.useCallback(
     (value: string) => {
@@ -23,8 +24,12 @@ export function Select<Value extends ValueType>({
   );
   return (
     <SelectBase value={value?.toString()} onValueChange={onChange ? handleChange : undefined} {...rest}>
-      {label && <Label className="mb-2 block text-left font-bold">{label}</Label>}
-      <SelectTrigger className={className}>
+      {label && (
+        <Label htmlFor={id} className="mb-2 block text-left font-bold">
+          {label}
+        </Label>
+      )}
+      <SelectTrigger className={className} id={id}>
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>
