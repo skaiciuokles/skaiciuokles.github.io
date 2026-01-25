@@ -1,7 +1,7 @@
 'use client';
 
 import { createPortal } from 'react-dom';
-import { cloneElement, createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
+import { cloneElement, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useElementResizeObserver, useOnClickOutside } from '@/hooks';
 import { cn } from '@/lib/utils';
 import React from 'react';
@@ -48,6 +48,14 @@ export function Collapsible({
     setIsOpen(false);
     closeTimeoutRef.current = setTimeout(() => setIsRendered(false), duration);
   }, [duration]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const actions = useMemo(
     () => ({
