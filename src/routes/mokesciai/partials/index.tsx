@@ -207,7 +207,7 @@ export function TaxCalculatorPage() {
             </div>
           </div>
 
-          <div className="text-sm text-gray-600 px-3 py-1 min-h-12 leading-none flex items-center justify-center border-t mt-auto">
+          <div className="text-sm text-gray-600 px-3 py-1 min-h-12 leading-none flex items-center justify-center border-t mt-auto text-center">
             <span>
               Skaičiuoklė paremta{' '}
               <ExternalLink href="https://www.vmi.lt/evmi/5725">VMI pateikta informacija.</ExternalLink> Rezultatai yra
