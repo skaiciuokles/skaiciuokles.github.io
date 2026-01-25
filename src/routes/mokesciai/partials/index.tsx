@@ -106,7 +106,7 @@ export function TaxCalculatorPage() {
       <div className="md:grid md:grid-cols-[340px_auto] md:overflow-hidden md:h-full not-md:overflow-y-auto">
         <IncomeConfigurationPanel income={income} setIncome={setIncome} />
 
-        <div className="md:overflow-y-auto flex flex-col h-full">
+        <div className="md:overflow-y-auto flex flex-col min-h-full">
           <div className="p-3 border-b bg-stone-50/50">
             <IncomeSummary income={income} />
           </div>
@@ -167,7 +167,7 @@ export function TaxCalculatorPage() {
             />
           </div>
 
-          <div className="text-sm text-gray-600 px-3 py-1 min-h-12 leading-none flex items-center justify-center border-t mt-auto text-center">
+          <div className="text-sm text-gray-600 px-3 py-2 min-h-12 leading-none flex items-center justify-center border-t mt-auto text-center">
             <span>
               Skaičiuoklė paremta{' '}
               <ExternalLink href="https://www.vmi.lt/evmi/5725">VMI pateikta informacija.</ExternalLink> Rezultatai yra
