@@ -52,15 +52,14 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
       additionalForGPM: !income.monthly ? mbTaxableMonthly * 12 : 0,
       gpmOverride: ivGpmResult ? { amount: ivGpmResult.amount / 12, percentage: ivGpmResult.percentage } : undefined,
       withSodra: true,
-      pensionAccumulation: income.pensionAccumulation,
     });
 
     const { totals: duTotals } = calculateSourceTaxes({
       monthlySalary: income.monthly ?? 0,
       taxRates: taxRates,
       additionalForGPM: (mbTaxableMonthly + ivTaxableMonthly) * 12,
-      withSodra: true,
       pensionAccumulation: income.pensionAccumulation,
+      withSodra: true,
     });
 
     let totalTaxesAmount = mbTotals.total.amount + ivTotals.total.amount + duTotals.total.amount + mbDividendsTotTaxes;
