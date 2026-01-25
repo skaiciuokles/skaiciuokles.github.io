@@ -2,6 +2,7 @@ import React from 'react';
 import { ChevronDown, ChevronUp, InfoIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { useIsOpen } from '@/hooks/general';
 import { Collapsible } from '@/components/layouts/collapsible';
 import type { TariffInfoComponentProps } from '../tariff-info/tariff-drawer';
 import { IndividualSummaryItems } from './individual-summary-items';
@@ -13,7 +14,7 @@ function getExpandedStateKey(id: string) {
 
 export const IndividualIncomeSummary = React.memo(
   ({ label, totals, className, InfoDrawer, incomeRef, year, id, ...taxTableProps }: IndividualIncomeSummaryProps) => {
-    const [isExpanded, setIsExpanded] = React.useState(() => {
+    const [isExpanded, actions] = useIsOpen(undefined, () => {
       const saved = localStorage.getItem(getExpandedStateKey(id));
       return saved === 'true';
     });
@@ -53,7 +54,7 @@ export const IndividualIncomeSummary = React.memo(
                 {label}
                 {infoDrawer}
               </h3>
-              <Button variant="outline" size="sm" onClick={() => setIsExpanded(!isExpanded)} className="h-7 w-48">
+              <Button variant="outline" size="sm" onClick={actions.toggle} className="h-7 w-48">
                 {isExpanded ? 'Slėpti detales' : 'Detalūs skaičiavimai'}
                 {isExpanded ? <ChevronUp className="size-3.5 ml-1" /> : <ChevronDown className="size-3.5 ml-1" />}
               </Button>
@@ -95,7 +96,6 @@ interface IndividualIncomeSummaryProps extends React.ComponentProps<typeof TaxSu
     total: { amount: number; percentage: number };
   };
   className?: string;
-
   incomeRef?: TariffInfoComponentProps['incomeRef'];
   InfoDrawer?: React.FC<TariffInfoComponentProps & { trigger?: React.ReactNode }>;
 }
