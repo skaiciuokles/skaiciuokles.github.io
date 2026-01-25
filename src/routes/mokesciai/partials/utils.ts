@@ -480,17 +480,6 @@ export function calculateAllTaxes(income: Income) {
   };
 }
 
-export type AllTaxes = ReturnType<typeof calculateAllTaxes>;
-
-export interface AllTaxesResult {
-  totals: IncomeTotalTaxes;
-  psdRemainder: number;
-  employmentTotals: IncomeTotalTaxes;
-  ivTotals: IncomeTotalTaxes;
-  mbTotals: IncomeTotalTaxes;
-  mbDividendsTotals: IncomeTotalTaxes;
-}
-
 interface CalculateSourceTaxesOptions {
   monthlySalary: number;
   taxRates: TaxRates;
