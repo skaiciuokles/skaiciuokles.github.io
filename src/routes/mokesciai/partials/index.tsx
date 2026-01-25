@@ -1,5 +1,5 @@
 import React from 'react';
-import { TaxSummaryTable } from './tax-summary-table';
+import { TaxSummaryTable } from './summary/tax-summary-table';
 import { ExternalLink } from '@/components/ui/external-link';
 import { EmploymentTariffDrawer, IVTariffDrawer, MBDividendsTariffDrawer, MBTariffDrawer } from './tariff-info';
 import {
@@ -12,8 +12,8 @@ import {
 } from './utils';
 import { IncomeConfigurationPanel } from './income-configuration';
 import { MBDividendsSources } from './tariff-info/mb-dividends-tariff-info';
-import { IndividualIncomeSummary } from './individual-income-summary';
-import { IncomeSummary } from './income-summary';
+import { IndividualIncomeSummary } from './summary/individual-income-summary';
+import { IncomeSummary } from './summary/income-summary';
 import { calculateAllTaxes } from './utils';
 import type { Income } from './utils';
 

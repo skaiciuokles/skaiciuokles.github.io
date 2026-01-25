@@ -2,9 +2,9 @@ import React from 'react';
 import { ChevronDown, ChevronUp, InfoIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import type { TariffInfoComponentProps } from './tariff-info/tariff-drawer';
-import { IndividualSummaryItems } from './summary/individual-summary-items';
-import type { Year } from './utils';
+import type { TariffInfoComponentProps } from '../tariff-info/tariff-drawer';
+import { IndividualSummaryItems } from './individual-summary-items';
+import type { Year } from '../utils';
 
 export const IndividualIncomeSummary = React.memo(
   ({

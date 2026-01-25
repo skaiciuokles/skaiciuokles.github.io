@@ -1,9 +1,9 @@
 import React from 'react';
 import { InfoIcon } from 'lucide-react';
 import { Tooltip } from '@/components/layouts/tooltip';
-import { formatCurrency, formatPercent, calculateAllTaxes } from './utils';
-import { IncomeSummaryCard } from './summary/income-summary-card';
-import type { Income } from './utils';
+import { formatCurrency, formatPercent, calculateAllTaxes } from '../utils';
+import { IncomeSummaryCard } from './income-summary-card';
+import type { Income } from '../utils';
 import { cn } from '@/lib/utils';
 
 export const IncomeSummary = React.memo(({ income, className }: IncomeSummaryProps) => {

@@ -3,15 +3,15 @@ import { cn } from '@/lib/utils';
 import { Tooltip } from '@/components/layouts/tooltip';
 import { ExternalLink } from '@/components/ui/external-link';
 import { Collapsible } from '@/components/layouts/collapsible';
-import { calculateSourceTaxes, formatCurrency, formatPercent, months, TAX_CALCULATION_EVENT } from './utils';
-import type { MonthlyIncomeCalculations, TaxCalculationEventDetail, TaxRates } from './utils';
+import { calculateSourceTaxes, formatCurrency, formatPercent, months, TAX_CALCULATION_EVENT } from '../utils';
+import type { MonthlyIncomeCalculations, TaxCalculationEventDetail, TaxRates } from '../utils';
 import {
   TaxSummaryTableBodyColumn,
   TaxSummaryTableBodyRow,
   TaxSummaryTableHeaderColumn,
   TaxSummaryTableHeaderRow,
 } from './tax-summary-table-wrapper';
-import type { Year } from './utils';
+import type { Year } from '../utils';
 
 export const TaxSummaryTable = React.memo(
   ({
