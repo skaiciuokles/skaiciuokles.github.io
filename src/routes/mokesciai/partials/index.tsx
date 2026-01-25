@@ -1,5 +1,4 @@
 import React from 'react';
-import { TaxSummaryTable } from './summary/tax-summary-table';
 import { ExternalLink } from '@/components/ui/external-link';
 import { EmploymentTariffDrawer, IVTariffDrawer, MBDividendsTariffDrawer, MBTariffDrawer } from './tariff-info';
 import {
@@ -20,7 +19,6 @@ import type { Income } from './utils';
 const INCOME_STORAGE_KEY = 'tax-calculator-income';
 
 export function TaxCalculatorPage() {
-  const [showDetails, setShowDetails] = React.useState<Record<string, boolean>>({});
   const [income, setIncome] = React.useState<Income>(() => {
     const savedIncome = localStorage.getItem(INCOME_STORAGE_KEY);
     let parsed: Partial<Income> = {};
@@ -103,8 +101,6 @@ export function TaxCalculatorPage() {
 
   const allTaxes = React.useMemo(() => calculateAllTaxes(income), [income]);
 
-  const toggleDetails = React.useCallback((id: string) => setShowDetails(prev => ({ ...prev, [id]: !prev[id] })), []);
-
   return (
     <div className="flex flex-col h-full">
       <div className="md:grid md:grid-cols-[340px_auto] md:overflow-hidden md:h-full not-md:overflow-y-auto">
@@ -116,91 +112,59 @@ export function TaxCalculatorPage() {
           </div>
 
           <div className="p-3 space-y-4">
-            <div className="space-y-2">
-              <IndividualIncomeSummary
-                id="employment"
-                label="Darbo santykiai"
-                totals={allTaxes.employmentTotals}
-                isDetailsOpen={!!showDetails.employment}
-                onToggleDetails={toggleDetails}
-                InfoDrawer={EmploymentTariffDrawer}
-                incomeRef={incomeRef}
-                year={income.year}
-              />
-              <TaxSummaryTable
-                monthlySalary={income.monthly ?? 0}
-                additionalForGPM={
-                  (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 + (income.ivMonthly ?? 0) * ivTaxRates.gpmBase * 12
-                }
-                open={showDetails.employment}
-                taxRates={taxRates}
-                pensionAccumulation={income.pensionAccumulation}
-                year={income.year}
-                withSodra
-              />
-            </div>
+            <IndividualIncomeSummary
+              id="employment"
+              label="Darbo santykiai"
+              totals={allTaxes.employmentTotals}
+              InfoDrawer={EmploymentTariffDrawer}
+              incomeRef={incomeRef}
+              year={income.year}
+              monthlySalary={income.monthly ?? 0}
+              additionalForGPM={
+                (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 + (income.ivMonthly ?? 0) * ivTaxRates.gpmBase * 12
+              }
+              taxRates={taxRates}
+              pensionAccumulation={income.pensionAccumulation}
+              withSodra
+            />
 
-            <div className="space-y-2">
-              <IndividualIncomeSummary
-                id="iv"
-                label="Individuali veikla"
-                totals={allTaxes.ivTotals}
-                isDetailsOpen={!!showDetails.iv}
-                onToggleDetails={toggleDetails}
-                InfoDrawer={IVTariffDrawer}
-                incomeRef={incomeRef}
-                year={income.year}
-              />
-              <TaxSummaryTable
-                monthlySalary={income.ivMonthly ?? 0}
-                open={showDetails.iv}
-                taxRates={ivTaxRates}
-                additionalForGPM={!income.monthly ? (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 : 0}
-                gpmOverride={ivGpmOverride}
-                year={income.year}
-                withSodra
-              />
-            </div>
+            <IndividualIncomeSummary
+              id="iv"
+              label="Individuali veikla"
+              totals={allTaxes.ivTotals}
+              InfoDrawer={IVTariffDrawer}
+              incomeRef={incomeRef}
+              year={income.year}
+              monthlySalary={income.ivMonthly ?? 0}
+              taxRates={ivTaxRates}
+              additionalForGPM={!income.monthly ? (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 : 0}
+              gpmOverride={ivGpmOverride}
+              withSodra
+            />
 
-            <div className="space-y-2">
-              <IndividualIncomeSummary
-                id="mb"
-                label="MB pajamos (civilinė sutartis)"
-                totals={allTaxes.mbTotals}
-                isDetailsOpen={!!showDetails.mb}
-                onToggleDetails={toggleDetails}
-                InfoDrawer={MBTariffDrawer}
-                incomeRef={incomeRef}
-                year={income.year}
-              />
-              <TaxSummaryTable
-                monthlySalary={income.mbMonthly ?? 0}
-                open={showDetails.mb}
-                taxRates={mbTaxRates}
-                year={income.year}
-              />
-            </div>
+            <IndividualIncomeSummary
+              id="mb"
+              label="MB pajamos (civilinė sutartis)"
+              totals={allTaxes.mbTotals}
+              InfoDrawer={MBTariffDrawer}
+              incomeRef={incomeRef}
+              year={income.year}
+              monthlySalary={income.mbMonthly ?? 0}
+              taxRates={mbTaxRates}
+            />
 
-            <div className="space-y-2">
-              <IndividualIncomeSummary
-                id="mbDividends"
-                label="MB dividendai"
-                totals={allTaxes.mbDividendsTotals}
-                isDetailsOpen={!!showDetails.mbDividends}
-                onToggleDetails={toggleDetails}
-                InfoDrawer={MBDividendsTariffDrawer}
-                incomeRef={incomeRef}
-                year={income.year}
-              />
-              <TaxSummaryTable
-                monthlySalary={income.mbDividendsMonthly ?? 0}
-                open={showDetails.mbDividends}
-                taxRates={mbTaxRates}
-                gpmOverride={mbDividendsGpmOverride}
-                gpmTooltip={gpmTooltip}
-                year={income.year}
-              />
-            </div>
+            <IndividualIncomeSummary
+              id="mbDividends"
+              label="MB dividendai"
+              totals={allTaxes.mbDividendsTotals}
+              InfoDrawer={MBDividendsTariffDrawer}
+              incomeRef={incomeRef}
+              year={income.year}
+              monthlySalary={income.mbDividendsMonthly ?? 0}
+              taxRates={mbTaxRates}
+              gpmOverride={mbDividendsGpmOverride}
+              gpmTooltip={gpmTooltip}
+            />
           </div>
 
           <div className="text-sm text-gray-600 px-3 py-1 min-h-12 leading-none flex items-center justify-center border-t mt-auto text-center">
