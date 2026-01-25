@@ -1,26 +1,32 @@
-import React from 'react';
+import { useCallback } from 'react';
 import { cn } from '@/lib/utils';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select } from '@/components/forms/select';
+import { Select, type SelectOption } from '@/components/forms/select';
 import { IncomeOptimizer } from './income-optimizer';
 import { formatCurrency, formatPercent, MB_INCOME_LIMIT_PER_YEAR, MMA, PROFIT_TAX_RATES, VDU } from './utils';
-import type { Income } from './utils';
+import type { Income, Year } from './utils';
+
+const yearOptions: SelectOption<Year>[] = [
+  // { label: '2025', value: 2025 },
+  { label: '2026', value: 2026 },
+];
 
 export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurationPanelProps) {
   const mbIncomeLimit = MB_INCOME_LIMIT_PER_YEAR / 12;
   const mbIncomeExceedsLimit = (income.mbMonthly ?? 0) > mbIncomeLimit;
   const profitTaxRates = PROFIT_TAX_RATES[income.year];
+  const handleYearChange = useCallback((year: Year) => setIncome(prev => ({ ...prev, year })), [setIncome]);
 
   return (
     <div className="flex md:flex-col md:border-r not-md:border-b">
       <div className="p-2 flex overflow-x-auto md:flex-col gap-2 md:overflow-y-auto md:max-h-[calc(100vh-93px)]">
         <div className="p-3 border rounded-sm not-md:min-w-42">
-          <Label className="mb-2 block text-left font-bold">Mokestiniai metai:</Label>
           <Select
-            value={income.year.toString()}
-            onValueChange={value => setIncome(prev => ({ ...prev, year: Number(value) as 2026 }))}
-            options={[{ label: '2026', value: '2026' }]}
+            value={income.year}
+            label="Mokestiniai metai:"
+            onChange={handleYearChange}
+            options={yearOptions}
             className="w-full"
           />
         </div>
