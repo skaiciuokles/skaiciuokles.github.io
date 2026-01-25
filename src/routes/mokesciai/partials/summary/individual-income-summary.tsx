@@ -37,7 +37,10 @@ export const IndividualIncomeSummary = React.memo(
             year={year}
             incomeRef={incomeRef}
             trigger={
-              <button className="p-2 inline-flex items-center text-stone-400 hover:text-stone-600 transition-colors cursor-pointer">
+              <button
+                className="p-2 inline-flex items-center text-stone-400 hover:text-stone-600 transition-colors cursor-pointer"
+                aria-label="Detali informacija apie mokesčius"
+              >
                 <InfoIcon className="size-4" />
               </button>
             }
