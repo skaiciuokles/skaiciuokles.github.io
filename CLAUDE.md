@@ -9,3 +9,9 @@ To check ESLint & TypeScript types, run:
 ```bash
 make lint
 ```
+
+To fix ESLint issues, run:
+
+```bash
+make lint-fix
+```
