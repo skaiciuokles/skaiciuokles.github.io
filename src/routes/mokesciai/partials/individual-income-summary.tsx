@@ -3,7 +3,7 @@ import { ChevronDown, ChevronUp, InfoIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import type { TariffInfoComponentProps } from './tariff-info/tariff-drawer';
-import { formatCurrency, formatPercent } from './utils';
+import { IndividualSummaryItems } from './summary/individual-summary-items';
 import type { Year } from './utils';
 
 export const IndividualIncomeSummary = React.memo(
@@ -31,7 +31,7 @@ export const IndividualIncomeSummary = React.memo(
             year={year}
             incomeRef={incomeRef}
             trigger={
-              <button className="ml-2 inline-flex items-center text-stone-400 hover:text-stone-600 transition-colors cursor-pointer">
+              <button className="p-2 inline-flex items-center text-stone-400 hover:text-stone-600 transition-colors cursor-pointer">
                 <InfoIcon className="size-4" />
               </button>
             }
@@ -48,65 +48,27 @@ export const IndividualIncomeSummary = React.memo(
               {label}
               {infoDrawer}
             </h3>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => onToggleDetails(id)}
-              className="text-blue-600 border-blue-100 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 h-7 px-2"
-            >
+            <Button variant="outline" size="sm" onClick={() => onToggleDetails(id)} className="h-7 w-48">
               {isDetailsOpen ? 'Slėpti detales' : 'Detalūs skaičiavimai'}
               {isDetailsOpen ? <ChevronUp className="size-3.5 ml-1" /> : <ChevronDown className="size-3.5 ml-1" />}
             </Button>
           </div>
 
           <div className="grid grid-cols-2 gap-8">
-            {/* Monthly side */}
-            <div className="space-y-2 border-r border-stone-100 pr-4">
-              <span className="block text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-1">
-                Vidurkis per mėnesį
-              </span>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <span className="block text-[10px] text-muted-foreground uppercase">Į rankas</span>
-                  <span className="text-sm font-bold text-stone-900">{formatCurrency(monthlyAfter)}</span>
-                </div>
-                <div>
-                  <span className="block text-[10px] text-muted-foreground uppercase">Ant popieriaus</span>
-                  <span className="text-sm font-semibold text-stone-700">{formatCurrency(monthlyBefore)}</span>
-                </div>
-              </div>
-              <div>
-                <span className="block text-[10px] text-muted-foreground uppercase">Mokesčiai</span>
-                <span className="text-xs font-bold text-rose-600">
-                  {formatCurrency(monthlyTaxes)} ({formatPercent(totals.total.percentage)})
-                </span>
-              </div>
-            </div>
-
-            {/* Yearly side */}
-            <div className="space-y-2">
-              <span className="block text-[10px] uppercase font-bold text-muted-foreground tracking-wider mb-1">
-                Iš viso per metus
-              </span>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <span className="block text-[10px] text-muted-foreground uppercase">Į rankas</span>
-                  <span className="text-sm font-bold text-stone-900">{formatCurrency(totals.salaryAfterTaxes)}</span>
-                </div>
-                <div>
-                  <span className="block text-[10px] text-muted-foreground uppercase">Ant popieriaus</span>
-                  <span className="text-sm font-semibold text-stone-700">
-                    {formatCurrency(totals.salaryBeforeTaxes)}
-                  </span>
-                </div>
-              </div>
-              <div>
-                <span className="block text-[10px] text-muted-foreground uppercase">Mokesčiai</span>
-                <span className="text-xs font-bold text-rose-600">
-                  {formatCurrency(totals.total.amount)} ({formatPercent(totals.total.percentage)})
-                </span>
-              </div>
-            </div>
+            <IndividualSummaryItems
+              title="Vidurkis per mėnesį"
+              salaryAfterTaxes={monthlyAfter}
+              salaryBeforeTaxes={monthlyBefore}
+              taxAmount={monthlyTaxes}
+              taxPercentage={totals.total.percentage}
+            />
+            <IndividualSummaryItems
+              title="Iš viso per metus"
+              salaryAfterTaxes={totals.salaryAfterTaxes}
+              salaryBeforeTaxes={totals.salaryBeforeTaxes}
+              taxAmount={totals.total.amount}
+              taxPercentage={totals.total.percentage}
+            />
           </div>
         </div>
       </div>
