@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 export const buttonVariants = cva(
   cn(
-    'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all shrink-0 outline-none',
+    'py-1 inline-flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-all shrink-0 outline-none leading-none',
     'focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px]',
     'aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive',
     'not-disabled:not-aria-[disabled]:cursor-pointer disabled:opacity-50 aria-[disabled]:opacity-50',
@@ -44,12 +44,12 @@ export const buttonVariants = cva(
         text: 'text-inherit font-inherit',
       },
       size: {
-        default: 'h-9 px-4 py-1',
-        sm: 'h-8 rounded-md gap-1.5 px-3',
-        lg: 'h-10 rounded-md px-6',
-        xl: 'h-12 rounded-md px-8',
+        default: 'min-h-9 px-4',
+        sm: 'min-h-8 rounded-md gap-1.5 px-3',
+        lg: 'min-h-10 rounded-md px-6',
+        xl: 'min-h-12 rounded-md px-8',
         icon: 'size-9',
-        none: 'h-auto px-0 py-0',
+        none: 'min-h-auto px-0 py-0',
       },
     },
     defaultVariants: {
