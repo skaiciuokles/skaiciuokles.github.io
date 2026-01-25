@@ -109,6 +109,7 @@ export const IndividualIncomeSummary = React.memo(
     InfoDrawer,
     incomeRef,
     year,
+    id,
   }: IndividualIncomeSummaryProps) => {
     const monthlyBefore = totals.salaryBeforeTaxes / 12;
     const monthlyAfter = totals.salaryAfterTaxes / 12;
@@ -123,7 +124,7 @@ export const IndividualIncomeSummary = React.memo(
             year={year}
             incomeRef={incomeRef}
             trigger={
-              <button className="ml-2 inline-flex items-center text-stone-400 hover:text-stone-600 transition-colors">
+              <button className="ml-2 inline-flex items-center text-stone-400 hover:text-stone-600 transition-colors cursor-pointer">
                 <InfoIcon className="size-4" />
               </button>
             }
@@ -143,7 +144,7 @@ export const IndividualIncomeSummary = React.memo(
             <Button
               variant="outline"
               size="sm"
-              onClick={onToggleDetails}
+              onClick={() => onToggleDetails(id)}
               className="text-blue-600 border-blue-100 hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 h-7 px-2"
             >
               {isDetailsOpen ? 'Slėpti detales' : 'Detalūs skaičiavimai'}
@@ -214,11 +215,12 @@ interface IndividualIncomeSummaryProps {
     total: { amount: number; percentage: number };
   };
   className?: string;
-  onToggleDetails: () => void;
+  onToggleDetails: (name: string) => void;
   isDetailsOpen: boolean;
   year?: Year;
   incomeRef?: TariffInfoComponentProps['incomeRef'];
   InfoDrawer?: React.FC<TariffInfoComponentProps & { trigger?: React.ReactNode }>;
+  id: string;
 }
 
 interface IncomeSummaryProps {

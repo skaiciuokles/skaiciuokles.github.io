@@ -102,9 +102,7 @@ export function TaxCalculatorPage() {
 
   const allTaxes = React.useMemo(() => calculateAllTaxes(income), [income]);
 
-  const toggleDetails = (id: string) => {
-    setShowDetails(prev => ({ ...prev, [id]: !prev[id] }));
-  };
+  const toggleDetails = React.useCallback((id: string) => setShowDetails(prev => ({ ...prev, [id]: !prev[id] })), []);
 
   return (
     <div className="flex flex-col h-full">
@@ -116,108 +114,95 @@ export function TaxCalculatorPage() {
             <IncomeSummary income={income} />
           </div>
 
-          <div className="p-4 space-y-4">
+          <div className="p-3 space-y-4">
             <div className="space-y-2">
               <IndividualIncomeSummary
+                id="employment"
                 label="Darbo santykiai"
                 totals={allTaxes.employmentTotals}
                 isDetailsOpen={!!showDetails.employment}
-                onToggleDetails={() => toggleDetails('employment')}
+                onToggleDetails={toggleDetails}
                 InfoDrawer={EmploymentTariffDrawer}
                 incomeRef={incomeRef}
                 year={income.year}
               />
-              {showDetails.employment && (
-                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                  <TaxSummaryTable
-                    label="Metinė darbo santykių mokesčių suvestinė"
-                    monthlySalary={income.monthly ?? 0}
-                    additionalForGPM={
-                      (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 +
-                      (income.ivMonthly ?? 0) * ivTaxRates.gpmBase * 12
-                    }
-                    className="border rounded-lg overflow-hidden"
-                    taxRates={taxRates}
-                    pensionAccumulation={income.pensionAccumulation}
-                    year={income.year}
-                    withSodra
-                  />
-                </div>
-              )}
+              <TaxSummaryTable
+                label="Metinė darbo santykių mokesčių suvestinė"
+                monthlySalary={income.monthly ?? 0}
+                additionalForGPM={
+                  (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 + (income.ivMonthly ?? 0) * ivTaxRates.gpmBase * 12
+                }
+                open={showDetails.employment}
+                taxRates={taxRates}
+                pensionAccumulation={income.pensionAccumulation}
+                year={income.year}
+                withSodra
+              />
             </div>
 
             <div className="space-y-2">
               <IndividualIncomeSummary
+                id="iv"
                 label="Individuali veikla"
                 totals={allTaxes.ivTotals}
                 isDetailsOpen={!!showDetails.iv}
-                onToggleDetails={() => toggleDetails('iv')}
+                onToggleDetails={toggleDetails}
                 InfoDrawer={IVTariffDrawer}
                 incomeRef={incomeRef}
                 year={income.year}
               />
-              {showDetails.iv && (
-                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                  <TaxSummaryTable
-                    label="Metinė IV pagal pažymą mokesčių suvestinė"
-                    monthlySalary={income.ivMonthly ?? 0}
-                    className="border rounded-lg overflow-hidden"
-                    taxRates={ivTaxRates}
-                    additionalForGPM={!income.monthly ? (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 : 0}
-                    gpmOverride={ivGpmOverride}
-                    year={income.year}
-                    withSodra
-                  />
-                </div>
-              )}
+              <TaxSummaryTable
+                label="Metinė IV pagal pažymą mokesčių suvestinė"
+                monthlySalary={income.ivMonthly ?? 0}
+                open={showDetails.iv}
+                taxRates={ivTaxRates}
+                additionalForGPM={!income.monthly ? (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 : 0}
+                gpmOverride={ivGpmOverride}
+                year={income.year}
+                withSodra
+              />
             </div>
 
             <div className="space-y-2">
               <IndividualIncomeSummary
+                id="mb"
                 label="MB pajamos (civilinė sutartis)"
                 totals={allTaxes.mbTotals}
                 isDetailsOpen={!!showDetails.mb}
-                onToggleDetails={() => toggleDetails('mb')}
+                onToggleDetails={toggleDetails}
                 InfoDrawer={MBTariffDrawer}
                 incomeRef={incomeRef}
                 year={income.year}
               />
-              {showDetails.mb && (
-                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                  <TaxSummaryTable
-                    label="Metinė MB mokesčių suvestinė"
-                    monthlySalary={income.mbMonthly ?? 0}
-                    className="border rounded-lg overflow-hidden"
-                    taxRates={mbTaxRates}
-                    year={income.year}
-                  />
-                </div>
-              )}
+              <TaxSummaryTable
+                label="Metinė MB mokesčių suvestinė"
+                monthlySalary={income.mbMonthly ?? 0}
+                open={showDetails.mb}
+                taxRates={mbTaxRates}
+                year={income.year}
+              />
             </div>
 
             <div className="space-y-2">
               <IndividualIncomeSummary
+                id="mbDividends"
                 label="MB dividendai"
                 totals={allTaxes.mbDividendsTotals}
                 isDetailsOpen={!!showDetails.mbDividends}
-                onToggleDetails={() => toggleDetails('mbDividends')}
+                onToggleDetails={toggleDetails}
                 InfoDrawer={MBDividendsTariffDrawer}
                 incomeRef={incomeRef}
                 year={income.year}
               />
-              {showDetails.mbDividends && (
-                <div className="animate-in fade-in slide-in-from-top-2 duration-300">
-                  <TaxSummaryTable
-                    label="Metinė MB dividendų mokesčių suvestinė"
-                    monthlySalary={income.mbDividendsMonthly ?? 0}
-                    className="border rounded-lg overflow-hidden"
-                    taxRates={mbTaxRates}
-                    gpmOverride={mbDividendsGpmOverride}
-                    gpmTooltip={gpmTooltip}
-                    year={income.year}
-                  />
-                </div>
-              )}
+              <TaxSummaryTable
+                label="Metinė MB dividendų mokesčių suvestinė"
+                monthlySalary={income.mbDividendsMonthly ?? 0}
+                open={showDetails.mbDividends}
+                taxRates={mbTaxRates}
+                gpmOverride={mbDividendsGpmOverride}
+                gpmTooltip={gpmTooltip}
+                year={income.year}
+              />
             </div>
           </div>
 
