@@ -29,7 +29,16 @@ export function TaxCalculatorPage() {
       }
     }
 
-    return { year: 2026, pensionAccumulation: true, mbNoProfitTax: false, mbUseReducedProfitTaxRate: true, ...parsed };
+    return {
+      year: parsed.year ?? 2026,
+      pensionAccumulation: parsed.pensionAccumulation ?? true,
+      mbNoProfitTax: parsed.mbNoProfitTax ?? false,
+      mbUseReducedProfitTaxRate: parsed.mbUseReducedProfitTaxRate ?? true,
+      ivMonthly: parsed.ivMonthly ?? 0,
+      mbMonthly: parsed.mbMonthly ?? 0,
+      mbDividendsMonthly: parsed.mbDividendsMonthly ?? 0,
+      monthly: parsed.monthly ?? 0,
+    };
   });
   const incomeRef = React.useRef<Income>(income);
   React.useEffect(() => {
