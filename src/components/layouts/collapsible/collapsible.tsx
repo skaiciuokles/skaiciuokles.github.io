@@ -1,12 +1,13 @@
 'use client';
 
 import { createPortal } from 'react-dom';
-import { cloneElement, createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { cloneElement, createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { useElementResizeObserver, useOnClickOutside } from '@/hooks';
 import { cn } from '@/lib/utils';
 import React from 'react';
 
 const CollapsibleContext = createContext<ICollapsibleContext | undefined>(undefined);
+const getExpandedStateKey = (id: string) => `collapsible-${id}-open`;
 
 export function Collapsible({
   id,
@@ -21,10 +22,16 @@ export function Collapsible({
   renderAfter,
   initialOpen = false,
   collapseOnClickOutside = false,
+  keepState = false,
+  anchor,
   ...rest
 }: CollapsibleProps) {
-  const [isOpen, setIsOpen] = useState(initialOpen);
-  const [isRendered, setIsRendered] = useState(initialOpen);
+  const isInitialOpen = useMemo(
+    () => (keepState && id ? localStorage.getItem(getExpandedStateKey(id)) === 'true' : initialOpen),
+    [keepState, id, initialOpen],
+  );
+  const [isOpen, setIsOpen] = useState(isInitialOpen);
+  const [isRendered, setIsRendered] = useState(isInitialOpen);
   const [element, size] = useElementResizeObserver(entry => {
     const [boxSize] = entry.borderBoxSize;
     const parent = entry.target.parentElement;
@@ -39,19 +46,37 @@ export function Collapsible({
     };
   }, []);
 
+  const closeTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const close = useCallback(() => {
+    if (closeTimeoutRef.current) {
+      clearTimeout(closeTimeoutRef.current);
+    }
     setIsOpen(false);
-    setTimeout(() => setIsRendered(false), duration);
+    closeTimeoutRef.current = setTimeout(() => setIsRendered(false), duration);
   }, [duration]);
+
+  useEffect(() => {
+    return () => {
+      if (closeTimeoutRef.current) {
+        clearTimeout(closeTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const actions = useMemo(
     () => ({
       open: () => {
+        if (closeTimeoutRef.current) {
+          clearTimeout(closeTimeoutRef.current);
+        }
         setIsRendered(true);
         requestAnimationFrame(() => setIsOpen(true));
       },
       close,
       toggle: () => {
+        if (closeTimeoutRef.current) {
+          clearTimeout(closeTimeoutRef.current);
+        }
         setIsRendered(prev => {
           requestAnimationFrame(() => (!prev ? setIsOpen(true) : close()));
           // This always returns true, because we either immediately render and then open in the next frame or we
@@ -62,6 +87,12 @@ export function Collapsible({
     }),
     [close],
   );
+
+  React.useEffect(() => {
+    if (keepState && id) {
+      localStorage.setItem(getExpandedStateKey(id), String(isOpen));
+    }
+  }, [isOpen, id, keepState]);
 
   const internalId = React.useId();
   const collapsibleId = `collapsible-trigger-${id || internalId}`;
@@ -89,8 +120,10 @@ export function Collapsible({
   return (
     <CollapsibleContext.Provider value={context}>
       {trigger && <CollapsibleTrigger>{trigger}</CollapsibleTrigger>}
+      {/* eslint-disable-next-line react-hooks/refs */}
       {renderBefore?.(context)}
-      {isRendered && (asChild ? content : createPortal(content, document.body))}
+      {isRendered && (asChild ? content : createPortal(content, anchor?.current ?? document.body))}
+      {/* eslint-disable-next-line react-hooks/refs */}
       {renderAfter?.(context)}
     </CollapsibleContext.Provider>
   );
@@ -111,6 +144,8 @@ export interface CollapsibleProps extends React.ComponentProps<'div'> {
   collapseOnClickOutside?: boolean;
   renderBefore?: (context: ICollapsibleContext) => React.ReactNode;
   renderAfter?: (context: ICollapsibleContext) => React.ReactNode;
+  anchor?: React.RefObject<HTMLElement | null>;
+  keepState?: boolean;
 }
 
 export function CollapsibleTrigger({ children }: { children: TriggerElement }) {

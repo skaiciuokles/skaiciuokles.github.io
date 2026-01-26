@@ -75,38 +75,36 @@ export function MBDividendsTariffDrawer({ year, incomeRef, ...rest }: TariffInfo
       {...rest}
     >
       <div className="space-y-4">
-        <div className="p-3 rounded-lg bg-violet-50 border border-violet-100">
-          <div className="text-xs text-violet-800 space-y-2">
-            <p>
-              <strong>Kaip skaičiuojama:</strong> Pirmiausia MB sumoka pelno mokestį nuo uždirbto pelno. Likusi dalis
-              paskirstoma nariams kaip dividendai, nuo kurių mokamas 15% GPM.
-            </p>
-            <p>
-              <strong>Dabartiniai tarifai:</strong>
-            </p>
-            <ul className="list-disc pl-4 space-y-1">
-              <li>Pelno mokestis: {formatPercent(profitTaxRate * 100)}</li>
-              <li>GPM nuo dividendų: 15%</li>
-              <li>
-                Efektyvus bendras tarifas: <strong>{formatPercent(effectiveGpmRate * 100)}</strong>
-              </li>
-            </ul>
-          </div>
+        <div className="p-3 rounded-lg bg-emerald-50 border border-emerald-100 text-xs text-emerald-800">
+          <strong>Svarbu:</strong> Dividendai nėra skaičiuojami sumuojant bendras pajamas GPM apmokestinimui.
         </div>
 
-        <div className="p-3 rounded-lg bg-blue-50 border border-blue-100">
-          <div className="text-xs text-blue-800">
-            <strong>Sodra:</strong> Dividendai nėra apmokestinami VSD ir PSD įmokomis, todėl tai dažnai yra pati
-            pigiausia išsiėmimo forma, jei sukauptas pakankamas pelnas.
-          </div>
+        <div className="p-3 rounded-lg bg-violet-50 border border-violet-100 text-xs text-violet-800 space-y-2">
+          <p>
+            <strong>Kaip skaičiuojama:</strong> Pirmiausia MB sumoka pelno mokestį nuo uždirbto pelno. Likusi dalis
+            paskirstoma nariams kaip dividendai, nuo kurių mokamas 15% GPM.
+          </p>
+          <p>
+            <strong>Dabartiniai tarifai:</strong>
+          </p>
+          <ul className="list-disc pl-4 space-y-1">
+            <li>Pelno mokestis: {formatPercent(profitTaxRate * 100)}</li>
+            <li>GPM nuo dividendų: 15%</li>
+            <li>
+              Efektyvus bendras tarifas: <strong>{formatPercent(effectiveGpmRate * 100)}</strong>
+            </li>
+          </ul>
         </div>
 
-        <div className="p-3 rounded-lg bg-amber-50 border border-amber-100">
-          <div className="text-xs text-amber-800">
-            <strong>Svarbu:</strong> Pelno mokestis gali skirtis priklausomai nuo MB apyvartos ir darbuotojų skaičiaus
-            (0%, {formatPercent(profitTaxRates.reducedRate * 100)} arba {formatPercent(profitTaxRates.mainRate * 100)}).
-            Skaičiuoklėje galite keisti šiuos nustatymus kairėje pusėje.
-          </div>
+        <div className="p-3 rounded-lg bg-blue-50 border border-blue-100 text-xs text-blue-800">
+          <strong>Sodra:</strong> Dividendai nėra apmokestinami VSD ir PSD įmokomis, todėl tai dažnai yra pati pigiausia
+          išsiėmimo forma, jei sukauptas pakankamas pelnas.
+        </div>
+
+        <div className="p-3 rounded-lg bg-amber-50 border border-amber-100 text-xs text-amber-800">
+          <strong>Svarbu:</strong> Pelno mokestis gali skirtis priklausomai nuo MB apyvartos ir darbuotojų skaičiaus
+          (0%, {formatPercent(profitTaxRates.reducedRate * 100)} arba {formatPercent(profitTaxRates.mainRate * 100)}).
+          Skaičiuoklėje galite keisti šiuos nustatymus kairėje pusėje.
         </div>
 
         <MBDividendsSources className="text-muted-foreground" year={year} />

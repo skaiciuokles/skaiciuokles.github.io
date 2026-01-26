@@ -1,5 +1,4 @@
 import React from 'react';
-import { TaxSummaryTable } from './tax-summary-table';
 import { ExternalLink } from '@/components/ui/external-link';
 import { EmploymentTariffDrawer, IVTariffDrawer, MBDividendsTariffDrawer, MBTariffDrawer } from './tariff-info';
 import {
@@ -12,7 +11,9 @@ import {
 } from './utils';
 import { IncomeConfigurationPanel } from './income-configuration';
 import { MBDividendsSources } from './tariff-info/mb-dividends-tariff-info';
-import { TotalTaxes } from './total-taxes';
+import { IndividualIncomeSummary } from './summary/individual-income-summary';
+import { IncomeSummary } from './summary/income-summary';
+import { calculateAllTaxes } from './utils';
 import type { Income } from './utils';
 
 const INCOME_STORAGE_KEY = 'tax-calculator-income';
@@ -53,6 +54,7 @@ export function TaxCalculatorPage() {
   const mbTaxRates = mbYearlyTaxRates[income.year];
   const ivTaxRates = ivYearlyTaxRates[income.year];
 
+  // TODO: Unify this with calculateAllTaxes
   const ivGpmOverride = React.useMemo(() => {
     if (!income.ivMonthly) return undefined;
     // Taxable income = 70% of total income (30% expense deduction)
@@ -65,6 +67,7 @@ export function TaxCalculatorPage() {
     }
   }, [income.ivMonthly, ivTaxRates]);
 
+  // TODO: Unify this with calculateAllTaxes
   const mbProfitTaxRate = React.useMemo(() => calculateMBProfitTaxRate(income), [income]);
   const { mbDividendsGpmOverride, gpmTooltip } = React.useMemo(() => {
     if (!income.mbDividendsMonthly)
@@ -98,65 +101,75 @@ export function TaxCalculatorPage() {
     };
   }, [income.mbDividendsMonthly, mbProfitTaxRate, income.year]);
 
+  const allTaxes = React.useMemo(() => calculateAllTaxes(income), [income]);
+
   return (
     <div className="flex flex-col h-full">
       <div className="md:grid md:grid-cols-[340px_auto] md:overflow-hidden md:h-full not-md:overflow-y-auto">
         <IncomeConfigurationPanel income={income} setIncome={setIncome} />
 
-        <div className="md:overflow-y-auto">
-          <TotalTaxes className="p-3 border-b" year={income.year} />
+        <div className="md:overflow-y-auto flex flex-col min-h-full">
+          <div className="p-2 border-b bg-stone-50/50">
+            <IncomeSummary totals={allTaxes.totals} psdRemainder={allTaxes.psdRemainder} />
+          </div>
 
-          <TaxSummaryTable
-            label="Metinė darbo santykių mokesčių suvestinė"
-            monthlySalary={income.monthly ?? 0}
-            additionalForGPM={
-              (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 + (income.ivMonthly ?? 0) * ivTaxRates.gpmBase * 12
-            }
-            className="border-b p-3"
-            taxRates={taxRates}
-            pensionAccumulation={income.pensionAccumulation}
-            InfoDrawer={EmploymentTariffDrawer}
-            incomeRef={incomeRef}
-            year={income.year}
-            withSodra
-          />
+          <div className="p-2 space-y-3">
+            <IndividualIncomeSummary
+              id="employment"
+              label="Darbo santykiai"
+              totals={allTaxes.employmentTotals}
+              InfoDrawer={EmploymentTariffDrawer}
+              incomeRef={incomeRef}
+              year={income.year}
+              monthlySalary={income.monthly ?? 0}
+              additionalForGPM={
+                (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 + (income.ivMonthly ?? 0) * ivTaxRates.gpmBase * 12
+              }
+              taxRates={taxRates}
+              pensionAccumulation={income.pensionAccumulation}
+              withSodra
+            />
 
-          <TaxSummaryTable
-            label="Metinė IV pagal pažymą mokesčių suvestinė"
-            monthlySalary={income.ivMonthly ?? 0}
-            className="p-3 border-b"
-            taxRates={ivTaxRates}
-            additionalForGPM={!income.monthly ? (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 : 0}
-            gpmOverride={ivGpmOverride}
-            InfoDrawer={IVTariffDrawer}
-            incomeRef={incomeRef}
-            year={income.year}
-            withSodra
-          />
+            <IndividualIncomeSummary
+              id="iv"
+              label="Individuali veikla"
+              totals={allTaxes.ivTotals}
+              InfoDrawer={IVTariffDrawer}
+              incomeRef={incomeRef}
+              year={income.year}
+              monthlySalary={income.ivMonthly ?? 0}
+              taxRates={ivTaxRates}
+              additionalForGPM={!income.monthly ? (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 : 0}
+              gpmOverride={ivGpmOverride}
+              withSodra
+            />
 
-          <TaxSummaryTable
-            label="Metinė MB mokesčių suvestinė"
-            monthlySalary={income.mbMonthly ?? 0}
-            className="p-3"
-            taxRates={mbTaxRates}
-            InfoDrawer={MBTariffDrawer}
-            incomeRef={incomeRef}
-            year={income.year}
-          />
+            <IndividualIncomeSummary
+              id="mb"
+              label="MB pajamos (civilinė sutartis)"
+              totals={allTaxes.mbTotals}
+              InfoDrawer={MBTariffDrawer}
+              incomeRef={incomeRef}
+              year={income.year}
+              monthlySalary={income.mbMonthly ?? 0}
+              taxRates={mbTaxRates}
+            />
 
-          <TaxSummaryTable
-            label="Metinė MB dividendų mokesčių suvestinė"
-            monthlySalary={income.mbDividendsMonthly ?? 0}
-            className="p-3 border-t"
-            taxRates={mbTaxRates}
-            InfoDrawer={MBDividendsTariffDrawer}
-            gpmOverride={mbDividendsGpmOverride}
-            gpmTooltip={gpmTooltip}
-            incomeRef={incomeRef}
-            year={income.year}
-          />
+            <IndividualIncomeSummary
+              id="mbDividends"
+              label="MB dividendai"
+              totals={allTaxes.mbDividendsTotals}
+              InfoDrawer={MBDividendsTariffDrawer}
+              incomeRef={incomeRef}
+              year={income.year}
+              monthlySalary={income.mbDividendsMonthly ?? 0}
+              taxRates={mbTaxRates}
+              gpmOverride={mbDividendsGpmOverride}
+              gpmTooltip={gpmTooltip}
+            />
+          </div>
 
-          <div className="text-sm text-gray-600 px-3 py-1 min-h-12 leading-none flex items-center justify-center border-t">
+          <div className="text-sm text-gray-600 px-3 py-2 min-h-12 leading-none flex items-center justify-center border-t mt-auto text-center">
             <span>
               Skaičiuoklė paremta{' '}
               <ExternalLink href="https://www.vmi.lt/evmi/5725">VMI pateikta informacija.</ExternalLink> Rezultatai yra

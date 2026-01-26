@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { cn } from '@/lib/utils';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/forms/input';
 import { Checkbox } from '@/components/forms/checkbox';
 import { Select, type SelectOption } from '@/components/forms/select';
@@ -14,12 +15,9 @@ const yearOptions: SelectOption<Year>[] = [
 
 function IncomeBlock({ className, children, hasError, ...rest }: React.ComponentProps<'div'> & { hasError?: boolean }) {
   return (
-    <div
-      className={cn('p-3 border rounded-sm space-y-2', hasError && 'text-red-500 [&_p]:text-red-500', className)}
-      {...rest}
-    >
+    <Card className={cn(hasError && 'text-red-500 [&_p]:text-red-500', className)} {...rest}>
       {children}
-    </div>
+    </Card>
   );
 }
 
@@ -50,7 +48,7 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
   return (
     <div className="flex md:flex-col md:border-r not-md:border-b">
       <div className="p-2 flex overflow-x-auto md:flex-col gap-2 md:overflow-y-auto md:max-h-[calc(100vh-93px)]">
-        <IncomeBlock className="not-md:min-w-42">
+        <IncomeBlock className="not-md:min-w-72">
           <Select
             value={income.year}
             label="Mokestiniai metai:"
@@ -58,6 +56,7 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             options={yearOptions}
             className="w-full"
           />
+          <IncomeOptimizer income={income} setIncome={setIncome} />
         </IncomeBlock>
         <IncomeBlock className="not-md:min-w-60">
           <Input
@@ -130,7 +129,6 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
             className="text-xs"
           />
         </IncomeBlock>
-        <IncomeOptimizer income={income} setIncome={setIncome} />
       </div>
       <div className="flex flex-col justify-center text-center h-12 border-t px-2 mt-auto not-md:hidden text-xs text-muted-foreground">
         *VDU {income.year} m. = {formatCurrency(VDU[income.year])} €

@@ -11,7 +11,7 @@ export function BuildNumber() {
     const handler = (event: KeyboardEvent) => {
       if (event.code === 'KeyE' && (event.altKey || event.metaKey)) {
         event.preventDefault();
-        setIsOpen.toggle(old => {
+        setIsOpen.setState(old => {
           localStorage.setItem(BUILD_NUMBER_STORAGE_KEY, String(!old));
           return !old;
         });
