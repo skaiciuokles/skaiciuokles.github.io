@@ -43,6 +43,11 @@ export type Year = keyof typeof MMA;
 export const VSD_BASE_RATE = 0.1252;
 export const PSD_BASE_RATE = 0.0698;
 
+export const MINIMUM_ANNUAL_PSD = {
+  2025: Number((MMA[2025] * 12 * PSD_BASE_RATE).toFixed(2)),
+  2026: Number((MMA[2026] * 12 * PSD_BASE_RATE).toFixed(2)),
+};
+
 function getGpmRates<InitialThreshold extends number>(year: Year, initialThreshold: InitialThreshold) {
   const gpmRates = {
     2025: [
@@ -450,7 +455,7 @@ export function calculateAllTaxes(income: Income) {
   });
 
   // Minimum annual PSD contribution logic
-  const minimumAnnualPsd = Number((MMA[income.year] * 12 * taxRates.psd[0].rate).toFixed(2));
+  const minimumAnnualPsd = MINIMUM_ANNUAL_PSD[income.year];
   let psdRemainder = 0;
 
   allTotals.gpm.amount = Number(allTotals.gpm.amount.toFixed(2));

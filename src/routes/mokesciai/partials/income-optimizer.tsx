@@ -11,7 +11,7 @@ import {
   ivYearlyTaxRates,
   MB_INCOME_LIMIT_PER_YEAR,
   mbYearlyTaxRates,
-  MMA,
+  MINIMUM_ANNUAL_PSD,
   yearlyTaxRates,
 } from './utils';
 import type { Income } from './utils';
@@ -64,7 +64,7 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
 
     let totalTaxesAmount = mbTotals.total.amount + ivTotals.total.amount + duTotals.total.amount + mbDividendsTotTaxes;
 
-    const minimumAnnualPsd = Number((MMA[income.year] * 12 * taxRates.psd[0].rate).toFixed(2));
+    const minimumAnnualPsd = MINIMUM_ANNUAL_PSD[income.year];
     const totalPsd = mbTotals.psd.amount + ivTotals.psd.amount + duTotals.psd.amount;
     if (totalPsd < minimumAnnualPsd) {
       totalTaxesAmount += minimumAnnualPsd - totalPsd;
