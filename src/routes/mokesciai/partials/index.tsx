@@ -54,6 +54,7 @@ export function TaxCalculatorPage() {
   const mbTaxRates = mbYearlyTaxRates[income.year];
   const ivTaxRates = ivYearlyTaxRates[income.year];
 
+  // TODO: Unify this with calculateAllTaxes
   const ivGpmOverride = React.useMemo(() => {
     if (!income.ivMonthly) return undefined;
     // Taxable income = 70% of total income (30% expense deduction)
@@ -66,6 +67,7 @@ export function TaxCalculatorPage() {
     }
   }, [income.ivMonthly, ivTaxRates]);
 
+  // TODO: Unify this with calculateAllTaxes
   const mbProfitTaxRate = React.useMemo(() => calculateMBProfitTaxRate(income), [income]);
   const { mbDividendsGpmOverride, gpmTooltip } = React.useMemo(() => {
     if (!income.mbDividendsMonthly)
