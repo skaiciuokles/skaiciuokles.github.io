@@ -104,81 +104,76 @@ export function TaxCalculatorPage() {
   const allTaxes = React.useMemo(() => calculateAllTaxes(income), [income]);
 
   return (
-    <div className="flex flex-col h-full">
-      <div
-        className="md:grid md:grid-cols-[340px_auto] md:overflow-hidden md:h-full not-md:overflow-y-auto"
-        data-scroll-boundary=""
-      >
-        <IncomeConfigurationPanel income={income} setIncome={setIncome} />
+    <div className="md:grid md:grid-cols-[340px_auto] md:overflow-hidden md:h-full">
+      <IncomeConfigurationPanel income={income} setIncome={setIncome} />
 
-        <div className="md:overflow-y-auto flex flex-col min-h-full">
-          <div className="p-2 border-b bg-stone-50/50">
-            <IncomeSummary totals={allTaxes.totals} psdRemainder={allTaxes.psdRemainder} />
-          </div>
+      <div className="md:overflow-y-auto flex flex-col md:min-h-full">
+        <div className="p-2 border-b bg-stone-50/50">
+          <IncomeSummary totals={allTaxes.totals} psdRemainder={allTaxes.psdRemainder} />
+        </div>
 
-          <div className="p-2 space-y-3">
-            <IndividualIncomeSummary
-              id="employment"
-              label="Darbo santykiai"
-              totals={allTaxes.employmentTotals}
-              InfoDrawer={EmploymentTariffDrawer}
-              incomeRef={incomeRef}
-              year={income.year}
-              monthlySalary={income.monthly ?? 0}
-              additionalForGPM={
-                (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 + (income.ivMonthly ?? 0) * ivTaxRates.gpmBase * 12
-              }
-              taxRates={taxRates}
-              pensionAccumulation={income.pensionAccumulation}
-              withSodra
-            />
+        <div className="p-2 space-y-3">
+          <IndividualIncomeSummary
+            id="employment"
+            label="Darbo santykiai"
+            totals={allTaxes.employmentTotals}
+            InfoDrawer={EmploymentTariffDrawer}
+            incomeRef={incomeRef}
+            year={income.year}
+            monthlySalary={income.monthly ?? 0}
+            additionalForGPM={
+              (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 + (income.ivMonthly ?? 0) * ivTaxRates.gpmBase * 12
+            }
+            taxRates={taxRates}
+            pensionAccumulation={income.pensionAccumulation}
+            withSodra
+          />
 
-            <IndividualIncomeSummary
-              id="iv"
-              label="Individuali veikla"
-              totals={allTaxes.ivTotals}
-              InfoDrawer={IVTariffDrawer}
-              incomeRef={incomeRef}
-              year={income.year}
-              monthlySalary={income.ivMonthly ?? 0}
-              taxRates={ivTaxRates}
-              additionalForGPM={!income.monthly ? (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 : 0}
-              gpmOverride={ivGpmOverride}
-              withSodra
-            />
+          <IndividualIncomeSummary
+            id="iv"
+            label="Individuali veikla"
+            totals={allTaxes.ivTotals}
+            InfoDrawer={IVTariffDrawer}
+            incomeRef={incomeRef}
+            year={income.year}
+            monthlySalary={income.ivMonthly ?? 0}
+            taxRates={ivTaxRates}
+            additionalForGPM={!income.monthly ? (income.mbMonthly ?? 0) * mbTaxRates.gpmBase * 12 : 0}
+            gpmOverride={ivGpmOverride}
+            withSodra
+          />
 
-            <IndividualIncomeSummary
-              id="mb"
-              label="MB pajamos (civilinė sutartis)"
-              totals={allTaxes.mbTotals}
-              InfoDrawer={MBTariffDrawer}
-              incomeRef={incomeRef}
-              year={income.year}
-              monthlySalary={income.mbMonthly ?? 0}
-              taxRates={mbTaxRates}
-            />
+          <IndividualIncomeSummary
+            id="mb"
+            label="MB pajamos (civilinė sutartis)"
+            totals={allTaxes.mbTotals}
+            InfoDrawer={MBTariffDrawer}
+            incomeRef={incomeRef}
+            year={income.year}
+            monthlySalary={income.mbMonthly ?? 0}
+            taxRates={mbTaxRates}
+          />
 
-            <IndividualIncomeSummary
-              id="mbDividends"
-              label="MB dividendai"
-              totals={allTaxes.mbDividendsTotals}
-              InfoDrawer={MBDividendsTariffDrawer}
-              incomeRef={incomeRef}
-              year={income.year}
-              monthlySalary={income.mbDividendsMonthly ?? 0}
-              taxRates={mbTaxRates}
-              gpmOverride={mbDividendsGpmOverride}
-              gpmTooltip={gpmTooltip}
-            />
-          </div>
+          <IndividualIncomeSummary
+            id="mbDividends"
+            label="MB dividendai"
+            totals={allTaxes.mbDividendsTotals}
+            InfoDrawer={MBDividendsTariffDrawer}
+            incomeRef={incomeRef}
+            year={income.year}
+            monthlySalary={income.mbDividendsMonthly ?? 0}
+            taxRates={mbTaxRates}
+            gpmOverride={mbDividendsGpmOverride}
+            gpmTooltip={gpmTooltip}
+          />
+        </div>
 
-          <div className="text-sm text-gray-600 px-3 py-2 min-h-12 leading-none flex items-center justify-center border-t mt-auto text-center">
-            <span>
-              Skaičiuoklė paremta{' '}
-              <ExternalLink href="https://www.vmi.lt/evmi/5725">VMI pateikta informacija.</ExternalLink> Rezultatai yra
-              apytiksliai ir gali skirtis nuo galutinių VMI apskaičiavimų.
-            </span>
-          </div>
+        <div className="text-sm text-gray-600 px-3 py-2 min-h-12 leading-none flex items-center justify-center border-t mt-auto text-center">
+          <span>
+            Skaičiuoklė paremta{' '}
+            <ExternalLink href="https://www.vmi.lt/evmi/5725">VMI pateikta informacija.</ExternalLink> Rezultatai yra
+            apytiksliai ir gali skirtis nuo galutinių VMI apskaičiavimų.
+          </span>
         </div>
       </div>
     </div>

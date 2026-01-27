@@ -7,12 +7,12 @@ import { Checkbox } from '@/components/forms/checkbox';
 import { Select, type SelectOption } from '@/components/forms/select';
 import { useIsMobile } from '@/hooks';
 import { Collapsible } from '@/components/layouts/collapsible';
+import { HEADER_HEIGHT } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
 import { IncomeOptimizer } from './income-optimizer';
 import { formatCurrency, formatPercent, MB_INCOME_LIMIT_PER_YEAR, MMA, PROFIT_TAX_RATES, VDU } from './utils';
 import type { Income, Year } from './utils';
 
-const HEADER_HEIGHT = 45;
 const yearOptions: SelectOption<Year>[] = [
   // { label: '2025', value: 2025 },
   { label: '2026', value: 2026 },
@@ -43,30 +43,14 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
     const container = containerRef.current;
     if (!container || !isMobile) return;
 
-    let depth = 0;
-    let currentElement: HTMLElement | null = container;
-    let scrollBoundary: HTMLElement | undefined;
-
-    // Find the closest parent element with the data-scroll-boundary attribute, as we need to listen
-    // to scroll events on the scrolling container (if one exists) rather than the window
-    while (currentElement && currentElement !== document.body && depth < 50) {
-      depth++;
-      if (currentElement.hasAttribute('data-scroll-boundary')) {
-        scrollBoundary = currentElement;
-        break;
-      }
-      currentElement = currentElement.parentElement;
-    }
-
     const handleScroll = () => {
       const { bottom } = container.getBoundingClientRect();
       setIsSticky(bottom < HEADER_HEIGHT);
     };
 
-    const scrollElement = scrollBoundary ?? window;
-    scrollElement.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
-    return () => scrollElement.removeEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [isMobile]);
 
   const mbIncomeLimit = MB_INCOME_LIMIT_PER_YEAR / 12;

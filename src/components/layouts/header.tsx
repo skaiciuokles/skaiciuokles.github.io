@@ -2,10 +2,17 @@ import { siGithub } from 'simple-icons';
 import { Link } from '@tanstack/react-router';
 import { ChartNoAxesCombinedIcon } from 'lucide-react';
 import { SimpleIcon } from '@/components/ui/simple-icon';
+import { cn } from '@/lib/utils';
 
-export function Header() {
+export function Header({ className, ...rest }: React.ComponentProps<'header'>) {
   return (
-    <header className="flex items-center justify-between px-3 py-2 border-b">
+    <header
+      className={cn(
+        'fixed border-b top-0 left-0 right-0 z-50 bg-background flex items-center justify-between px-3',
+        className,
+      )}
+      {...rest}
+    >
       <h1 className="text-lg font-semibold flex items-center gap-2">
         <Link to="/" className="data-[status='active']:text-blue-800">
           <ChartNoAxesCombinedIcon className="size-6" />
