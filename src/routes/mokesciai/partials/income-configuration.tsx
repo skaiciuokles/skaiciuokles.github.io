@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/forms/input';
 import { Checkbox } from '@/components/forms/checkbox';
 import { Select, type SelectOption } from '@/components/forms/select';
-import { useIsMobile, useIsOpen } from '@/hooks';
+import { useIsMobile } from '@/hooks';
 import { Collapsible } from '@/components/layouts/collapsible';
 import { Button } from '@/components/ui/button';
 import { IncomeOptimizer } from './income-optimizer';
@@ -34,7 +34,7 @@ function IncomeInfo({ className, children, ...rest }: React.ComponentProps<'p'>)
 }
 
 export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurationPanelProps) {
-  const [isSticky, stickyActions] = useIsOpen();
+  const [isSticky, setIsSticky] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
 
@@ -59,14 +59,14 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
 
     const handleScroll = () => {
       const { bottom } = container.getBoundingClientRect();
-      stickyActions.setState(bottom < 45);
+      setIsSticky(bottom < 45);
     };
 
     const scrollElement = scrollBoundary ?? window;
     scrollElement.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     return () => scrollElement.removeEventListener('scroll', handleScroll);
-  }, [stickyActions]);
+  }, []);
 
   const mbIncomeLimit = MB_INCOME_LIMIT_PER_YEAR / 12;
   const mbIncomeExceedsLimit = (income.mbMonthly ?? 0) > mbIncomeLimit;
