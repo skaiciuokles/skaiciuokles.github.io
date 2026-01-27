@@ -107,7 +107,7 @@ export function TaxCalculatorPage() {
     <div className="md:grid md:grid-cols-[340px_auto] md:overflow-hidden md:h-full">
       <IncomeConfigurationPanel income={income} setIncome={setIncome} />
 
-      <div className="md:overflow-y-auto flex flex-col md:min-h-full">
+      <div className="flex flex-col md:overflow-y-auto">
         <div className="p-2 border-b bg-stone-50/50">
           <IncomeSummary totals={allTaxes.totals} psdRemainder={allTaxes.psdRemainder} />
         </div>
