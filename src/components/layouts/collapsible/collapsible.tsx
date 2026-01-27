@@ -117,9 +117,12 @@ export function Collapsible({
   );
 
   const context = useMemo(() => ({ isOpen, actions, id: collapsibleId }), [isOpen, actions, collapsibleId]);
+  // eslint-disable-next-line react-hooks/refs
+  const triggerElement = trigger && (typeof trigger === 'function' ? trigger(context) : trigger);
+
   return (
     <CollapsibleContext.Provider value={context}>
-      {trigger && <CollapsibleTrigger>{trigger}</CollapsibleTrigger>}
+      {triggerElement && <CollapsibleTrigger>{triggerElement}</CollapsibleTrigger>}
       {/* eslint-disable-next-line react-hooks/refs */}
       {renderBefore?.(context)}
       {isRendered && (asChild ? content : createPortal(content, anchor?.current ?? document.body))}
@@ -137,7 +140,7 @@ export interface CollapsibleProps extends React.ComponentProps<'div'> {
   duration?: number;
   style?: React.CSSProperties;
   className?: string;
-  trigger?: TriggerElement;
+  trigger?: TriggerElement | ((context: ICollapsibleContext) => TriggerElement);
   asChild?: boolean;
   children: React.ReactElement<{ ref?: React.Ref<HTMLElement> }>;
   initialOpen?: boolean;
