@@ -8,7 +8,7 @@ export function Header({ className, ...rest }: React.ComponentProps<'header'>) {
   return (
     <header
       className={cn(
-        'fixed border-b top-0 left-0 right-0 z-50 bg-background flex items-center justify-between px-3',
+        'fixed border-b top-0 left-0 right-0 z-50 bg-background flex items-center justify-between px-3 max-w-[inherit] mx-auto',
         className,
       )}
       {...rest}
