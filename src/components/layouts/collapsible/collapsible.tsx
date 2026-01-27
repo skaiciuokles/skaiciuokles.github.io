@@ -118,7 +118,7 @@ export function Collapsible({
 
   const context = useMemo(() => ({ isOpen, actions, id: collapsibleId }), [isOpen, actions, collapsibleId]);
   // eslint-disable-next-line react-hooks/refs
-  const triggerElement = trigger && (typeof trigger === 'function' ? trigger(context) : trigger);
+  const triggerElement = typeof trigger === 'function' ? trigger(context) : trigger;
 
   return (
     <CollapsibleContext.Provider value={context}>
