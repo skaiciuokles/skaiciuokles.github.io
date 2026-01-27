@@ -72,11 +72,11 @@ export function useIsOpen(initialOpeningDelay?: number, initiallyOpen: boolean |
             setIsOpen(false);
           }
         },
-        setState: (callback?: (old: boolean) => boolean) => {
+        setState: (stateOrCallback: boolean | React.SetStateAction<boolean>) => {
           if (isMounted.current) {
             setIsOpen(old => {
-              if (callback) return callback(old);
-              return !old;
+              if (typeof stateOrCallback === 'function') return stateOrCallback(old);
+              return stateOrCallback;
             });
           }
         },
