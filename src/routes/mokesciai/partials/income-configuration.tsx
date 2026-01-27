@@ -46,7 +46,8 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
     let currentElement: HTMLElement | null = container;
     let scrollBoundary: HTMLElement | undefined;
 
-    // Find the closest parent element with the data-scroll-boundary attribute as scroll events do not bubble up to the window
+    // Find the closest parent element with the data-scroll-boundary attribute, as we need to listen
+    // to scroll events on the scrolling container (if one exists) rather than the window
     while (currentElement && currentElement !== document.body && depth < 50) {
       depth++;
       if (currentElement.hasAttribute('data-scroll-boundary')) {
@@ -62,7 +63,7 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
     };
 
     const scrollElement = scrollBoundary ?? window;
-    scrollElement.addEventListener('scroll', handleScroll);
+    scrollElement.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     return () => scrollElement.removeEventListener('scroll', handleScroll);
   }, [stickyActions]);
@@ -182,6 +183,7 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
       {/* Sticky income entry for mobile */}
       {isMobile && (
         <div
+          aria-hidden={!isSticky}
           className={cn(
             'fixed top-[45px] left-0 right-0 z-50 transition-all ease-in-out transform border-b bg-background',
             isSticky ? 'opacity-100' : 'opacity-0 pointer-events-none',
