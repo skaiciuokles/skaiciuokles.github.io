@@ -12,6 +12,7 @@ import { IncomeOptimizer } from './income-optimizer';
 import { formatCurrency, formatPercent, MB_INCOME_LIMIT_PER_YEAR, MMA, PROFIT_TAX_RATES, VDU } from './utils';
 import type { Income, Year } from './utils';
 
+const HEADER_HEIGHT = 45;
 const yearOptions: SelectOption<Year>[] = [
   // { label: '2025', value: 2025 },
   { label: '2026', value: 2026 },
@@ -40,7 +41,7 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || !isMobile) return;
 
     let depth = 0;
     let currentElement: HTMLElement | null = container;
@@ -59,14 +60,14 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
 
     const handleScroll = () => {
       const { bottom } = container.getBoundingClientRect();
-      setIsSticky(bottom < 45);
+      setIsSticky(bottom < HEADER_HEIGHT);
     };
 
     const scrollElement = scrollBoundary ?? window;
     scrollElement.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll();
     return () => scrollElement.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isMobile]);
 
   const mbIncomeLimit = MB_INCOME_LIMIT_PER_YEAR / 12;
   const mbIncomeExceedsLimit = (income.mbMonthly ?? 0) > mbIncomeLimit;
@@ -184,8 +185,9 @@ export function IncomeConfigurationPanel({ income, setIncome }: IncomeConfigurat
       {isMobile && (
         <div
           aria-hidden={!isSticky}
+          style={{ top: HEADER_HEIGHT }}
           className={cn(
-            'fixed top-[45px] left-0 right-0 z-50 transition-all ease-in-out transform border-b bg-background',
+            'fixed left-0 right-0 z-50 transition-all ease-in-out transform border-b bg-background',
             isSticky ? 'opacity-100' : 'opacity-0 pointer-events-none',
           )}
         >
