@@ -3,6 +3,7 @@ import { ChevronDown, ChevronUp, InfoIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Collapsible } from '@/components/layouts/collapsible';
+import { useIsMobile } from '@/hooks';
 import type { TariffInfoComponentProps } from '../tariff-info/tariff-drawer';
 import { IndividualSummaryItems } from './individual-summary-items';
 import { TaxSummaryTable } from './tax-summary-table';
@@ -14,6 +15,7 @@ export const IndividualIncomeSummary = React.memo(
     const monthlyAfter = totals.salaryAfterTaxes / 12;
     const monthlyTaxes = totals.total.amount / 12;
     const moreInfoAnchorRef = React.useRef<HTMLDivElement>(null);
+    const isMobile = useIsMobile();
     const infoDrawer = React.useMemo(
       () =>
         InfoDrawer &&
@@ -49,7 +51,7 @@ export const IndividualIncomeSummary = React.memo(
               className="rounded shadow-sm"
               renderBefore={context => (
                 <Button variant="outline" size="sm" onClick={context.actions.toggle} className="h-7 lg:w-48">
-                  {context.isOpen ? 'Slėpti detales' : 'Detalūs skaičiavimai'}
+                  {context.isOpen ? 'Slėpti detales' : isMobile ? 'Skaičiavimai' : 'Detalūs skaičiavimai'}
                   {context.isOpen ? <ChevronUp className="size-3.5 ml-1" /> : <ChevronDown className="size-3.5 ml-1" />}
                 </Button>
               )}
