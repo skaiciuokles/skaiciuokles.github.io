@@ -126,11 +126,19 @@ export function IncomeOptimizer({ income, setIncome }: IncomeOptimizerProps) {
 
       // If the best MB is a tiny fraction of the best dividends, it's best to allocate everything
       // to dividends and set MB to 0 to simplify tax reporting at the end of the year.
-      if (bestMB * 100 < bestDividends) {
+      if (bestMB > 0 && bestMB * 100 < bestDividends) {
         bestDividends = bestDividends + bestMB;
         bestMB = 0;
+      } else if (bestDividends > 0 && bestDividends * 100 < bestMB) {
+        bestMB = bestMB + bestDividends;
+        bestDividends = 0;
       }
-      setIncome(prev => ({ ...prev, ivMonthly: bestIV, mbMonthly: bestMB, mbDividendsMonthly: bestDividends }));
+      setIncome(prev => ({
+        ...prev,
+        ivMonthly: Number(bestIV.toFixed(2)),
+        mbMonthly: Number(bestMB.toFixed(2)),
+        mbDividendsMonthly: Number(bestDividends.toFixed(2)),
+      }));
       setOptimizerState({ isOpen: false, isLoading: false });
     }, 0);
   };
